@@ -10,7 +10,7 @@ set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_C_COMPILER_WORKS 1)
 set(CMAKE_CXX_COMPILER_WORKS 1)
 
-project("usbh-gamepad-clion" C CXX)
+project("usbh-gamepad" C CXX)
 
 include(CMakeListsPrivate.txt)
 
