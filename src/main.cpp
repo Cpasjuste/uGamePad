@@ -24,6 +24,10 @@ PS3USB Ps3(&UsbH);
 USBDeviceConfig *controller;
 
 void setup() {
+    // led
+    //pinMode(LED_BUILTIN, OUTPUT);
+
+    /*
     // init output pins
     pinMode(A0, OUTPUT);
     pinMode(A1, OUTPUT);
@@ -39,23 +43,28 @@ void setup() {
     // SWCLK
     // pinMode(32, INPUT); // patch to use the SWCLK pin as output
     pinMode(32, OUTPUT);
+    */
 
     SerialDebug.begin(115200);
     if (UsbH.Init()) {
-        SerialDebug.print(F("\r\nUSB host did not start"));
+        SerialDebug.println("\r\nusb host library error...");
         while (1); //halt
     }
-    SerialDebug.print(F("\r\nXBOX USB Library Started"));
+    SerialDebug.println("\r\nusb host library started");
 }
 
 void loop() {
-
     UsbH.Task();
 
     if (Xbox.Xbox360Connected) {
         controller = &Xbox;
         if (Xbox.getButtonClick(A)) {
-            SerialDebug.println(F("A"));
+            SerialDebug.println("rebooting ");
+            SerialDebug.flush();
+            delay(1000);
+            // reset to bootloader
+            *((volatile uint32_t *) (HMCRAMC0_ADDR + HMCRAMC0_SIZE - 4)) = 0xf01669ef;
+            NVIC_SystemReset();
         }
     } else if (Ps3.PS3Connected) {
         controller = &Ps3;
