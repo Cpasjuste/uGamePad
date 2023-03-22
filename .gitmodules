@@ -1,6 +1,3 @@
-[submodule "lib/usbh-samd"]
-	path = lib/usbh-samd
-	url = git@github.com:Cpasjuste/USB_Host_Library_SAMD.git
 [submodule "lib/FlashStorage"]
 	path = lib/FlashStorage
 	url = https://github.com/cmaglie/FlashStorage.git
