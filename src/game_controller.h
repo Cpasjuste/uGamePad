@@ -21,7 +21,7 @@ public:
 
     bool getButtonClick(ButtonEnum b);
 
-    static GameControllerDesc *getDescription(uint16_t pid, uint16_t vid);
+    static GameControllerData *getData(uint16_t pid, uint16_t vid);
 };
 
 #endif //USBH_GAMEPAD_GAME_CONTROLLER_H

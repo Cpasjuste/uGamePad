@@ -9,7 +9,7 @@
 
 USBHost m_usb_host;
 XboxUsb m_xbox(&m_usb_host);
-extern GameControllerDesc xbox_controllers[];
+extern GameControllerData xbox_controllers[];
 
 GameController::GameController() {
     if (m_usb_host.Init()) {
@@ -38,7 +38,7 @@ bool GameController::getButtonClick(ButtonEnum b) {
     return false;
 }
 
-GameControllerDesc *GameController::getDescription(uint16_t pid, uint16_t vid) {
+GameControllerData *GameController::getData(uint16_t pid, uint16_t vid) {
     // lookup for xbox game controller
     int i = 0;
     int p = INT32_MAX;

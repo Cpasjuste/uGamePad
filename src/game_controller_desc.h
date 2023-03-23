@@ -18,6 +18,6 @@ typedef struct GCD {
     uint8_t mapping;
     uint8_t type;
     uint8_t packet_type;
-} GameControllerDesc;
+} GameControllerData;
 
 #endif //USBH_GAMEPAD_GAME_CONTROLLER_DESC_H

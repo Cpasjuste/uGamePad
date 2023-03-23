@@ -38,8 +38,9 @@ void setup() {
 
     controller = new GameController();
 
-    Debug.println("\r\n********************");
-    Debug.println("usbh-gamepad started");
+    Debug.println("\r\n***********************");
+    Debug.println("  usbh-gamepad started");
+    Debug.println("***********************");
 }
 
 void loop() {
