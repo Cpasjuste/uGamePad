@@ -5,8 +5,8 @@
  */
 
 #include <Arduino.h>
-#include "XBOXUSB.h"
-#include "PS3USB.h"
+#include "led.h"
+#include "xbox_usb.h"
 
 // On SAMD boards where the native USB port is also the serial console, use
 // Serial1 for the serial console. This applies to all SAMD boards except for
@@ -17,15 +17,14 @@
 #define SerialDebug Serial1
 #endif
 
-USBHost UsbH;
-
-XBOXUSB Xbox(&UsbH);
-PS3USB Ps3(&UsbH);
-USBDeviceConfig *controller;
+GameController *gameController;
 
 void setup() {
+    // serial debug
+    SerialDebug.begin(115200);
+
     // led
-    //pinMode(LED_BUILTIN, OUTPUT);
+    pinMode(LED_PIN, OUTPUT);
 
     /*
     // init output pins
@@ -45,35 +44,24 @@ void setup() {
     pinMode(32, OUTPUT);
     */
 
-    SerialDebug.begin(115200);
-    if (UsbH.Init()) {
-        SerialDebug.println("\r\nusb host library error...");
-        while (1); //halt
-    }
-    SerialDebug.println("\r\nusb host library started");
+    gameController = new GameController();
+    SerialDebug.println("\r\nusbh-gamepad started");
 }
 
 void loop() {
-    UsbH.Task();
+    Led::Update();
+    gameController->update();
 
-    if (Xbox.Xbox360Connected) {
-        controller = &Xbox;
-        if (Xbox.getButtonClick(A)) {
-            SerialDebug.println("rebooting ");
+    if (gameController->isConnected()) {
+        if (gameController->getButtonClick(A)) {
+            SerialDebug.println("rebooting...");
             SerialDebug.flush();
             delay(1000);
             // reset to bootloader
-            *((volatile uint32_t *) (HMCRAMC0_ADDR + HMCRAMC0_SIZE - 4)) = 0xf01669ef;
+            //*((volatile uint32_t *) (HMCRAMC0_ADDR + HMCRAMC0_SIZE - 4)) = 0xf01669ef;
+            // normal reset
             NVIC_SystemReset();
         }
-    } else if (Ps3.PS3Connected) {
-        controller = &Ps3;
-    } else {
-        controller = nullptr;
-    }
-
-    if (controller) {
-        //if(controller.)
     }
 
     delay(1);
