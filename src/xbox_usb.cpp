@@ -101,13 +101,13 @@ uint32_t XboxUsb::Init(uint32_t parent, uint32_t port, uint32_t lowspeed) {
     VID = udd->idVendor;
     PID = udd->idProduct;
 
-    controller = GameController::getController(PID, VID);
-    if (controller != nullptr && controller->xtype == XTYPE_XBOX360) {
+    controller = GameController::getDescription(PID, VID);
+    if (controller != nullptr && controller->type == XTYPE_XBOX360) {
         Serial1.printf("new device detected: %s\n", controller->name);
         Led::Blink(2, Led::BLINK_RATE_SUCCESS);
     } else {
         Serial1.printf("unknown device detected: vid: %x, pid: %x\n", VID, PID);
-        Led::Blink(2, Led::BLINK_RATE_ERROR);
+        Led::Blink(10, Led::BLINK_RATE_ERROR);
         goto FailUnknownDevice;
     }
 

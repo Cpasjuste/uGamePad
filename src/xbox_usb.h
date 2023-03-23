@@ -20,7 +20,6 @@
 
 #include "UsbHost/Usb.h"
 #include "hid.h"
-#include "game_controller.h"
 #include "xbox_enums.h"
 
 /* Data Xbox 360 taken from descriptors */

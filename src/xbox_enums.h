@@ -18,7 +18,7 @@
 #ifndef USBH_GAMEPAD_XBOX_ENUMS_H
 #define USBH_GAMEPAD_XBOX_ENUMS_H
 
-#include "controller_enums.h"
+#include "game_controller_enums.h"
 
 /** Enum used to set special LED modes supported by the Xbox controller. */
 enum LEDModeEnum {

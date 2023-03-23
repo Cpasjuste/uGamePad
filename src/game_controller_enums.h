@@ -15,8 +15,8 @@
  e-mail   :  kristianl@tkjelectronics.com
  */
 
-#ifndef USBH_GAMEPAD_CONTROLLER_ENUMS_H
-#define USBH_GAMEPAD_CONTROLLER_ENUMS_H
+#ifndef USBH_GAMEPAD_GAME_CONTROLLER_ENUMS_H
+#define USBH_GAMEPAD_GAME_CONTROLLER_ENUMS_H
 
 #if defined(ESP32)
 #undef PS

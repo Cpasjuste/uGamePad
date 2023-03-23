@@ -5,23 +5,15 @@
  */
 
 #include <Arduino.h>
-#include "led.h"
-#include "xbox_usb.h"
+#include "main.h"
+#include "game_controller.h"
 
-// On SAMD boards where the native USB port is also the serial console, use
-// Serial1 for the serial console. This applies to all SAMD boards except for
-// Arduino Zero and M0 boards.
-#if (USB_VID == 0x2341 && defined(ARDUINO_SAMD_ZERO)) || (USB_VID == 0x2a03 && defined(ARDUINO_SAM_ZERO))
-#define SerialDebug SERIAL_PORT_MONITOR
-#else
-#define SerialDebug Serial1
-#endif
-
-GameController *gameController;
+// game controller wrapper
+GameController controller;
 
 void setup() {
     // serial debug
-    SerialDebug.begin(115200);
+    Debug.begin(115200);
 
     // led
     pinMode(LED_PIN, OUTPUT);
@@ -44,18 +36,18 @@ void setup() {
     pinMode(32, OUTPUT);
     */
 
-    gameController = new GameController();
-    SerialDebug.println("\r\nusbh-gamepad started");
+    Debug.println("\r\n********************");
+    Debug.println("usbh-gamepad started");
 }
 
 void loop() {
     Led::Update();
-    gameController->update();
+    controller.update();
 
-    if (gameController->isConnected()) {
-        if (gameController->getButtonClick(A)) {
-            SerialDebug.println("rebooting...");
-            SerialDebug.flush();
+    if (controller.isConnected()) {
+        if (controller.getButtonClick(A)) {
+            Debug.println("rebooting...");
+            Debug.flush();
             delay(1000);
             // reset to bootloader
             //*((volatile uint32_t *) (HMCRAMC0_ADDR + HMCRAMC0_SIZE - 4)) = 0xf01669ef;
