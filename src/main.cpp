@@ -9,7 +9,7 @@
 #include "game_controller.h"
 
 // game controller wrapper
-GameController controller;
+GameController *controller;
 
 void setup() {
     // serial debug
@@ -36,16 +36,18 @@ void setup() {
     pinMode(32, OUTPUT);
     */
 
+    controller = new GameController();
+
     Debug.println("\r\n********************");
     Debug.println("usbh-gamepad started");
 }
 
 void loop() {
     Led::Update();
-    controller.update();
+    controller->update();
 
-    if (controller.isConnected()) {
-        if (controller.getButtonClick(A)) {
+    if (controller->isConnected()) {
+        if (controller->getButtonClick(A)) {
             Debug.println("rebooting...");
             Debug.flush();
             delay(1000);

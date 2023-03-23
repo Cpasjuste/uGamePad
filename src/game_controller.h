@@ -22,9 +22,6 @@ public:
     bool getButtonClick(ButtonEnum b);
 
     static GameControllerDesc *getDescription(uint16_t pid, uint16_t vid);
-
-private:
-    USBHost m_usb_host;
 };
 
 #endif //USBH_GAMEPAD_GAME_CONTROLLER_H

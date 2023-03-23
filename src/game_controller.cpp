@@ -7,7 +7,8 @@
 #include "game_controller.h"
 #include "xbox_usb.h"
 
-XboxUsb *p_xbox;
+USBHost m_usb_host;
+XboxUsb m_xbox(&m_usb_host);
 extern GameControllerDesc xbox_controllers[];
 
 GameController::GameController() {
@@ -16,8 +17,6 @@ GameController::GameController() {
         Led::Blink(10, Led::BLINK_RATE_ERROR);
         while (true); // halt
     }
-
-    p_xbox = new XboxUsb(&m_usb_host);
 }
 
 void GameController::update() {
@@ -25,17 +24,17 @@ void GameController::update() {
 }
 
 bool GameController::isConnected() {
-    if (p_xbox && p_xbox->Xbox360Connected) return true;
+    if (m_xbox.Xbox360Connected) return true;
     return false;
 }
 
 uint8_t GameController::getButtonPress(ButtonEnum b) {
-    if (p_xbox && p_xbox->Xbox360Connected) return p_xbox->getButtonPress(b);
+    if (m_xbox.Xbox360Connected) return m_xbox.getButtonPress(b);
     return 0;
 }
 
 bool GameController::getButtonClick(ButtonEnum b) {
-    if (p_xbox && p_xbox->Xbox360Connected) return p_xbox->getButtonClick(b);
+    if (m_xbox.Xbox360Connected) return m_xbox.getButtonClick(b);
     return false;
 }
 
