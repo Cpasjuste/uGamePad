@@ -1,3 +1,6 @@
 [submodule "lib/FlashStorage"]
 	path = lib/FlashStorage
 	url = https://github.com/cmaglie/FlashStorage.git
+[submodule "lib/Adafruit_TinyUSB_Arduino"]
+	path = lib/Adafruit_TinyUSB_Arduino
+	url = git@github.com:Cpasjuste/Adafruit_TinyUSB_Arduino.git

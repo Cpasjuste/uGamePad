@@ -51,6 +51,7 @@ void loop() {
     Led::Update();
     controller->update();
 
+    /*
     if (controller->isConnected()) {
         if (controller->getButtonClick(A)) {
             Debug.println("rebooting...");
@@ -62,6 +63,6 @@ void loop() {
             NVIC_SystemReset();
         }
     }
-
+    */
     delay(1);
 }

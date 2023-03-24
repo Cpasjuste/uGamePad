@@ -2,8 +2,8 @@
 // Created by cpasjuste on 23/03/23.
 //
 
-#ifndef USBH_GAMEPAD_GAME_CONTROLLER_DESC_H
-#define USBH_GAMEPAD_GAME_CONTROLLER_DESC_H
+#ifndef USBH_GAMEPAD_GAME_CONTROLLER_DATA_H
+#define USBH_GAMEPAD_GAME_CONTROLLER_DATA_H
 
 #define XTYPE_XBOX        0
 #define XTYPE_XBOX360     1
@@ -20,4 +20,4 @@ typedef struct GCD {
     uint8_t packet_type;
 } GameControllerData;
 
-#endif //USBH_GAMEPAD_GAME_CONTROLLER_DESC_H
+#endif //USBH_GAMEPAD_GAME_CONTROLLER_DATA_H

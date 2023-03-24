@@ -3,38 +3,43 @@
 //
 
 #include <cstdint>
+#include "tusb.h"
 #include "main.h"
 #include "game_controller.h"
-#include "xbox_usb.h"
 
-USBHost m_usb_host;
-XboxUsb m_xbox(&m_usb_host);
 extern GameControllerData xbox_controllers[];
 
 GameController::GameController() {
-    if (m_usb_host.Init()) {
-        Debug.println("GameController: usb host library error...");
-        Led::Blink(10, Led::BLINK_RATE_ERROR);
-        while (true); // halt
+    if (!tusb_init()) {
+        Debug.println("tusb_init failed...");
+    }
+
+    if (!tuh_init(0)) {
+        Debug.println("tuh_init failed...");
+        while (true);
     }
 }
 
 void GameController::update() {
-    m_usb_host.Task();
+    if (tuh_inited()) tuh_task();
+    else {
+        Debug.println("oops, tuh_inited is false");
+        while (true);
+    }
 }
 
 bool GameController::isConnected() {
-    if (m_xbox.Xbox360Connected) return true;
+    // TODO
     return false;
 }
 
-uint8_t GameController::getButtonPress(ButtonEnum b) {
-    if (m_xbox.Xbox360Connected) return m_xbox.getButtonPress(b);
+uint8_t GameController::getButtonPress(uint8_t b) {
+    // TODO
     return 0;
 }
 
-bool GameController::getButtonClick(ButtonEnum b) {
-    if (m_xbox.Xbox360Connected) return m_xbox.getButtonClick(b);
+bool GameController::getButtonClick(uint8_t b) {
+    // TODO
     return false;
 }
 

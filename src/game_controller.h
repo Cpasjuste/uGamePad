@@ -5,9 +5,7 @@
 #ifndef USBH_GAMEPAD_GAME_CONTROLLER_H
 #define USBH_GAMEPAD_GAME_CONTROLLER_H
 
-#include "game_controller_desc.h"
-#include "game_controller_enums.h"
-#include "UsbHost/Usb.h"
+#include "game_controller_data.h"
 
 class GameController {
 public:
@@ -17,9 +15,9 @@ public:
 
     bool isConnected();
 
-    uint8_t getButtonPress(ButtonEnum b);
+    uint8_t getButtonPress(uint8_t b);
 
-    bool getButtonClick(ButtonEnum b);
+    bool getButtonClick(uint8_t b);
 
     static GameControllerData *getData(uint16_t pid, uint16_t vid);
 };
