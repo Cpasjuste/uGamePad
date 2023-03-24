@@ -6,22 +6,33 @@
 #include <cstdio>
 #include "tusb.h"
 #include "gamepad.h"
+#include "game_controller_data.h"
 
 #undef printf
 #define printf Serial1.printf
 #define MAX_REPORT 4
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
+extern const GamepadData xbox_pads[];
+GamepadData *padData = nullptr;
 
 namespace {
     uint8_t _report_count[CFG_TUH_HID];
     tuh_hid_report_info_t _report_info_arr[CFG_TUH_HID][MAX_REPORT];
 
-    bool isXbox(uint16_t vid, uint16_t pid) {
-        return vid == 0x24c6 && pid == 0x550d; // Hori GEM Xbox controller"
+    const GamepadData *getGamepadData(uint16_t vid, uint16_t pid) {
+        // lookup for xbox game controller
+        int i = 0;
+        int p = INT32_MAX;
+
+        while (p != 0) {
+            p = xbox_pads[i].idProduct;
+            if (p == pid && xbox_pads[i].idVendor == vid) {
+                return &xbox_pads[i];
+            }
+            i++;
+        }
+
+        return nullptr;
     }
 
     bool isDS4(uint16_t vid, uint16_t pid) {
@@ -136,17 +147,20 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *desc_re
     uint16_t vid, pid;
     tuh_vid_pid_get(dev_addr, &vid, &pid);
 
-    printf("HID device address = %d, instance = %d is mounted\r\n", dev_addr, instance);
-    printf("VID = %04x, PID = %04x\r\n", vid, pid);
-
-    const char *protocol_str[] = {"None", "Keyboard", "Mouse"}; // hid_protocol_type_t
-    uint8_t const interface_protocol = tuh_hid_interface_protocol(dev_addr, instance);
+    auto data = getGamepadData(vid, pid);
+    if (data) {
+        printf("new gamepad discovered: %s\r\n", data->name);
+        if (data->type == XTYPE_XBOX360) {
+            // disable led
+            // https://github.com/felis/USB_Host_Shield_2.0/blob/45bf971f3bfc549ce8c23eeff26857562eef80a8/xboxEnums.h
+            uint8_t msg[3] = {0x01, 0x03, 0x02};
+            tuh_hid_set_report(dev_addr, instance, 5, HID_REPORT_TYPE_OUTPUT, &msg, 3);
+        }
+    }
 
     // Parse report descriptor with built-in parser
-    _report_count[instance] = tuh_hid_parse_report_descriptor(_report_info_arr[instance], MAX_REPORT, desc_report,
-                                                              desc_len);
-    printf("HID has %u reports and interface protocol = %d:%s\r\n", _report_count[instance],
-           interface_protocol, protocol_str[interface_protocol]);
+    _report_count[instance] = tuh_hid_parse_report_descriptor(
+            _report_info_arr[instance], MAX_REPORT, desc_report, desc_len);
 
     if (!tuh_hid_receive_report(dev_addr, instance)) {
         printf("Error: cannot request to receive report\r\n");
@@ -166,8 +180,9 @@ void tuh_hid_report_received_cb(uint8_t dev_addr,
     uint16_t vid, pid;
     tuh_vid_pid_get(dev_addr, &vid, &pid);
 
-    if (isXbox(vid, pid)) {
-        //printf("tuh_hid_report_received_cb: isXbox\r\n");
+    auto data = getGamepadData(vid, pid);
+    if (data && data->type == XTYPE_XBOX360) {
+        //printf("tuh_hid_report_received_cb: %s (xbox)\r\n", data->name);
         if (sizeof(XBOXReport) == len && report[0] == 0x00) {
             auto r = reinterpret_cast<const XBOXReport *>(report);
             auto &gp = io::getCurrentGamePadState(0);
@@ -185,7 +200,7 @@ void tuh_hid_report_received_cb(uint8_t dev_addr,
             //gp.convertButtonsFromHat();
             if (gp.buttons != 0) printf("Xbox: buttons: %lu\r\n", gp.buttons);
         } else {
-            printf("tuh_hid_report_received_cb: skipping report, wrong packet (xbox)\r\n");
+            //printf("tuh_hid_report_received_cb: skipping report, wrong packet (xbox)\r\n");
             tuh_hid_receive_report(dev_addr, instance);
             return;
         }
@@ -277,13 +292,13 @@ void tuh_hid_report_received_cb(uint8_t dev_addr,
 
         if (rpt_info->usage_page == HID_USAGE_PAGE_DESKTOP) {
             switch (rpt_info->usage) {
+                case HID_USAGE_DESKTOP_GAMEPAD:
                 case HID_USAGE_DESKTOP_MOUSE:
                 case HID_USAGE_DESKTOP_KEYBOARD:
                     //TU_LOG1("HID receive mouse/keyboard report\n");
                     // Assume mouse follow boot report layout
                     //                process_mouse_report((hid_mouse_report_t const *)report);
                     break;
-
                 case HID_USAGE_DESKTOP_JOYSTICK: {
                     // TU_LOG1("HID receive joystick report\n");
                     struct JoyStickReport {
@@ -304,11 +319,6 @@ void tuh_hid_report_received_cb(uint8_t dev_addr,
                     // VID = 0411, PID = 00c6
                 }
                     break;
-
-                case HID_USAGE_DESKTOP_GAMEPAD:
-                    //TU_LOG1("HID receive gamepad report\n");
-                    break;
-
                 default:
                     break;
             }
@@ -319,7 +329,3 @@ void tuh_hid_report_received_cb(uint8_t dev_addr,
         printf("Error: cannot request to receive report\r\n");
     }
 }
-
-#ifdef __cplusplus
-}
-#endif

@@ -11,13 +11,13 @@
 #define XTYPE_XBOXONE     3
 #define XTYPE_UNKNOWN     4
 
-typedef struct GCD {
+typedef struct GPD {
     uint16_t idVendor;
     uint16_t idProduct;
     char *name;
     uint8_t mapping;
     uint8_t type;
     uint8_t packet_type;
-} GameControllerData;
+} GamepadData;
 
 #endif //USBH_GAMEPAD_GAME_CONTROLLER_DATA_H

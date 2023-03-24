@@ -19,7 +19,7 @@ public:
 
     bool getButtonClick(uint8_t b);
 
-    static GameControllerData *getData(uint16_t pid, uint16_t vid);
+    static GamepadData *getData(uint16_t pid, uint16_t vid);
 };
 
 #endif //USBH_GAMEPAD_GAME_CONTROLLER_H

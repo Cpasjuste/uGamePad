@@ -5,6 +5,7 @@
  */
 
 #include <Arduino.h>
+#include "tusb.h"
 #include "main.h"
 #include "game_controller.h"
 
@@ -35,6 +36,16 @@ void setup() {
     // pinMode(32, INPUT); // patch to use the SWCLK pin as output
     pinMode(32, OUTPUT);
     */
+
+    // tinyusb
+    if (!tusb_init()) {
+        Debug.println("tusb_init failed...");
+    }
+
+    if (!tuh_init(0)) {
+        Debug.println("tuh_init failed...");
+        while (true);
+    }
 
     controller = new GameController();
 
