@@ -103,11 +103,11 @@ uint32_t XboxUsb::Init(uint32_t parent, uint32_t port, uint32_t lowspeed) {
 
     controller = GameController::getData(PID, VID);
     if (controller != nullptr && controller->type == XTYPE_XBOX360) {
-        Serial1.printf("new gamepad detected: %s\n", controller->name);
         Led::Blink(2, Led::BLINK_RATE_SUCCESS);
+        Serial1.printf("new gamepad detected: %s\r\n", controller->name);
     } else {
-        Serial1.printf("unknown device detected: vid: %x, pid: %x\n", VID, PID);
         Led::Blink(10, Led::BLINK_RATE_ERROR);
+        Serial1.printf("unknown device detected: vid: %x, pid: %x\n", VID, PID);
         goto FailUnknownDevice;
     }
 

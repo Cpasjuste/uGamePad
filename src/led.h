@@ -6,7 +6,7 @@
 #define LED_PIN LED_BUILTIN
 
 namespace Led {
-    const uint8_t BLINK_RATE_ERROR = 50;
+    const uint8_t BLINK_RATE_ERROR = 100;
     const uint8_t BLINK_RATE_SUCCESS = 255;
 
     void On();
