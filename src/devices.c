@@ -5,7 +5,7 @@
 // from https://github.com/torvalds/linux/blob/master/drivers/input/joystick/xpad.c
 
 #include <stdio.h>
-#include "game_controller_data.h"
+#include "gamepad_data.h"
 
 #define MAP_DPAD_TO_BUTTONS     (1 << 0)
 #define MAP_TRIGGERS_TO_BUTTONS (1 << 1)
@@ -16,7 +16,7 @@
 
 #define DANCEPAD_MAP_CONFIG     (MAP_DPAD_TO_BUTTONS | MAP_TRIGGERS_TO_BUTTONS | MAP_STICKS_TO_NULL)
 
-const PadData pads_data[] = {
+const GamePadData pads_data[] = {
         ///
         /// XBOX
         ///

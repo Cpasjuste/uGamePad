@@ -7,10 +7,10 @@
 #include <Arduino.h>
 #include "tusb.h"
 #include "main.h"
-#include "game_controller.h"
+#include "gamepad.h"
 
-// game controller wrapper
-GameController *controller;
+uGamePad::State pad;
+uGamePad::State pad_old;
 
 void setup() {
     // serial debug
@@ -19,61 +19,69 @@ void setup() {
     // led
     pinMode(LED_PIN, OUTPUT);
 
-    /*
     // init output pins
-    pinMode(A0, OUTPUT);
-    pinMode(A1, OUTPUT);
-    pinMode(A2, OUTPUT);
-    pinMode(A3, OUTPUT);
-    pinMode(A4, OUTPUT);
-    pinMode(A5, OUTPUT);
-    //pinMode(A6, OUTPUT); // TX UART debug
-    //pinMode(A7, OUTPUT); // RX UART debug
-    pinMode(A8, OUTPUT);
-    pinMode(A9, OUTPUT);
-    pinMode(A10, OUTPUT);
-    // SWCLK
-    // pinMode(32, INPUT); // patch to use the SWCLK pin as output
-    pinMode(32, OUTPUT);
-    */
+    pinMode(D0, OUTPUT);
+    pinMode(D1, OUTPUT);
+    pinMode(D2, OUTPUT);
+    pinMode(D3, OUTPUT);
+    pinMode(D4, OUTPUT);
+    pinMode(D5, OUTPUT);
+    //pinMode(D6, OUTPUT); // TODO: TX UART
+    //pinMode(D7, OUTPUT); // TODO: RX UART
+    pinMode(D8, OUTPUT);
+    pinMode(D9, OUTPUT);
+    pinMode(D10, OUTPUT);
+    //pinMode(SWCLK, INPUT);  // TODO: TX SWCLK FIX ?
+    //pinMode(SWCLK, OUTPUT); // TODO: TX SWCLK
 
     // tinyusb
     if (!tusb_init()) {
-        Debug.println("tusb_init failed...");
+        printf("tusb_init failed...\r\n");
     }
 
     if (!tuh_init(0)) {
-        Debug.println("tuh_init failed...");
+        printf("tuh_init failed...\r\n");
         while (true);
     }
 
-    controller = new GameController();
-
     // motd
-    Debug.println("        _____                      _____          _ \r\n"
-                  "       / ____|                    |  __ \\        | |\r\n"
-                  " _   _| |  __  __ _ _ __ ___   ___| |__) |_ _  __| |\r\n"
-                  "| | | | | |_ |/ _` | '_ ` _ \\ / _ \\  ___/ _` |/ _` |\r\n"
-                  "| |_| | |__| | (_| | | | | | |  __/ |  | (_| | (_| |\r\n"
-                  " \\__,_|\\_____|\\__,_|_| |_| |_|\\___|_|   \\__,_|\\__,_|\r\n");
+    printf("        _____                      _____          _ \r\n"
+           "       / ____|                    |  __ \\        | |\r\n"
+           " _   _| |  __  __ _ _ __ ___   ___| |__) |_ _  __| |\r\n"
+           "| | | | | |_ |/ _` | '_ ` _ \\ / _ \\  ___/ _` |/ _` |\r\n"
+           "| |_| | |__| | (_| | | | | | |  __/ |  | (_| | (_| |\r\n"
+           " \\__,_|\\_____|\\__,_|_| |_| |_|\\___|_|   \\__,_|\\__,_|\r\n\n");
 }
 
 void loop() {
-    Led::Update();
-    controller->update();
-
-    /*
-    if (controller->isConnected()) {
-        if (controller->getButtonClick(A)) {
-            Debug.println("rebooting...");
-            Debug.flush();
-            delay(1000);
-            // reset to bootloader
-            //*((volatile uint32_t *) (HMCRAMC0_ADDR + HMCRAMC0_SIZE - 4)) = 0xf01669ef;
-            // normal reset
-            NVIC_SystemReset();
-        }
+    // handle usb host updates
+    if (tuh_inited()) {
+        tuh_task();
+    } else {
+        Debug.println("oops, tinyusb host service not inited...");
+        while (true);
     }
-    */
+
+    // handle led updates
+    Led::Update();
+
+    // get gamepad sate
+    pad = uGamePad::getState();
+    // only update on button change
+    bool changed = pad_old.buttons ^ pad.buttons;
+    pad_old.buttons = pad.buttons;
+    if (changed) {
+        uGamePad::PinMapping *mapping = uGamePad::getPinMapping();
+        // generate pin output
+        for (int i = 0; i < MAX_BUTTONS; i++) {
+            if (mapping[i].pin == D6 || mapping[i].pin == D7 || mapping[i].pin == SWCLK) {
+                // TODO: handle swd debug pins / buttons config change
+                continue;
+            }
+            digitalWrite(mapping[i].pin, pad.buttons & mapping[i].button ? HIGH : LOW);
+        }
+        //printf("buttons: %hx\r\n", pad.buttons);
+    }
+
     delay(1);
 }

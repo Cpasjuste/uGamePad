@@ -2,10 +2,12 @@
 // Created by cpasjuste on 23/03/23.
 //
 
-#ifndef USBH_GAMEPAD_MAIN_H
-#define USBH_GAMEPAD_MAIN_H
+#ifndef U_GAMEPAD_MAIN_H
+#define U_GAMEPAD_MAIN_H
 
 #include "led.h"
+
+#define SWCLK 32
 
 // On SAMD boards where the native USB port is also the serial console, use
 // Serial1 for the serial console. This applies to all SAMD boards except for
@@ -16,4 +18,7 @@
 #define Debug Serial1
 #endif
 
-#endif //USBH_GAMEPAD_MAIN_H
+#undef printf
+#define printf Serial1.printf
+
+#endif //U_GAMEPAD_MAIN_H
