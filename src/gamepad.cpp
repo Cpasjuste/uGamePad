@@ -12,35 +12,27 @@
 #define printf Serial1.printf
 #define MAX_REPORT 4
 
-extern const GamepadData xbox_pads[];
-GamepadData *padData = nullptr;
+extern const PadData pads_data[];
+PadData padData;
 
 namespace {
     uint8_t _report_count[CFG_TUH_HID];
     tuh_hid_report_info_t _report_info_arr[CFG_TUH_HID][MAX_REPORT];
 
-    const GamepadData *getGamepadData(uint16_t vid, uint16_t pid) {
-        // lookup for xbox game controller
+    const PadData *getPadData(uint16_t vid, uint16_t pid) {
+        // lookup for a known game controller
         int i = 0;
         int p = INT32_MAX;
 
         while (p != 0) {
-            p = xbox_pads[i].idProduct;
-            if (p == pid && xbox_pads[i].idVendor == vid) {
-                return &xbox_pads[i];
+            p = pads_data[i].idProduct;
+            if (p == pid && pads_data[i].idVendor == vid) {
+                return &pads_data[i];
             }
             i++;
         }
 
         return nullptr;
-    }
-
-    bool isDS4(uint16_t vid, uint16_t pid) {
-        return vid == 0x054c && (pid == 0x09cc || pid == 0x05c4);
-    }
-
-    bool isDS5(uint16_t vid, uint16_t pid) {
-        return vid == 0x054c && pid == 0x0ce6;
     }
 
     bool isNintendo(uint16_t vid, uint16_t pid) {
@@ -147,12 +139,16 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *desc_re
     uint16_t vid, pid;
     tuh_vid_pid_get(dev_addr, &vid, &pid);
 
-    auto data = getGamepadData(vid, pid);
+    //printf("mount_cb: %x:%x\r\n", vid, pid);
+
+    auto data = getPadData(vid, pid);
     if (data) {
-        printf("new gamepad discovered: %s\r\n", data->name);
-        if (data->type == XTYPE_XBOX360) {
+        if (data->idVendor != padData.idVendor || data->idProduct != padData.idProduct) {
+            printf("new gamepad discovered: %s\r\n", data->name);
+            memcpy(&padData, data, sizeof(PadData));
+        }
+        if (padData.type == TYPE_XBOX360) {
             // disable led
-            // https://github.com/felis/USB_Host_Shield_2.0/blob/45bf971f3bfc549ce8c23eeff26857562eef80a8/xboxEnums.h
             uint8_t msg[3] = {0x01, 0x03, 0x02};
             tuh_hid_set_report(dev_addr, instance, 5, HID_REPORT_TYPE_OUTPUT, &msg, 3);
         }
@@ -171,17 +167,20 @@ void tuh_hid_umount_cb(uint8_t dev_addr, uint8_t instance) {
     printf("HID device address = %d, instance = %d is unmounted\n", dev_addr, instance);
 }
 
-void tuh_hid_report_received_cb(uint8_t dev_addr,
-                                uint8_t instance, uint8_t const *report, uint16_t len) {
+void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *report, uint16_t len) {
     uint8_t const rpt_count = _report_count[instance];
     tuh_hid_report_info_t *rpt_info_arr = _report_info_arr[instance];
     tuh_hid_report_info_t *rpt_info = nullptr;
 
     uint16_t vid, pid;
     tuh_vid_pid_get(dev_addr, &vid, &pid);
+    if (padData.idProduct != pid || padData.idVendor != vid) {
+        printf("received_cb: skipping report, wrong vid or pid for %s...\r\n", padData.name);
+        tuh_hid_receive_report(dev_addr, instance);
+        return;
+    }
 
-    auto data = getGamepadData(vid, pid);
-    if (data && data->type == XTYPE_XBOX360) {
+    if (padData.type == TYPE_XBOX360) {
         //printf("tuh_hid_report_received_cb: %s (xbox)\r\n", data->name);
         if (sizeof(XBOXReport) == len && report[0] == 0x00) {
             auto r = reinterpret_cast<const XBOXReport *>(report);
@@ -198,21 +197,16 @@ void tuh_hid_report_received_cb(uint8_t dev_addr,
             //gp.hat = static_cast<io::GamePadState::Hat>(r->getHat());
             //gp.convertButtonsFromAxis(0, 1);
             //gp.convertButtonsFromHat();
-            if (gp.buttons != 0) printf("Xbox: buttons: %lu\r\n", gp.buttons);
+            if (gp.buttons != 0) printf("xbox: %lu\r\n", gp.buttons);
         } else {
             //printf("tuh_hid_report_received_cb: skipping report, wrong packet (xbox)\r\n");
             tuh_hid_receive_report(dev_addr, instance);
             return;
         }
-    } else if (isDS4(vid, pid)) {
-        //printf("tuh_hid_report_received_cb: isDS4\n");
-        if (sizeof(DS4Report) <= len) {
+    } else if (padData.type == TYPE_DS4) {
+        //printf("tuh_hid_report_received_cb: len: %i\r\n", len);
+        if (sizeof(DS4Report) <= len && report[0] == 1) {
             auto r = reinterpret_cast<const DS4Report *>(report);
-            if (r->reportID != 1) {
-                printf("Invalid reportID %d\n", r->reportID);
-                return;
-            }
-
             auto &gp = io::getCurrentGamePadState(0);
             gp.axis[0] = r->stickL[0];
             gp.axis[1] = r->stickL[1];
@@ -227,22 +221,16 @@ void tuh_hid_report_received_cb(uint8_t dev_addr,
             gp.hat = static_cast<io::GamePadState::Hat>(r->getHat());
             gp.convertButtonsFromAxis(0, 1);
             gp.convertButtonsFromHat();
-            if (gp.buttons != 0) printf("DS4: x button: %lu\n", gp.buttons);
+            if (gp.buttons != 0) printf("ds4: %lu\r\n", gp.buttons);
         } else {
-            printf("Invalid DS4 report size %zd\n", len);
+            //printf("tuh_hid_report_received_cb: skipping report, wrong packet (ds4)\r\n");
+            tuh_hid_receive_report(dev_addr, instance);
             return;
         }
-    } else if (isDS5(vid, pid)) {
-        if (sizeof(DS5Report) <= len) {
-
+    } else if (padData.type == TYPE_DS5) {
+        if (sizeof(DS5Report) <= len && report[0] == 1) {
             auto r = reinterpret_cast<const DS5Report *>(report);
-            if (r->reportID != 1) {
-                printf("Invalid reportID %d\n", r->reportID);
-                return;
-            }
-
             auto buttons = r->buttons[0] | (r->buttons[1] << 8) | (r->buttons[2] << 16);
-
             auto &gp = io::getCurrentGamePadState(0);
             gp.axis[0] = r->stickL[0];
             gp.axis[1] = r->stickL[1];

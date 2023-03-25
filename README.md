@@ -1,4 +1,4 @@
-# usbh-gamepad
+# uGamePad
 
 ````
 Resolving seeed_xiao_rp2040 dependencies...

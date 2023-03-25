@@ -7,7 +7,7 @@
 #include "main.h"
 #include "game_controller.h"
 
-extern GamepadData xbox_pads[];
+extern PadData pads_data[];
 
 GameController::GameController() {
 
