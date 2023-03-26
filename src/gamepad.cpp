@@ -14,18 +14,18 @@ extern const GamePadData pads_data[];
 static GamePadData padData;
 static uGamePad::State padState;
 static uGamePad::PinMapping padMapping[MAX_BUTTONS] = {
-        {uGamePad::Button::B_1, D2},
-        {uGamePad::Button::B_2, D1},
-        {uGamePad::Button::B_3, D0},
-        {uGamePad::Button::B_4, D10},
-        {uGamePad::Button::B_5, D8},
-        {uGamePad::Button::B_6, D7},
+        {uGamePad::Button::B_1,      D2},
+        {uGamePad::Button::B_2,      D1},
+        {uGamePad::Button::B_3,      D0},
+        {uGamePad::Button::B_4,      D10},
+        {uGamePad::Button::B_5,      D8},
+        {uGamePad::Button::B_6,      D7},
         {uGamePad::Button::B_SELECT, 32}, // TODO: test SWDCLK as output
-        {uGamePad::Button::B_START, D9},
-        {uGamePad::Button::B_UP, D5},
-        {uGamePad::Button::B_DOWN, D6},
-        {uGamePad::Button::B_LEFT, D4},
-        {uGamePad::Button::B_RIGHT, D3},
+        {uGamePad::Button::B_START,  D9},
+        {uGamePad::Button::B_UP,     D5},
+        {uGamePad::Button::B_DOWN,   D6},
+        {uGamePad::Button::B_LEFT,   D4},
+        {uGamePad::Button::B_RIGHT,  D3},
 };
 
 uGamePad::State &uGamePad::getState() {
@@ -34,6 +34,43 @@ uGamePad::State &uGamePad::getState() {
 
 uGamePad::PinMapping *uGamePad::getPinMapping() {
     return padMapping;
+}
+
+uint16_t uGamePad::getButtonsFromAxis(int x, int y) {
+    uint16_t buttons = 0;
+    float slope = 0.414214f; // tangent of 22.5 degrees for size of angular zones
+    auto analogX = (float) x, analogY = (float) y;
+
+    if (std::sqrt(analogX * analogX + analogY * analogY) >= DEAD_ZONE) {
+        // symmetric angular zones for all eight digital directions
+        if (analogY > 0 && analogX > 0) {
+            // upper right quadrant
+            if (analogY > slope * analogX)
+                buttons |= Button::B_UP;
+            if (analogX > slope * analogY)
+                buttons |= Button::B_RIGHT;
+        } else if (analogY > 0 && analogX <= 0) {
+            // upper left quadrant
+            if (analogY > slope * (-analogX))
+                buttons |= Button::B_UP;
+            if ((-analogX) > slope * analogY)
+                buttons |= Button::B_LEFT;
+        } else if (analogY <= 0 && analogX > 0) {
+            // lower right quadrant
+            if ((-analogY) > slope * analogX)
+                buttons |= Button::B_DOWN;
+            if (analogX > slope * (-analogY))
+                buttons |= Button::B_RIGHT;
+        } else if (analogY <= 0 && analogX <= 0) {
+            // lower left quadrant
+            if ((-analogY) > slope * (-analogX))
+                buttons |= Button::B_DOWN;
+            if ((-analogX) > slope * (-analogY))
+                buttons |= Button::B_LEFT;
+        }
+    }
+
+    return buttons;
 }
 
 namespace {
@@ -128,8 +165,8 @@ namespace {
         uint8_t len;
         uint16_t buttons;
         uint8_t triggers[2];
-        uint16_t stickL[2];
-        uint16_t stickR[2];
+        int16_t stickL[2];
+        int16_t stickR[2];
         uint8_t unused[6];
 
         // is partsnotincluded wrong (not the same button order on my "Hori GEM Xbox controller" gamepad) ?
@@ -203,8 +240,6 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
         if (sizeof(XBOXReport) == len && report[0] == 0x00) {
             auto r = reinterpret_cast<const XBOXReport *>(report);
             auto &gp = uGamePad::getState();
-            //gp.axis[0] = r->stickL[0];
-            //gp.axis[1] = r->stickL[1];
             gp.buttons =
                     (r->buttons & XBOXReport::Button::A ? uGamePad::Button::B_1 : 0) |
                     (r->buttons & XBOXReport::Button::B ? uGamePad::Button::B_2 : 0) |
@@ -218,9 +253,8 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
                     (r->buttons & XBOXReport::Button::PAD_RIGHT ? uGamePad::Button::B_RIGHT : 0) |
                     (r->buttons & XBOXReport::Button::BACK ? uGamePad::Button::B_SELECT : 0) |
                     (r->buttons & XBOXReport::Button::START ? uGamePad::Button::B_START : 0);
-            //gp.hat = static_cast<io::GamePadState::Hat>(r->getHat());
-            //gp.convertButtonsFromAxis(0, 1);
-            //gp.convertButtonsFromHat();
+            gp.buttons |= uGamePad::getButtonsFromAxis(r->stickL[0], r->stickL[1]);
+            gp.buttons |= uGamePad::getButtonsFromAxis(r->stickR[0], r->stickR[1]);
             //if (gp.buttons != 0) printf("xbox: %lu\r\n", gp.buttons);
         } else {
             //printf("tuh_hid_report_received_cb: skipping report, wrong packet (xbox)\r\n");
@@ -247,7 +281,7 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
             gp.hat = static_cast<uGamePad::Hat>(r->getHat());
             gp.convertButtonsFromAxis(0, 1);
             gp.convertButtonsFromHat();
-            if (gp.buttons != 0) printf("ds4: %lu\r\n", gp.buttons);
+            if (gp.buttons != 0) printf("ds4: %hu\r\n", gp.buttons);
         } else {
             //printf("tuh_hid_report_received_cb: skipping report, wrong packet (ds4)\r\n");
             tuh_hid_receive_report(dev_addr, instance);

@@ -8,6 +8,7 @@
 #include <cstdint>
 
 #define MAX_BUTTONS 12
+#define DEAD_ZONE 4000
 
 class uGamePad {
 public:
@@ -46,6 +47,8 @@ public:
         uint16_t button;
         pin_size_t pin;
     };
+
+    static uint16_t getButtonsFromAxis(int x, int y);
 
     static PinMapping *getPinMapping();
 
