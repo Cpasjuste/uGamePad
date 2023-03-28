@@ -3,10 +3,12 @@
 //
 
 #include <Arduino.h>
+#include <string>
 #include "tusb.h"
 #include "main.h"
 #include "gamepad.h"
 #include "gamepad_data.h"
+#include "utility.h"
 
 #define MAX_REPORT 4
 
@@ -255,7 +257,7 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
                     (r->buttons & XBOXReport::Button::START ? uGamePad::Button::B_START : 0);
             gp.buttons |= uGamePad::getButtonsFromAxis(r->stickL[0], r->stickL[1]);
             gp.buttons |= uGamePad::getButtonsFromAxis(r->stickR[0], r->stickR[1]);
-            //if (gp.buttons != 0) printf("xbox: %lu\r\n", gp.buttons);
+            if (gp.buttons != 0) printf("xbox: %s\r\n", Utility::toString(gp.buttons).c_str());
         } else {
             //printf("tuh_hid_report_received_cb: skipping report, wrong packet (xbox)\r\n");
             tuh_hid_receive_report(dev_addr, instance);
@@ -271,17 +273,19 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
             gp.buttons =
                     (r->buttons1 & DS4Report::Button1::CROSS ? uGamePad::Button::B_1 : 0) |
                     (r->buttons1 & DS4Report::Button1::CIRCLE ? uGamePad::Button::B_2 : 0) |
-                    (r->buttons1 & DS4Report::Button1::TRIANGLE ? uGamePad::Button::B_3 : 0) |
-                    (r->buttons1 & DS4Report::Button1::SQUARE ? uGamePad::Button::B_4 : 0) |
-                    (r->buttons1 & DS4Report::Button2::L1 ? uGamePad::Button::B_5 : 0) |
-                    (r->buttons1 & DS4Report::Button2::R1 ? uGamePad::Button::B_6 : 0) |
+                    (r->buttons1 & DS4Report::Button1::SQUARE ? uGamePad::Button::B_3 : 0) |
+                    (r->buttons1 & DS4Report::Button1::TRIANGLE ? uGamePad::Button::B_4 : 0) |
+                    //(r->buttons1 & DS4Report::Button2::L1 ? uGamePad::Button::B_5 : 0) |
+                    //(r->buttons1 & DS4Report::Button2::R1 ? uGamePad::Button::B_6 : 0) |
                     (r->buttons2 & DS4Report::Button2::SHARE ? uGamePad::Button::B_SELECT : 0) |
                     (r->tpad ? uGamePad::Button::B_SELECT : 0) |
                     (r->buttons2 & DS4Report::Button2::OPTIONS ? uGamePad::Button::B_START : 0);
             gp.hat = static_cast<uGamePad::Hat>(r->getHat());
-            gp.convertButtonsFromAxis(0, 1);
-            gp.convertButtonsFromHat();
-            if (gp.buttons != 0) printf("ds4: %hu\r\n", gp.buttons);
+            gp.buttons |= uGamePad::getButtonsFromAxis(r->stickL[0], r->stickL[1]);
+            gp.buttons |= uGamePad::getButtonsFromAxis(r->stickR[0], r->stickR[1]);
+            //gp.convertButtonsFromAxis(0, 1);
+            //gp.convertButtonsFromHat();
+            if (gp.buttons != 0) printf("ds4: %s\r\n", Utility::toString(gp.buttons).c_str());
         } else {
             //printf("tuh_hid_report_received_cb: skipping report, wrong packet (ds4)\r\n");
             tuh_hid_receive_report(dev_addr, instance);
@@ -306,6 +310,7 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
             gp.hat = static_cast<uGamePad::Hat>(r->getHat());
             gp.convertButtonsFromAxis(0, 1);
             gp.convertButtonsFromHat();
+            if (gp.buttons != 0) printf("ds5: %s\r\n", Utility::toString(gp.buttons).c_str());
         } else {
             //printf("tuh_hid_report_received_cb: skipping report, wrong packet (ds5)\r\n");
             tuh_hid_receive_report(dev_addr, instance);
