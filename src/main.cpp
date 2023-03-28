@@ -14,6 +14,10 @@ uGamePad::State pad_old;
 
 void setup() {
     // serial debug
+#if defined(ARDUINO_RASPBERRY_PI_PICO)
+    Debug.setTX(D16);
+    Debug.setRX(D17);
+#endif
     Debug.begin(115200);
 
     // led
@@ -26,13 +30,12 @@ void setup() {
     pinMode(D3, OUTPUT);
     pinMode(D4, OUTPUT);
     pinMode(D5, OUTPUT);
-    //pinMode(D6, OUTPUT); // TODO: TX UART
-    //pinMode(D7, OUTPUT); // TODO: RX UART
+    pinMode(D6, OUTPUT);
+    pinMode(D7, OUTPUT);
     pinMode(D8, OUTPUT);
     pinMode(D9, OUTPUT);
     pinMode(D10, OUTPUT);
-    //pinMode(SWCLK, INPUT);  // TODO: TX SWCLK FIX ?
-    //pinMode(SWCLK, OUTPUT); // TODO: TX SWCLK
+    pinMode(D11, OUTPUT);
 
     // tinyusb
     if (!tusb_init()) {
