@@ -19,6 +19,6 @@ typedef struct PD {
     char *name;
     uint8_t mapping;
     uint8_t type;
-} GamePadData;
+} Device;
 
 #endif //USBH_GAMEPAD_GAME_CONTROLLER_DATA_H

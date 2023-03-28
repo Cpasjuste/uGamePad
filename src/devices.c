@@ -5,6 +5,7 @@
 // from https://github.com/torvalds/linux/blob/master/drivers/input/joystick/xpad.c
 
 #include <stdio.h>
+#include "devices.h"
 #include "gamepad_data.h"
 
 #define MAP_DPAD_TO_BUTTONS     (1 << 0)
@@ -16,7 +17,7 @@
 
 #define DANCEPAD_MAP_CONFIG     (MAP_DPAD_TO_BUTTONS | MAP_TRIGGERS_TO_BUTTONS | MAP_STICKS_TO_NULL)
 
-const GamePadData pads_data[] = {
+const Device devices[] = {
         ///
         /// XBOX
         ///
@@ -25,7 +26,7 @@ const GamePadData pads_data[] = {
         {0x03eb, 0xff02, "Wooting Two (Legacy)",                                 0,                 TYPE_XBOX360},
         {0x044f, 0x0f00, "Thrustmaster Wheel",                                   0,                 TYPE_XBOX},
         {0x044f, 0x0f03, "Thrustmaster Wheel",                                   0,                 TYPE_XBOX},
-        {0x044f, 0x0f07, "Thrustmaster, Inc. Controller",                        0,             TYPE_XBOX},
+        {0x044f, 0x0f07, "Thrustmaster, Inc. Controller",                        0,                 TYPE_XBOX},
         {0x044f, 0x0f10, "Thrustmaster Modena GT Wheel",                         0,                 TYPE_XBOX},
         {0x044f, 0xb326, "Thrustmaster Gamepad GP XID",                          0,                 TYPE_XBOX360},
         {0x045e, 0x0202, "Microsoft X-Box pad v1 (US)",                          0,                 TYPE_XBOX},
@@ -254,21 +255,41 @@ const GamePadData pads_data[] = {
         {0x2dc8, 0x3106, "8BitDo Pro 2 Wired Controller",                        0,                 TYPE_XBOX360},
         {0x31e3, 0x1100, "Wooting One",                                          0,                 TYPE_XBOX360},
         {0x31e3, 0x1200, "Wooting Two",                                          0,                 TYPE_XBOX360},
-        {0x31e3, 0x1210, "Wooting Lekker",                                       0, TYPE_XBOX360},
-        {0x31e3, 0x1220, "Wooting Two HE",                                       0, TYPE_XBOX360},
-        {0x31e3, 0x1300, "Wooting 60HE (AVR)",                                   0, TYPE_XBOX360},
-        {0x31e3, 0x1310, "Wooting 60HE (ARM)",                                   0, TYPE_XBOX360},
-        {0x3285, 0x0607, "Nacon GC-100",                                         0, TYPE_XBOX360},
-        {0x3767, 0x0101, "Fanatec Speedster 3 Forceshock Wheel",                 0, TYPE_XBOX},
-        {0xffff, 0xffff, "Chinese-made Xbox Controller",                         0, TYPE_XBOX},
+        {0x31e3, 0x1210, "Wooting Lekker",                                       0,                 TYPE_XBOX360},
+        {0x31e3, 0x1220, "Wooting Two HE",                                       0,                 TYPE_XBOX360},
+        {0x31e3, 0x1300, "Wooting 60HE (AVR)",                                   0,                 TYPE_XBOX360},
+        {0x31e3, 0x1310, "Wooting 60HE (ARM)",                                   0,                 TYPE_XBOX360},
+        {0x3285, 0x0607, "Nacon GC-100",                                         0,                 TYPE_XBOX360},
+        {0x3767, 0x0101, "Fanatec Speedster 3 Forceshock Wheel",                 0,                 TYPE_XBOX},
+        {0xffff, 0xffff, "Chinese-made Xbox Controller",                         0,                 TYPE_XBOX},
         ///
         /// DS4
         ///
-        {0x054c, 0x05c4, "DualShock 4",                                          0, TYPE_DS4},
-        {0x054c, 0x09cc, "DualShock 4 (2nd Gen)",                                0, TYPE_DS4},
-        {0x054c, 0x0ce6, "DualSense",                                            0, TYPE_DS5},
+        {0x054c, 0x05c4, "DualShock 4",                                          0,                 TYPE_DS4},
+        {0x054c, 0x09cc, "DualShock 4 (2nd Gen)",                                0,                 TYPE_DS4},
+        {0x054c, 0x0ce6, "DualSense",                                            0,                 TYPE_DS5},
         ///
         /// Unknown
         ///
-        {0x0000, 0x0000, "Unknown device",                                       0, TYPE_UNKNOWN}
+        {0x0000, 0x0000, "Unknown device",                                       0,                 TYPE_UNKNOWN},
 };
+
+const Device *find_device(uint16_t vid, uint16_t pid) {
+    // lookup for a known game controller
+    int i = 0;
+    int p = INT32_MAX;
+
+    while (p > 0) {
+        p = devices[i].idProduct;
+        if (p == pid && devices[i].idVendor == vid) {
+            return &devices[i];
+        }
+        i++;
+    }
+
+    return NULL;
+}
+
+const Device *get_device(int i) {
+    return &devices[i];
+}

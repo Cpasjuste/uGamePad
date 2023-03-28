@@ -69,12 +69,12 @@ void loop() {
     Led::Update();
 
     // get gamepad sate
-    pad = uGamePad::getState();
+    pad = gamePad.getState();
     // only update on button change
     bool changed = pad_old.buttons ^ pad.buttons;
     pad_old.buttons = pad.buttons;
     if (changed) {
-        uGamePad::PinMapping *mapping = uGamePad::getPinMapping();
+        uGamePad::PinMapping *mapping = gamePad.getPinMapping();
         // generate pin output
         for (int i = 0; i < MAX_BUTTONS; i++) {
             if (mapping[i].pin == D6 || mapping[i].pin == D7 || mapping[i].pin == SWCLK) {
