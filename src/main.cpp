@@ -11,8 +11,9 @@
 #include "gamepad.h"
 
 Ui ui;
-uGamePad::State pad;
-uGamePad::State pad_old;
+uGamePad gamePad;
+uint16_t buttons;
+uint16_t buttons_old;
 
 void setup() {
     // serial debug
@@ -76,10 +77,10 @@ void loop() {
     Led::Update();
 
     // get gamepad sate
-    pad = gamePad.getState();
+    buttons = gamePad.getButtons();
     // only update on button change
-    bool changed = pad_old.buttons ^ pad.buttons;
-    pad_old.buttons = pad.buttons;
+    bool changed = buttons_old ^ buttons;
+    buttons_old = buttons;
     if (changed) {
         uGamePad::PinMapping *mapping = gamePad.getPinMapping();
         // generate pin output

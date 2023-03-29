@@ -17,7 +17,7 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t idx, uint8_t const *report_desc,
     uint16_t vid, pid;
     tuh_vid_pid_get(dev_addr, &vid, &pid);
 
-    //printf("tuh_hid_mount_cb: vid: %x, pid: %x, addr: %i, instance: %i, len: %i\r\n",
+    //printf("mount_cb: vid: %x, pid: %x, addr: %i, instance: %i, len: %i\r\n",
     //       vid, pid, dev_addr, idx, desc_len);
 
     auto device = find_device(vid, pid);
@@ -31,7 +31,7 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t idx, uint8_t const *report_desc,
             }
         }
     } else {
-        printf("tuh_hid_mount_cb: unknown device %x:%x\r\n", vid, pid);
+        printf("mount_cb: unknown device %x:%x\r\n", vid, pid);
     }
 
     // Parse report descriptor with built-in parser
@@ -39,12 +39,12 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t idx, uint8_t const *report_desc,
     //      _report_info_arr[instance], MAX_REPORT, desc_report, desc_len);
 
     if (!tuh_hid_receive_report(dev_addr, idx)) {
-        printf("tuh_hid_mount_cb: tuh_hid_receive_report failed\r\n");
+        printf("mount_cb: tuh_hid_receive_report failed\r\n");
     }
 }
 
 void tuh_hid_umount_cb(uint8_t dev_addr, uint8_t instance) {
-    printf("HID device address = %d, instance = %d is unmounted\n", dev_addr, instance);
+    printf("umount_cb: device unmounted (address: %d, instance: %d)\r\n", dev_addr, instance);
 }
 
 void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *report, uint16_t len) {
@@ -128,6 +128,6 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
     }
 
     if (!tuh_hid_receive_report(dev_addr, instance)) {
-        printf("tuh_hid_report_received_cb: cannot request to receive report\r\n");
+        printf("received_cb: cannot request to receive report\r\n");
     }
 }

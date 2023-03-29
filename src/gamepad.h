@@ -29,30 +29,22 @@ public:
         B_DOWN = 1 << 11
     };
 
-    enum Hat {
-        N, NE, E, SE,
-        S, SW, W, NW,
-        RELEASED,
+    enum AxisType : uint8_t {
+        AXIS_32767 = 0,
+        AXIS_255 = 4,
+        AXIS_FLIP_Y = 8
     };
 
     enum Led {
         LED_P1, LED_P2, LED_P3, LED_P4
     };
 
-    struct State {
-        uint16_t buttons{0};
-        Hat hat{Hat::RELEASED};
-        uint8_t axis[3]{0x80, 0x80, 0x80};
-    public:
-        void convertButtonsFromAxis(int axisX, int axisY) {};
-
-        void convertButtonsFromHat() {};
-    };
-
     struct PinMapping {
         uint16_t button;
         pin_size_t pin;
     };
+
+    uGamePad();
 
     void setCurrentDevice(const Device *device, uint8_t dev_addr, uint8_t instance);
 
@@ -64,16 +56,37 @@ public:
 
     PinMapping *getPinMapping();
 
-    State &getState();
+    uint16_t &getButtons() { return m_buttons; };
 
 private:
     uint8_t m_addr = 0;
     uint8_t m_instance = 0;
     const Device p_device_unknown = {0x0000, 0x0000, (char *) "Unknown device", 0, TYPE_UNKNOWN};
     const Device *p_device = &p_device_unknown;
-    State m_state;
+    uint16_t m_buttons{0};
 
-    uint16_t getButtonsFromAxis(int x, int y);
+    ///
+    /// axis handling
+    ///
+    typedef struct {
+        int x;
+        int y;
+    } point;
+
+    point m_pa = {0, 0};
+    point m_pb = {0, 0};
+    point m_pc = {128, 32767};
+    point m_pd = {128, 32767};
+
+    int m_analog_map[256]{}; // map analog inputs to -32768 -> 32767 if needed
+
+    static void lerp(point *dest, point *first, point *second, float t);
+
+    int calc_bezier_y(float t);
+
+    uint16_t getButtonsFromAxis(int x, int y, uint8_t type = AXIS_32767);
+
+    static uint16_t getButtonsFromHat(int hat);
 };
 
 extern uGamePad gamePad;
