@@ -5,6 +5,8 @@
 #ifndef U_GAMEPAD_UTILITY_H
 #define U_GAMEPAD_UTILITY_H
 
+#include <string>
+
 class Utility {
 public:
     static void reboot(bool bootloader = false);
