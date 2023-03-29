@@ -10,8 +10,11 @@
 #include "ui.h"
 #include "gamepad.h"
 
+using uGamePad::Ui;
+using uGamePad::GamePad;
+
 Ui ui;
-uGamePad gamePad;
+GamePad gamePad;
 uint16_t buttons;
 uint16_t buttons_old;
 
@@ -82,7 +85,7 @@ void loop() {
     bool changed = buttons_old ^ buttons;
     buttons_old = buttons;
     if (changed) {
-        uGamePad::PinMapping *mapping = gamePad.getPinMapping();
+        GamePad::PinMapping *mapping = gamePad.getPinMapping();
         // generate pin output
         for (int i = 0; i < MAX_BUTTONS; i++) {
             if (mapping[i].pin == D6 || mapping[i].pin == D7 || mapping[i].pin == SWCLK) {

@@ -7,12 +7,13 @@
 
 #include <string>
 
-class Utility {
-public:
-    static void reboot(bool bootloader = false);
+namespace uGamePad {
+    class Utility {
+    public:
+        static void reboot(bool bootloader = false);
 
-    static std::string toString(uint32_t button);
-};
-
+        static std::string toString(uint32_t button);
+    };
+}
 
 #endif //U_GAMEPAD_UTILITY_H

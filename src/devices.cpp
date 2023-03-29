@@ -5,7 +5,6 @@
 // from https://github.com/torvalds/linux/blob/master/drivers/input/joystick/xpad.c
 
 #include "devices.h"
-#include "gamepad_data.h"
 
 #define MAP_DPAD_TO_BUTTONS     (1 << 0)
 #define MAP_TRIGGERS_TO_BUTTONS (1 << 1)

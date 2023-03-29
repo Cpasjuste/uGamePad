@@ -5,9 +5,10 @@
 #ifndef UGAMEPAD_UI_H
 #define UGAMEPAD_UI_H
 
-class Ui {
-public:
-    void init();
-};
-
+namespace uGamePad {
+    class Ui {
+    public:
+        void init();
+    };
+}
 #endif //UGAMEPAD_UI_H

@@ -14,7 +14,7 @@
 #include "gamepad.h"
 #include "utility.h"
 
-void Utility::reboot(bool bootloader) {
+void uGamePad::Utility::reboot(bool bootloader) {
     if (bootloader) {
 #if ARDUINO_ARCH_RP2040
         reset_usb_boot(0, 0);
@@ -25,21 +25,21 @@ void Utility::reboot(bool bootloader) {
     NVIC_SystemReset();
 }
 
-std::string Utility::toString(uint32_t buttons) {
+std::string uGamePad::Utility::toString(uint32_t buttons) {
     std::string ret;
 
-    if (buttons & uGamePad::Button::B1) ret += "1 ";
-    if (buttons & uGamePad::Button::B2) ret += "2 ";
-    if (buttons & uGamePad::Button::B3) ret += "3 ";
-    if (buttons & uGamePad::Button::B4) ret += "4 ";
-    if (buttons & uGamePad::Button::B5) ret += "5 ";
-    if (buttons & uGamePad::Button::B6) ret += "6 ";
-    if (buttons & uGamePad::Button::START) ret += "START ";
-    if (buttons & uGamePad::Button::SELECT) ret += "SELECT ";
-    if (buttons & uGamePad::Button::UP) ret += "UP ";
-    if (buttons & uGamePad::Button::DOWN) ret += "DOWN ";
-    if (buttons & uGamePad::Button::LEFT) ret += "LEFT ";
-    if (buttons & uGamePad::Button::RIGHT) ret += "RIGHT ";
+    if (buttons & GamePad::Button::B1) ret += "1 ";
+    if (buttons & GamePad::Button::B2) ret += "2 ";
+    if (buttons & GamePad::Button::B3) ret += "3 ";
+    if (buttons & GamePad::Button::B4) ret += "4 ";
+    if (buttons & GamePad::Button::B5) ret += "5 ";
+    if (buttons & GamePad::Button::B6) ret += "6 ";
+    if (buttons & GamePad::Button::START) ret += "START ";
+    if (buttons & GamePad::Button::SELECT) ret += "SELECT ";
+    if (buttons & GamePad::Button::UP) ret += "UP ";
+    if (buttons & GamePad::Button::DOWN) ret += "DOWN ";
+    if (buttons & GamePad::Button::LEFT) ret += "LEFT ";
+    if (buttons & GamePad::Button::RIGHT) ret += "RIGHT ";
 
     return ret;
 }

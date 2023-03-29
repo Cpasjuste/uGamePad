@@ -6,7 +6,22 @@
 #define UGAMEPAD_DEVICES_H
 
 #include <cstdint>
-#include "gamepad_data.h"
+
+#define TYPE_UNKNOWN     0
+#define TYPE_XBOX        1
+#define TYPE_XBOX360     2
+#define TYPE_XBOX360W    3
+#define TYPE_XBOXONE     4
+#define TYPE_DS4         5
+#define TYPE_DS5         6
+
+typedef struct PD {
+    uint16_t idVendor;
+    uint16_t idProduct;
+    char *name;
+    uint8_t mapping;
+    uint8_t type;
+} Device;
 
 struct XBOXReport {
     // https://www.partsnotincluded.com/understanding-the-xbox-360-wired-controllers-usb-data/

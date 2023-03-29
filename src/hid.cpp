@@ -9,6 +9,8 @@
 #include "devices.h"
 #include "gamepad.h"
 
+extern uGamePad::GamePad gamePad;
+
 //#define MAX_REPORT 4
 //uint8_t _report_count[CFG_TUH_HID];
 //tuh_hid_report_info_t _report_info_arr[CFG_TUH_HID][MAX_REPORT];
@@ -22,7 +24,8 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t idx, uint8_t const *report_desc,
 
     auto device = find_device(vid, pid);
     if (device) {  // a know controller was plugged in (see devices.c)
-        if (device->idVendor != gamePad.getDevice()->idVendor || device->idProduct != gamePad.getDevice()->idProduct) {
+        if (device->idVendor != gamePad.getDevice()->idVendor ||
+            device->idProduct != gamePad.getDevice()->idProduct) {
             gamePad.setCurrentDevice(device, dev_addr, idx);
             // set default led value
             if (device->type == TYPE_XBOX360) {
