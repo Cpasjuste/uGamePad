@@ -13,18 +13,21 @@
 //uint8_t _report_count[CFG_TUH_HID];
 //tuh_hid_report_info_t _report_info_arr[CFG_TUH_HID][MAX_REPORT];
 
-void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *desc_report, uint16_t desc_len) {
+void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t idx, uint8_t const *report_desc, uint16_t desc_len) {
     uint16_t vid, pid;
     tuh_vid_pid_get(dev_addr, &vid, &pid);
+
+    //printf("tuh_hid_mount_cb: vid: %x, pid: %x, addr: %i, instance: %i, len: %i\r\n",
+    //       vid, pid, dev_addr, idx, desc_len);
 
     auto device = find_device(vid, pid);
     if (device) {  // a know controller was plugged in (see devices.c)
         if (device->idVendor != gamePad.getDevice()->idVendor || device->idProduct != gamePad.getDevice()->idProduct) {
-            gamePad.setCurrentDevice(device, dev_addr, instance);
+            gamePad.setCurrentDevice(device, dev_addr, idx);
             // set default led value
             if (device->type == TYPE_XBOX360) {
                 uint8_t msg[3] = {0x01, 0x03, 0x02};
-                tuh_hid_set_report(dev_addr, instance, 5, HID_REPORT_TYPE_OUTPUT, &msg, 3);
+                tuh_hid_set_report(dev_addr, idx, 5, HID_REPORT_TYPE_OUTPUT, &msg, 3);
             }
         }
     } else {
@@ -35,7 +38,7 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *desc_re
     //_report_count[instance] = tuh_hid_parse_report_descriptor(
     //      _report_info_arr[instance], MAX_REPORT, desc_report, desc_len);
 
-    if (!tuh_hid_receive_report(dev_addr, instance)) {
+    if (!tuh_hid_receive_report(dev_addr, idx)) {
         printf("tuh_hid_mount_cb: tuh_hid_receive_report failed\r\n");
     }
 }
