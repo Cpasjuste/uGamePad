@@ -2,19 +2,20 @@
 // Created by cpasjuste on 25/03/23.
 //
 
+#ifndef NATIVE
 #include <Arduino.h>
-#include <string>
-
 #if ARDUINO_ARCH_RP2040
-
 #include <pico/bootrom.h>
-
 #endif
+#endif
+
+#include <string>
 
 #include "gamepad.h"
 #include "utility.h"
 
 void uGamePad::Utility::reboot(bool bootloader) {
+#ifndef NATIVE
     if (bootloader) {
 #if ARDUINO_ARCH_RP2040
         reset_usb_boot(0, 0);
@@ -23,6 +24,7 @@ void uGamePad::Utility::reboot(bool bootloader) {
 #endif
     }
     NVIC_SystemReset();
+#endif
 }
 
 std::string uGamePad::Utility::toString(uint32_t buttons) {

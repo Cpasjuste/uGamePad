@@ -1,62 +1,25 @@
-/*
- Example sketch for the Xbox 360 USB library - developed by Kristian Lauszus
- For more information visit my blog: http://blog.tkjelectronics.dk/ or
- send me an e-mail:  kristianl@tkjelectronics.com
- */
+//
+// Created by cpasjuste on 29/03/23.
+//
 
-#include <Arduino.h>
-#include "tusb.h"
-#include "main.h"
-#include "ui.h"
-#include "gamepad.h"
+#ifdef NATIVE
+#include "linux_platform.h"
+#else
+#include "pico_platform.h"
+#endif
 
-using uGamePad::Ui;
-using uGamePad::GamePad;
+using uGamePad::Platform;
 
-Ui ui;
-GamePad gamePad;
+Platform *platform;
 uint16_t buttons;
 uint16_t buttons_old;
 
 void setup() {
-    // serial debug
-#if defined(ARDUINO_RASPBERRY_PI_PICO)
-    Debug.setTX(D16);
-    Debug.setRX(D17);
+#if NATIVE
+    platform = (Platform *) new uGamePad::LinuxPlatform();
+#else
+    platform = (Platform *) new uGamePad::PicoPlatform();
 #endif
-    Debug.begin(115200);
-
-    // led
-    pinMode(LED_PIN, OUTPUT);
-
-    // screen
-    ui.init();
-
-    // init output pins
-    /*
-    pinMode(D0, OUTPUT);
-    pinMode(D1, OUTPUT);
-    pinMode(D2, OUTPUT);
-    pinMode(D3, OUTPUT);
-    pinMode(D4, OUTPUT);
-    pinMode(D5, OUTPUT);
-    pinMode(D6, OUTPUT);
-    pinMode(D7, OUTPUT);
-    pinMode(D8, OUTPUT);
-    pinMode(D9, OUTPUT);
-    pinMode(D10, OUTPUT);
-    pinMode(D11, OUTPUT);
-    */
-
-    // tinyusb
-    if (!tusb_init()) {
-        printf("tusb_init failed...\r\n");
-    }
-
-    if (!tuh_init(0)) {
-        printf("tuh_init failed...\r\n");
-        while (true);
-    }
 
     // motd
     printf("        _____                      _____          _ \r\n"
@@ -65,36 +28,41 @@ void setup() {
            "| | | | | |_ |/ _` | '_ ` _ \\ / _ \\  ___/ _` |/ _` |\r\n"
            "| |_| | |__| | (_| | | | | | |  __/ |  | (_| | (_| |\r\n"
            " \\__,_|\\_____|\\__,_|_| |_| |_|\\___|_|   \\__,_|\\__,_|\r\n\n");
+
+    // ui splash
+    platform->getUi()->drawSplash();
 }
 
 void loop() {
-    // handle usb host updates
-    if (tuh_inited()) {
-        tuh_task();
-    } else {
-        Debug.println("oops, tinyusb host service not inited...");
-        while (true);
-    }
-
-    // handle led updates
-    Led::Update();
+    platform->loop();
 
     // get gamepad sate
-    buttons = gamePad.getButtons();
+    buttons = platform->getPad()->getButtons();
     // only update on button change
     bool changed = buttons_old ^ buttons;
     buttons_old = buttons;
     if (changed) {
-        GamePad::PinMapping *mapping = gamePad.getPinMapping();
-        // generate pin output
-        for (int i = 0; i < MAX_BUTTONS; i++) {
-            if (mapping[i].pin == D6 || mapping[i].pin == D7 || mapping[i].pin == SWCLK) {
-                // TODO: handle swd debug pins / buttons config change
-                continue;
+#ifndef NATIVE
+        uGamePad::GamePad::PinMapping *mapping = platform->getPad()->getPinMapping();
+        if (mapping) {
+            // generate pin output
+            for (int i = 0; i < MAX_BUTTONS; i++) {
+                //digitalWrite(mapping[i].pin, pad.buttons & mapping[i].button ? HIGH : LOW);
             }
-            //digitalWrite(mapping[i].pin, pad.buttons & mapping[i].button ? HIGH : LOW);
         }
+#endif
     }
 
+#if !NATIVE
     delay(1);
+#endif
 }
+
+#if NATIVE
+int main() {
+    setup();
+    while (true) {
+        loop();
+    }
+}
+#endif

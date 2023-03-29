@@ -41,7 +41,7 @@ namespace uGamePad {
 
         struct PinMapping {
             uint16_t button;
-            pin_size_t pin;
+            uint8_t pin;
         };
 
         GamePad();
@@ -50,15 +50,15 @@ namespace uGamePad {
 
         const Device *getDevice() { return p_device; };
 
-        void setLed(uint8_t type);
+        virtual void setLed(uint8_t type) {};
 
-        bool update(const uint8_t *report, uint16_t len);
+        virtual bool update(const uint8_t *report, uint16_t len) { return false; };
 
-        PinMapping *getPinMapping();
+        virtual PinMapping *getPinMapping() { return nullptr; };
 
         uint16_t &getButtons() { return m_buttons; };
 
-    private:
+    protected:
         uint8_t m_addr = 0;
         uint8_t m_instance = 0;
         const Device p_device_unknown = {0x0000, 0x0000, (char *) "Unknown device", 0, TYPE_UNKNOWN};
