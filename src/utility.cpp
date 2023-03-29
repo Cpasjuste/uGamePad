@@ -28,18 +28,18 @@ void Utility::reboot(bool bootloader) {
 std::string Utility::toString(uint32_t buttons) {
     std::string ret;
 
-    if (buttons & uGamePad::Button::B_1) ret += "B_1 ";
-    if (buttons & uGamePad::Button::B_2) ret += "B_2 ";
-    if (buttons & uGamePad::Button::B_3) ret += "B_3 ";
-    if (buttons & uGamePad::Button::B_4) ret += "B_4 ";
-    if (buttons & uGamePad::Button::B_5) ret += "B_5 ";
-    if (buttons & uGamePad::Button::B_6) ret += "B_6 ";
-    if (buttons & uGamePad::Button::B_START) ret += "B_START ";
-    if (buttons & uGamePad::Button::B_SELECT) ret += "B_SELECT ";
-    if (buttons & uGamePad::Button::B_UP) ret += "B_UP ";
-    if (buttons & uGamePad::Button::B_DOWN) ret += "B_DOWN ";
-    if (buttons & uGamePad::Button::B_LEFT) ret += "B_LEFT ";
-    if (buttons & uGamePad::Button::B_RIGHT) ret += "B_RIGHT ";
+    if (buttons & uGamePad::Button::B1) ret += "1 ";
+    if (buttons & uGamePad::Button::B2) ret += "2 ";
+    if (buttons & uGamePad::Button::B3) ret += "3 ";
+    if (buttons & uGamePad::Button::B4) ret += "4 ";
+    if (buttons & uGamePad::Button::B5) ret += "5 ";
+    if (buttons & uGamePad::Button::B6) ret += "6 ";
+    if (buttons & uGamePad::Button::START) ret += "START ";
+    if (buttons & uGamePad::Button::SELECT) ret += "SELECT ";
+    if (buttons & uGamePad::Button::UP) ret += "UP ";
+    if (buttons & uGamePad::Button::DOWN) ret += "DOWN ";
+    if (buttons & uGamePad::Button::LEFT) ret += "LEFT ";
+    if (buttons & uGamePad::Button::RIGHT) ret += "RIGHT ";
 
     return ret;
 }

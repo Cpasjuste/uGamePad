@@ -8,18 +8,18 @@
 #include "utility.h"
 
 static uGamePad::PinMapping padMapping[MAX_BUTTONS] = {
-        {uGamePad::Button::B_1,      D2},
-        {uGamePad::Button::B_2,      D1},
-        {uGamePad::Button::B_3,      D0},
-        {uGamePad::Button::B_4,      D10},
-        {uGamePad::Button::B_5,      D8},
-        {uGamePad::Button::B_6,      D7},
-        {uGamePad::Button::B_SELECT, D11},
-        {uGamePad::Button::B_START,  D9},
-        {uGamePad::Button::B_UP,     D5},
-        {uGamePad::Button::B_DOWN,   D6},
-        {uGamePad::Button::B_LEFT,   D4},
-        {uGamePad::Button::B_RIGHT,  D3},
+        {uGamePad::Button::B1,    D2},
+        {uGamePad::Button::B2,     D1},
+        {uGamePad::Button::B3,     D0},
+        {uGamePad::Button::B4,     D10},
+        {uGamePad::Button::B5,     D8},
+        {uGamePad::Button::B6,     D7},
+        {uGamePad::Button::SELECT, D11},
+        {uGamePad::Button::START,  D9},
+        {uGamePad::Button::UP,     D5},
+        {uGamePad::Button::DOWN,   D6},
+        {uGamePad::Button::LEFT,   D4},
+        {uGamePad::Button::RIGHT,  D3},
 };
 
 uGamePad::uGamePad() {
@@ -59,18 +59,18 @@ bool uGamePad::update(const uint8_t *report, uint16_t len) {
         if (sizeof(XBOXReport) == len && report[0] == 0x00) {
             auto r = reinterpret_cast<const XBOXReport *>(report);
             m_buttons =
-                    (r->buttons & XBOXReport::Button::A ? uGamePad::Button::B_1 : 0) |
-                    (r->buttons & XBOXReport::Button::B ? uGamePad::Button::B_2 : 0) |
-                    (r->buttons & XBOXReport::Button::X ? uGamePad::Button::B_3 : 0) |
-                    (r->buttons & XBOXReport::Button::Y ? uGamePad::Button::B_4 : 0) |
-                    (r->buttons & XBOXReport::Button::LB ? uGamePad::Button::B_5 : 0) |
-                    (r->buttons & XBOXReport::Button::RB ? uGamePad::Button::B_6 : 0) |
-                    (r->buttons & XBOXReport::Button::PAD_UP ? uGamePad::Button::B_UP : 0) |
-                    (r->buttons & XBOXReport::Button::PAD_DOWN ? uGamePad::Button::B_DOWN : 0) |
-                    (r->buttons & XBOXReport::Button::PAD_LEFT ? uGamePad::Button::B_LEFT : 0) |
-                    (r->buttons & XBOXReport::Button::PAD_RIGHT ? uGamePad::Button::B_RIGHT : 0) |
-                    (r->buttons & XBOXReport::Button::BACK ? uGamePad::Button::B_SELECT : 0) |
-                    (r->buttons & XBOXReport::Button::START ? uGamePad::Button::B_START : 0);
+                    (r->buttons & XBOXReport::Button::A ? uGamePad::Button::B1 : 0) |
+                    (r->buttons & XBOXReport::Button::B ? uGamePad::Button::B2 : 0) |
+                    (r->buttons & XBOXReport::Button::X ? uGamePad::Button::B3 : 0) |
+                    (r->buttons & XBOXReport::Button::Y ? uGamePad::Button::B4 : 0) |
+                    (r->buttons & XBOXReport::Button::LB ? uGamePad::Button::B5 : 0) |
+                    (r->buttons & XBOXReport::Button::RB ? uGamePad::Button::B6 : 0) |
+                    (r->buttons & XBOXReport::Button::PAD_UP ? uGamePad::Button::UP : 0) |
+                    (r->buttons & XBOXReport::Button::PAD_DOWN ? uGamePad::Button::DOWN : 0) |
+                    (r->buttons & XBOXReport::Button::PAD_LEFT ? uGamePad::Button::LEFT : 0) |
+                    (r->buttons & XBOXReport::Button::PAD_RIGHT ? uGamePad::Button::RIGHT : 0) |
+                    (r->buttons & XBOXReport::Button::BACK ? uGamePad::Button::SELECT : 0) |
+                    (r->buttons & XBOXReport::Button::START ? uGamePad::Button::START : 0);
             m_buttons |= uGamePad::getButtonsFromAxis(r->stickL[0], r->stickL[1]);
             m_buttons |= uGamePad::getButtonsFromAxis(r->stickR[0], r->stickR[1]);
             if (m_buttons != 0) TU_LOG1("x360: %s\r\n", Utility::toString(m_buttons).c_str());
@@ -82,15 +82,15 @@ bool uGamePad::update(const uint8_t *report, uint16_t len) {
         if (sizeof(DS4Report) <= len && report[0] == 1) {
             auto r = reinterpret_cast<const DS4Report *>(report);
             m_buttons =
-                    (r->buttons1 & DS4Report::Button1::CROSS ? uGamePad::Button::B_1 : 0) |
-                    (r->buttons1 & DS4Report::Button1::CIRCLE ? uGamePad::Button::B_2 : 0) |
-                    (r->buttons1 & DS4Report::Button1::SQUARE ? uGamePad::Button::B_3 : 0) |
-                    (r->buttons1 & DS4Report::Button1::TRIANGLE ? uGamePad::Button::B_4 : 0) |
-                    (r->buttons2 & DS4Report::Button2::L1 ? uGamePad::Button::B_5 : 0) |
-                    (r->buttons2 & DS4Report::Button2::R1 ? uGamePad::Button::B_6 : 0) |
-                    (r->buttons2 & DS4Report::Button2::SHARE ? uGamePad::Button::B_SELECT : 0) |
-                    (r->t_pad ? uGamePad::Button::B_SELECT : 0) |
-                    (r->buttons2 & DS4Report::Button2::OPTIONS ? uGamePad::Button::B_START : 0);
+                    (r->buttons1 & DS4Report::Button1::CROSS ? uGamePad::Button::B1 : 0) |
+                    (r->buttons1 & DS4Report::Button1::CIRCLE ? uGamePad::Button::B2 : 0) |
+                    (r->buttons1 & DS4Report::Button1::SQUARE ? uGamePad::Button::B3 : 0) |
+                    (r->buttons1 & DS4Report::Button1::TRIANGLE ? uGamePad::Button::B4 : 0) |
+                    (r->buttons2 & DS4Report::Button2::L1 ? uGamePad::Button::B5 : 0) |
+                    (r->buttons2 & DS4Report::Button2::R1 ? uGamePad::Button::B6 : 0) |
+                    (r->buttons2 & DS4Report::Button2::SHARE ? uGamePad::Button::SELECT : 0) |
+                    (r->t_pad ? uGamePad::Button::SELECT : 0) |
+                    (r->buttons2 & DS4Report::Button2::OPTIONS ? uGamePad::Button::START : 0);
             // axis
             m_buttons |= uGamePad::getButtonsFromAxis(r->stickL[0], r->stickL[1], AXIS_255 | AXIS_FLIP_Y);
             m_buttons |= uGamePad::getButtonsFromAxis(r->stickR[0], r->stickR[1], AXIS_255 | AXIS_FLIP_Y);
@@ -106,14 +106,14 @@ bool uGamePad::update(const uint8_t *report, uint16_t len) {
             auto r = reinterpret_cast<const DS5Report *>(report);
             auto buttons = r->buttons[0] | (r->buttons[1] << 8) | (r->buttons[2] << 16);
             m_buttons =
-                    (buttons & DS4Report::Button1::CROSS ? uGamePad::Button::B_1 : 0) |
-                    (buttons & DS4Report::Button1::CIRCLE ? uGamePad::Button::B_2 : 0) |
-                    (buttons & DS4Report::Button1::TRIANGLE ? uGamePad::Button::B_3 : 0) |
-                    (buttons & DS4Report::Button1::SQUARE ? uGamePad::Button::B_4 : 0) |
-                    (buttons & DS4Report::Button2::L1 ? uGamePad::Button::B_5 : 0) |
-                    (buttons & DS4Report::Button2::R1 ? uGamePad::Button::B_6 : 0) |
-                    (buttons & DS4Report::Button2::SHARE ? uGamePad::Button::B_SELECT : 0) |
-                    (buttons & DS4Report::Button2::OPTIONS ? uGamePad::Button::B_START : 0);
+                    (buttons & DS4Report::Button1::CROSS ? uGamePad::Button::B1 : 0) |
+                    (buttons & DS4Report::Button1::CIRCLE ? uGamePad::Button::B2 : 0) |
+                    (buttons & DS4Report::Button1::TRIANGLE ? uGamePad::Button::B3 : 0) |
+                    (buttons & DS4Report::Button1::SQUARE ? uGamePad::Button::B4 : 0) |
+                    (buttons & DS4Report::Button2::L1 ? uGamePad::Button::B5 : 0) |
+                    (buttons & DS4Report::Button2::R1 ? uGamePad::Button::B6 : 0) |
+                    (buttons & DS4Report::Button2::SHARE ? uGamePad::Button::SELECT : 0) |
+                    (buttons & DS4Report::Button2::OPTIONS ? uGamePad::Button::START : 0);
             // axis
             m_buttons |= uGamePad::getButtonsFromAxis(r->stickL[0], r->stickL[1], AXIS_255 | AXIS_FLIP_Y);
             m_buttons |= uGamePad::getButtonsFromAxis(r->stickR[0], r->stickR[1], AXIS_255 | AXIS_FLIP_Y);
@@ -134,14 +134,14 @@ bool uGamePad::update(const uint8_t *report, uint16_t len) {
 uint16_t uGamePad::getButtonsFromHat(int hat) {
     uint16_t buttons = 0;
     static constexpr int table[] = {
-            Button::B_UP,
-            Button::B_UP | Button::B_RIGHT,
-            Button::B_RIGHT,
-            Button::B_DOWN | Button::B_RIGHT,
-            Button::B_DOWN,
-            Button::B_LEFT | Button::B_DOWN,
-            Button::B_LEFT,
-            Button::B_LEFT | Button::B_UP,
+            Button::UP,
+            Button::UP | Button::RIGHT,
+            Button::RIGHT,
+            Button::DOWN | Button::RIGHT,
+            Button::DOWN,
+            Button::LEFT | Button::DOWN,
+            Button::LEFT,
+            Button::LEFT | Button::UP,
     };
     auto i = static_cast<int>(hat);
     if (i < 8) {
@@ -170,27 +170,27 @@ uint16_t uGamePad::getButtonsFromAxis(int x, int y, uint8_t type) {
         if (analogY > 0 && analogX > 0) {
             // upper right quadrant
             if (analogY > slope * analogX)
-                buttons |= Button::B_UP;
+                buttons |= Button::UP;
             if (analogX > slope * analogY)
-                buttons |= Button::B_RIGHT;
+                buttons |= Button::RIGHT;
         } else if (analogY > 0 && analogX <= 0) {
             // upper left quadrant
             if (analogY > slope * (-analogX))
-                buttons |= Button::B_UP;
+                buttons |= Button::UP;
             if ((-analogX) > slope * analogY)
-                buttons |= Button::B_LEFT;
+                buttons |= Button::LEFT;
         } else if (analogY <= 0 && analogX > 0) {
             // lower right quadrant
             if ((-analogY) > slope * analogX)
-                buttons |= Button::B_DOWN;
+                buttons |= Button::DOWN;
             if (analogX > slope * (-analogY))
-                buttons |= Button::B_RIGHT;
+                buttons |= Button::RIGHT;
         } else if (analogY <= 0 && analogX <= 0) {
             // lower left quadrant
             if ((-analogY) > slope * (-analogX))
-                buttons |= Button::B_DOWN;
+                buttons |= Button::DOWN;
             if ((-analogX) > slope * (-analogY))
-                buttons |= Button::B_LEFT;
+                buttons |= Button::LEFT;
         }
     }
 

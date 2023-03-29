@@ -15,18 +15,18 @@
 class uGamePad {
 public:
     enum Button {
-        B_1 = 1 << 0,
-        B_2 = 1 << 1,
-        B_3 = 1 << 2,
-        B_4 = 1 << 3,
-        B_5 = 1 << 4,
-        B_6 = 1 << 5,
-        B_START = 1 << 6,
-        B_SELECT = 1 << 7,
-        B_LEFT = 1 << 8,
-        B_RIGHT = 1 << 9,
-        B_UP = 1 << 10,
-        B_DOWN = 1 << 11
+        B1 = 1 << 0,
+        B2 = 1 << 1,
+        B3 = 1 << 2,
+        B4 = 1 << 3,
+        B5 = 1 << 4,
+        B6 = 1 << 5,
+        START = 1 << 6,
+        SELECT = 1 << 7,
+        LEFT = 1 << 8,
+        RIGHT = 1 << 9,
+        UP = 1 << 10,
+        DOWN = 1 << 11
     };
 
     enum AxisType : uint8_t {
