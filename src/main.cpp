@@ -7,8 +7,10 @@
 #include <Arduino.h>
 #include "tusb.h"
 #include "main.h"
+#include "ui.h"
 #include "gamepad.h"
 
+Ui ui;
 uGamePad::State pad;
 uGamePad::State pad_old;
 
@@ -23,7 +25,11 @@ void setup() {
     // led
     pinMode(LED_PIN, OUTPUT);
 
+    // screen
+    ui.init();
+
     // init output pins
+    /*
     pinMode(D0, OUTPUT);
     pinMode(D1, OUTPUT);
     pinMode(D2, OUTPUT);
@@ -36,6 +42,7 @@ void setup() {
     pinMode(D9, OUTPUT);
     pinMode(D10, OUTPUT);
     pinMode(D11, OUTPUT);
+    */
 
     // tinyusb
     if (!tusb_init()) {
@@ -81,9 +88,8 @@ void loop() {
                 // TODO: handle swd debug pins / buttons config change
                 continue;
             }
-            digitalWrite(mapping[i].pin, pad.buttons & mapping[i].button ? HIGH : LOW);
+            //digitalWrite(mapping[i].pin, pad.buttons & mapping[i].button ? HIGH : LOW);
         }
-        //printf("buttons: %hx\r\n", pad.buttons);
     }
 
     delay(1);
