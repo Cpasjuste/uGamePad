@@ -28,11 +28,11 @@ static GamePad::PinMapping pinMapping[MAX_BUTTONS] = {
 
 bool PicoGamePad::update(const uint8_t *report, uint16_t len) {
     if (!p_device) {
-        TU_LOG1("uGamePad::update: error: device not set\r\n");
+        TU_LOG1("uGamePad::loop: error: device not set\r\n");
         return false;
     }
 
-    TU_LOG2("uGamePad::update: received report for '%s': type: %i, len: %i)\r\n",
+    TU_LOG2("uGamePad::loop: received report for '%s': type: %i, len: %i)\r\n",
             p_device->name, p_device->type, len);
 
     if (p_device->type == TYPE_XBOX360) {
@@ -55,7 +55,7 @@ bool PicoGamePad::update(const uint8_t *report, uint16_t len) {
             m_buttons |= GamePad::getButtonsFromAxis(r->stickR[0], r->stickR[1]);
             if (m_buttons != 0) TU_LOG1("x360: %s\r\n", Utility::toString(m_buttons).c_str());
         } else {
-            TU_LOG2("uGamePad::update: skipping report, wrong packet (xbox)\r\n");
+            TU_LOG2("uGamePad::loop: skipping report, wrong packet (xbox)\r\n");
             return false;
         }
     } else if (p_device->type == TYPE_DS4) {
@@ -78,7 +78,7 @@ bool PicoGamePad::update(const uint8_t *report, uint16_t len) {
             m_buttons |= GamePad::getButtonsFromHat(r->buttons1 & 15);
             if (m_buttons != 0) TU_LOG1("ds4: %s\r\n", Utility::toString(m_buttons).c_str());
         } else {
-            TU_LOG2("uGamePad::update: skipping report, wrong packet (ds4)\r\n");
+            TU_LOG2("uGamePad::loop: skipping report, wrong packet (ds4)\r\n");
             return false;
         }
     } else if (p_device->type == TYPE_DS5) {

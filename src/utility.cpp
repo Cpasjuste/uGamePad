@@ -10,7 +10,6 @@
 #endif
 
 #include <string>
-
 #include "gamepad.h"
 #include "utility.h"
 

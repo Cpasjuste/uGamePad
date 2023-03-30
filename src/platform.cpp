@@ -4,13 +4,16 @@
 
 #include "platform.h"
 
-using uGamePad::Platform;
+using namespace uGamePad;
+
+// trying to do as much static allocation as possible...
+Ui ui;
 
 uGamePad::Platform::Platform() {
-    //p_ui = new Ui();
+    p_ui = &ui;
 }
 
 void uGamePad::Platform::loop() {
-    //p_ui->update();
+    p_ui->loop();
     p_gfx->flip();
 }

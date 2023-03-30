@@ -12,7 +12,7 @@ namespace uGamePad {
     public:
         explicit Ui();
 
-        virtual void update();
+        virtual void loop();
     };
 }
 

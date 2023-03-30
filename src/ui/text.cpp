@@ -5,8 +5,7 @@
 #include "platform.h"
 #include "text.h"
 
-using uGamePad::Gfx;
-using uGamePad::Text;
+using namespace uGamePad;
 
 Text::Text(int16_t x, int16_t y, const std::string &text) : Widget() {
     Widget::setPosition(x, y);

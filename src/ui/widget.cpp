@@ -7,19 +7,19 @@
 #include "platform.h"
 #include "widget.h"
 
-using uGamePad::Utility;
-using uGamePad::Widget;
+using namespace uGamePad;
 
-void Widget::add(uGamePad::Widget *widget) {
+void Widget::add(Widget *widget) {
     if (widget) {
         widget->p_parent = this;
         p_child_list.push_back(widget);
     }
 }
 
-void Widget::remove(uGamePad::Widget *widget) {
+void Widget::remove(Widget *widget) {
     if (!p_child_list.empty()) {
-        p_child_list.erase(std::remove(p_child_list.begin(), p_child_list.end(), widget), p_child_list.end());
+        p_child_list.erase(std::remove(
+                p_child_list.begin(), p_child_list.end(), widget), p_child_list.end());
     }
 }
 
@@ -46,7 +46,7 @@ void Widget::setSize(const Utility::Vector2 &size) {
     m_size.y = size.y;
 }
 
-Adafruit_GFX *uGamePad::Widget::getGfx() {
+Adafruit_GFX *Widget::getGfx() {
     return getPlatform()->getGfx()->getDisplay();
 }
 
@@ -60,7 +60,7 @@ void Widget::update(const Utility::Vector2 &pos) {
     }
 }
 
-uGamePad::Widget::~Widget() {
+Widget::~Widget() {
     for (auto widget = p_child_list.begin(); widget != p_child_list.end();) {
         if (*widget) {
             delete (*widget);

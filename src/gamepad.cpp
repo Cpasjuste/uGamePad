@@ -6,7 +6,7 @@
 #include <complex>
 #include "gamepad.h"
 
-using uGamePad::GamePad;
+using namespace uGamePad;
 
 GamePad::GamePad() {
     // create an accurate map from ds4/5 analog inputs (0 to 255) to uGamePad metrics (-32768 to 32767)

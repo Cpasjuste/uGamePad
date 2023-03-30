@@ -4,8 +4,7 @@
 
 #include "linux_gamepad.h"
 
-using uGamePad::GamePad;
-using uGamePad::LinuxGamePad;
+using namespace uGamePad;
 
 bool LinuxGamePad::update(const uint8_t *report, uint16_t len) {
     return true;

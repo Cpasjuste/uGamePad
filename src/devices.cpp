@@ -6,14 +6,11 @@
 
 #include "devices.h"
 
-#define MAP_DPAD_TO_BUTTONS     (1 << 0)
+#define MAP_D_PAD_TO_BUTTONS    (1 << 0)
 #define MAP_TRIGGERS_TO_BUTTONS (1 << 1)
-#define MAP_STICKS_TO_NULL      (1 << 2)
-#define MAP_SELECT_BUTTON       (1 << 3)
-#define MAP_PADDLES             (1 << 4)
-#define MAP_PROFILE_BUTTON      (1 << 5)
-
-#define DANCEPAD_MAP_CONFIG     (MAP_DPAD_TO_BUTTONS | MAP_TRIGGERS_TO_BUTTONS | MAP_STICKS_TO_NULL)
+#define MAP_SELECT_BUTTON       (1 << 2)
+#define MAP_PADDLES             (1 << 3)
+#define MAP_PROFILE_BUTTON      (1 << 4)
 
 static constexpr Device devices[] PROGMEM = {
         ///
@@ -34,13 +31,13 @@ static constexpr Device devices[] PROGMEM = {
         {0x045e, 0x0289, (char *) "Microsoft X-Box pad v2 (US)",                          0,                 TYPE_XBOX},
         {0x045e, 0x028e, (char *) "Microsoft X-Box 360 pad",                              0,                 TYPE_XBOX360},
         {0x045e, 0x028f, (char *) "Microsoft X-Box 360 pad v2",                           0,                 TYPE_XBOX360},
-        {0x045e, 0x0291, (char *) "Xbox 360 Wireless Receiver (XBOX)",              MAP_DPAD_TO_BUTTONS,     TYPE_XBOX360W},
+        {0x045e, 0x0291, (char *) "Xbox 360 Wireless Receiver (XBOX)",              MAP_D_PAD_TO_BUTTONS,    TYPE_XBOX360W},
         {0x045e, 0x02d1, (char *) "Microsoft X-Box One pad",                              0,                 TYPE_XBOXONE},
         {0x045e, 0x02dd, (char *) "Microsoft X-Box One pad (Firmware 2015)",              0,                 TYPE_XBOXONE},
         {0x045e, 0x02e3, (char *) "Microsoft X-Box One Elite pad",                  MAP_PADDLES,             TYPE_XBOXONE},
         {0x045e, 0x0b00, (char *) "Microsoft X-Box One Elite 2 pad",                MAP_PADDLES,             TYPE_XBOXONE},
         {0x045e, 0x02ea, (char *) "Microsoft X-Box One S pad",                            0,                 TYPE_XBOXONE},
-        {0x045e, 0x0719, (char *) "Xbox 360 Wireless Receiver",                     MAP_DPAD_TO_BUTTONS,     TYPE_XBOX360W},
+        {0x045e, 0x0719, (char *) "Xbox 360 Wireless Receiver",                     MAP_D_PAD_TO_BUTTONS,    TYPE_XBOX360W},
         {0x045e, 0x0b0a, (char *) "Microsoft X-Box Adaptive Controller",            MAP_PROFILE_BUTTON,      TYPE_XBOXONE},
         {0x045e, 0x0b12, (char *) "Microsoft Xbox Series S|X Controller",           MAP_SELECT_BUTTON,       TYPE_XBOXONE},
         {0x046d, 0xc21d, (char *) "Logitech Gamepad F310",                                0,                 TYPE_XBOX360},
@@ -68,11 +65,11 @@ static constexpr Device devices[] PROGMEM = {
         {0x0738, 0x4526, (char *) "Mad Catz Control Pad Pro",                             0,                 TYPE_XBOX},
         {0x0738, 0x4530, (char *) "Mad Catz Universal MC2 Racing Wheel and Pedals",       0,                 TYPE_XBOX},
         {0x0738, 0x4536, (char *) "Mad Catz MicroCON",                                    0,                 TYPE_XBOX},
-        {0x0738, 0x4540, (char *) "Mad Catz Beat Pad",                              MAP_DPAD_TO_BUTTONS,     TYPE_XBOX},
+        {0x0738, 0x4540, (char *) "Mad Catz Beat Pad",                              MAP_D_PAD_TO_BUTTONS,    TYPE_XBOX},
         {0x0738, 0x4556, (char *) "Mad Catz Lynx Wireless Controller",                    0,                 TYPE_XBOX},
         {0x0738, 0x4586, (char *) "Mad Catz MicroCon Wireless Controller",                0,                 TYPE_XBOX},
         {0x0738, 0x4588, (char *) "Mad Catz Blaster",                                     0,                 TYPE_XBOX},
-        {0x0738, 0x45ff, (char *) "Mad Catz Beat Pad (w/ Handle)",                  MAP_DPAD_TO_BUTTONS,     TYPE_XBOX},
+        {0x0738, 0x45ff, (char *) "Mad Catz Beat Pad (w/ Handle)",                  MAP_D_PAD_TO_BUTTONS,    TYPE_XBOX},
         {0x0738, 0x4716, (char *) "Mad Catz Wired Xbox 360 Controller",                   0,                 TYPE_XBOX360},
         {0x0738, 0x4718, (char *) "Mad Catz Street Fighter IV FightStick SE",             0,                 TYPE_XBOX360},
         {0x0738, 0x4726, (char *) "Mad Catz Xbox 360 Controller",                         0,                 TYPE_XBOX360},
@@ -80,10 +77,10 @@ static constexpr Device devices[] PROGMEM = {
         {0x0738, 0x4736, (char *) "Mad Catz MicroCon Gamepad",                            0,                 TYPE_XBOX360},
         {0x0738, 0x4738, (char *) "Mad Catz Wired Xbox 360 Controller (SFIV)",      MAP_TRIGGERS_TO_BUTTONS, TYPE_XBOX360},
         {0x0738, 0x4740, (char *) "Mad Catz Beat Pad",                                    0,                 TYPE_XBOX360},
-        {0x0738, 0x4743, (char *) "Mad Catz Beat Pad Pro",                          MAP_DPAD_TO_BUTTONS,     TYPE_XBOX},
+        {0x0738, 0x4743, (char *) "Mad Catz Beat Pad Pro",                          MAP_D_PAD_TO_BUTTONS,    TYPE_XBOX},
         {0x0738, 0x4758, (char *) "Mad Catz Arcade Game Stick",                     MAP_TRIGGERS_TO_BUTTONS, TYPE_XBOX360},
         {0x0738, 0x4a01, (char *) "Mad Catz FightStick TE 2",                       MAP_TRIGGERS_TO_BUTTONS, TYPE_XBOXONE},
-        {0x0738, 0x6040, (char *) "Mad Catz Beat Pad Pro",                          MAP_DPAD_TO_BUTTONS,     TYPE_XBOX},
+        {0x0738, 0x6040, (char *) "Mad Catz Beat Pad Pro",                          MAP_D_PAD_TO_BUTTONS,    TYPE_XBOX},
         {0x0738, 0x9871, (char *) "Mad Catz Portable Drum",                               0,                 TYPE_XBOX360},
         {0x0738, 0xb726, (char *) "Mad Catz Xbox controller - MW2",                       0,                 TYPE_XBOX360},
         {0x0738, 0xb738, (char *) "Mad Catz MVC2TE Stick 2",                        MAP_TRIGGERS_TO_BUTTONS, TYPE_XBOX360},
@@ -96,11 +93,10 @@ static constexpr Device devices[] PROGMEM = {
         {0x0c12, 0x0005, (char *) "Intec wireless",                                       0,                 TYPE_XBOX},
         {0x0c12, 0x8801, (char *) "Nyko Xbox Controller",                                 0,                 TYPE_XBOX},
         {0x0c12, 0x8802, (char *) "Zeroplus Xbox Controller",                             0,                 TYPE_XBOX},
-        {0x0c12, 0x8809, (char *) "RedOctane Xbox Dance Pad",                       DANCEPAD_MAP_CONFIG,     TYPE_XBOX},
         {0x0c12, 0x880a, (char *) "Pelican Eclipse PL-2023",                              0,                 TYPE_XBOX},
         {0x0c12, 0x8810, (char *) "Zeroplus Xbox Controller",                             0,                 TYPE_XBOX},
         {0x0c12, 0x9902, (char *) "HAMA VibraX - *FAULTY HARDWARE*",                      0,                 TYPE_XBOX},
-        {0x0d2f, 0x0002, (char *) "Andamiro Pump It Up pad",                        MAP_DPAD_TO_BUTTONS,     TYPE_XBOX},
+        {0x0d2f, 0x0002, (char *) "Andamiro Pump It Up pad",                        MAP_D_PAD_TO_BUTTONS,    TYPE_XBOX},
         {0x0e4c, 0x1097, (char *) "Radica Gamester Controller",                           0,                 TYPE_XBOX},
         {0x0e4c, 0x1103, (char *) "Radica Gamester Reflex",                         MAP_TRIGGERS_TO_BUTTONS, TYPE_XBOX},
         {0x0e4c, 0x2390, (char *) "Radica Games Jtech Controller",                        0,                 TYPE_XBOX},
@@ -109,7 +105,7 @@ static constexpr Device devices[] PROGMEM = {
         {0x0e6f, 0x0005, (char *) "Eclipse wireless Controller",                          0,                 TYPE_XBOX},
         {0x0e6f, 0x0006, (char *) "Edge wireless Controller",                             0,                 TYPE_XBOX},
         {0x0e6f, 0x0008, (char *) "After Glow Pro Controller",                            0,                 TYPE_XBOX},
-        {0x0e6f, 0x0105, (char *) "HSM3 Xbox360 dancepad",                          MAP_DPAD_TO_BUTTONS,     TYPE_XBOX360},
+        {0x0e6f, 0x0105, (char *) "HSM3 Xbox360 dancepad",                          MAP_D_PAD_TO_BUTTONS,    TYPE_XBOX360},
         {0x0e6f, 0x0113, (char *) "Afterglow AX.1 Gamepad for Xbox 360",                  0,                 TYPE_XBOX360},
         {0x0e6f, 0x011f, (char *) "Rock Candy Gamepad Wired Controller",                  0,                 TYPE_XBOX360},
         {0x0e6f, 0x0131, (char *) "PDP EA Sports Controller",                             0,                 TYPE_XBOX360},
@@ -164,12 +160,12 @@ static constexpr Device devices[] PROGMEM = {
         {0x1038, 0x1431, (char *) "SteelSeries Stratus Duo",                              0,                 TYPE_XBOX360},
         {0x11c9, 0x55f0, (char *) "Nacon GC-100XF",                                       0,                 TYPE_XBOX360},
         {0x1209, 0x2882, (char *) "Ardwiino Controller",                                  0,                 TYPE_XBOX360},
-        {0x12ab, 0x0004, (char *) "Honey Bee Xbox360 dancepad",                     MAP_DPAD_TO_BUTTONS,     TYPE_XBOX360},
+        {0x12ab, 0x0004, (char *) "Honey Bee Xbox360 dancepad",                     MAP_D_PAD_TO_BUTTONS,    TYPE_XBOX360},
         {0x12ab, 0x0301, (char *) "PDP AFTERGLOW AX.1",                                   0,                 TYPE_XBOX360},
         {0x12ab, 0x0303, (char *) "Mortal Kombat Klassic FightStick",               MAP_TRIGGERS_TO_BUTTONS, TYPE_XBOX360},
-        {0x12ab, 0x8809, (char *) "Xbox DDR dancepad",                              MAP_DPAD_TO_BUTTONS,     TYPE_XBOX},
+        {0x12ab, 0x8809, (char *) "Xbox DDR dancepad",                              MAP_D_PAD_TO_BUTTONS,    TYPE_XBOX},
         {0x1430, 0x4748, (char *) "RedOctane Guitar Hero X-plorer",                       0,                 TYPE_XBOX360},
-        {0x1430, 0x8888, (char *) "TX6500+ Dance Pad (first generation)",           MAP_DPAD_TO_BUTTONS,     TYPE_XBOX},
+        {0x1430, 0x8888, (char *) "TX6500+ Dance Pad (first generation)",           MAP_D_PAD_TO_BUTTONS,    TYPE_XBOX},
         {0x1430, 0xf801, (char *) "RedOctane Controller",                                 0,                 TYPE_XBOX360},
         {0x146b, 0x0601, (char *) "BigBen Interactive XBOX 360 Controller",               0,                 TYPE_XBOX360},
         {0x146b, 0x0604, (char *) "Bigben Interactive DAIJA Arcade Stick",          MAP_TRIGGERS_TO_BUTTONS, TYPE_XBOX360},
@@ -185,8 +181,8 @@ static constexpr Device devices[] PROGMEM = {
         {0x1689, 0xfe00, (char *) "Razer Sabertooth",                                     0,                 TYPE_XBOX360},
         {0x1949, 0x041a, (char *) "Amazon Game Controller",                               0,                 TYPE_XBOX360},
         {0x1bad, 0x0002, (char *) "Harmonix Rock Band Guitar",                            0,                 TYPE_XBOX360},
-        {0x1bad, 0x0003, (char *) "Harmonix Rock Band Drumkit",                     MAP_DPAD_TO_BUTTONS,     TYPE_XBOX360},
-        {0x1bad, 0x0130, (char *) "Ion Drum Rocker",                                MAP_DPAD_TO_BUTTONS,     TYPE_XBOX360},
+        {0x1bad, 0x0003, (char *) "Harmonix Rock Band Drumkit",                     MAP_D_PAD_TO_BUTTONS,    TYPE_XBOX360},
+        {0x1bad, 0x0130, (char *) "Ion Drum Rocker",                                MAP_D_PAD_TO_BUTTONS,    TYPE_XBOX360},
         {0x1bad, 0xf016, (char *) "Mad Catz Xbox 360 Controller",                         0,                 TYPE_XBOX360},
         {0x1bad, 0xf018, (char *) "Mad Catz Street Fighter IV SE Fighting Stick",   MAP_TRIGGERS_TO_BUTTONS, TYPE_XBOX360},
         {0x1bad, 0xf019, (char *) "Mad Catz Brawlstick for Xbox 360",               MAP_TRIGGERS_TO_BUTTONS, TYPE_XBOX360},

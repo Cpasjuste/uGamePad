@@ -7,7 +7,7 @@
 #include "linux_gamepad.h"
 #include "linux_gfx.h"
 
-using uGamePad::LinuxPlatform;
+using namespace uGamePad;
 
 LinuxPlatform::LinuxPlatform() : Platform() {
     // init display
