@@ -15,7 +15,7 @@
 
 #define DANCEPAD_MAP_CONFIG     (MAP_DPAD_TO_BUTTONS | MAP_TRIGGERS_TO_BUTTONS | MAP_STICKS_TO_NULL)
 
-const Device devices[] = {
+static constexpr Device devices[] PROGMEM = {
         ///
         /// XBOX
         ///

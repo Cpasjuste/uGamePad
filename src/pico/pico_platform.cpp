@@ -5,7 +5,7 @@
 #include <Arduino.h>
 #include "pico_platform.h"
 #include "pico_gamepad.h"
-#include "pico_ui.h"
+#include "pico_gfx.h"
 #include "tusb.h"
 
 using uGamePad::PicoPlatform;
@@ -51,7 +51,7 @@ PicoPlatform::PicoPlatform() {
     p_pad = new PicoGamePad();
 
     // init ui
-    p_ui = new PicoUi();
+    p_gfx = new PicoGfx();
 }
 
 void PicoPlatform::loop() {

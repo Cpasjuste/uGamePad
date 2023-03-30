@@ -221,8 +221,8 @@ class Adafruit_GFX : public Print {
     WIDTH,          ///< This is the 'raw' display width - never changes
     HEIGHT;         ///< This is the 'raw' display height - never changes
   int16_t
-    _width,         ///< Display width as modified by current rotation
-    _height,        ///< Display height as modified by current rotation
+    _width,         ///< Gfx width as modified by current rotation
+    _height,        ///< Gfx height as modified by current rotation
     cursor_x,       ///< x location to start print()ing text
     cursor_y;       ///< y location to start print()ing text
   uint16_t
@@ -231,7 +231,7 @@ class Adafruit_GFX : public Print {
   uint8_t
     textsize_x,      ///< Desired magnification in X-axis of text to print()
     textsize_y,      ///< Desired magnification in Y-axis of text to print()
-    rotation;       ///< Display rotation (0 thru 3)
+    rotation;       ///< Gfx rotation (0 thru 3)
   boolean
     wrap,           ///< If set, 'wrap' text at right edge of display
     _cp437;         ///< If set, use correct CP437 charset (default is off)

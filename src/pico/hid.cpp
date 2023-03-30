@@ -9,7 +9,7 @@
 #include "devices.h"
 #include "pico/pico_platform.h"
 
-extern uGamePad::Platform *platform;
+extern uGamePad::Platform platform;
 
 //#define MAX_REPORT 4
 //uint8_t _report_count[CFG_TUH_HID];
@@ -19,16 +19,16 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t idx, uint8_t const *report_desc,
     uint16_t vid, pid;
     tuh_vid_pid_get(dev_addr, &vid, &pid);
 
-    if (!platform || !platform->getPad()) return;
+    if (platform.getPad()) return;
 
     //printf("mount_cb: vid: %x, pid: %x, addr: %i, instance: %i, len: %i\r\n",
     //       vid, pid, dev_addr, idx, desc_len);
 
     auto device = find_device(vid, pid);
     if (device) {  // a know controller was plugged in (see devices.c)
-        if (device->idVendor != platform->getPad()->getDevice()->idVendor ||
-            device->idProduct != platform->getPad()->getDevice()->idProduct) {
-            platform->getPad()->setCurrentDevice(device, dev_addr, idx);
+        if (device->idVendor != platform.getPad()->getDevice()->idVendor ||
+            device->idProduct != platform.getPad()->getDevice()->idProduct) {
+            platform.getPad()->setCurrentDevice(device, dev_addr, idx);
             // set default led value
             if (device->type == TYPE_XBOX360) {
                 uint8_t msg[3] = {0x01, 0x03, 0x02};
@@ -58,17 +58,17 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
     //tuh_hid_report_info_t *rpt_info = nullptr;
     uint16_t vid, pid;
 
-    if (!platform || !platform->getPad()) return;
+    if (!platform.getPad()) return;
 
     tuh_vid_pid_get(dev_addr, &vid, &pid);
-    if (platform->getPad()->getDevice()->idProduct != pid || platform->getPad()->getDevice()->idVendor != vid) {
-        printf("received_cb: skipping report, wrong vid or pid for %s...\r\n", platform->getPad()->getDevice()->name);
+    if (platform.getPad()->getDevice()->idProduct != pid || platform.getPad()->getDevice()->idVendor != vid) {
+        printf("received_cb: skipping report, wrong vid or pid for %s...\r\n", platform.getPad()->getDevice()->name);
         tuh_hid_receive_report(dev_addr, instance);
         return;
     }
 
     //printf("tuh_hid_report_received_cb: addr: %i, instance: %i, len: %i\r\n", dev_addr, instance, len);
-    if (!platform->getPad()->update(report, len)) {
+    if (!platform.getPad()->update(report, len)) {
         // TODO: handle this
 #if 0
         if (rpt_count == 1 && rpt_info_arr[0].report_id == 0) {

@@ -5,16 +5,16 @@
 #include <SDL2/SDL.h>
 #include "linux_platform.h"
 #include "linux_gamepad.h"
-#include "linux_ui.h"
+#include "linux_gfx.h"
 
 using uGamePad::LinuxPlatform;
 
-LinuxPlatform::LinuxPlatform() {
+LinuxPlatform::LinuxPlatform() : Platform() {
+    // init display
+    p_gfx = new LinuxGfx();
+
     // init gamepad
     p_pad = new LinuxGamePad();
-
-    // init ui
-    p_ui = new LinuxUi();
 }
 
 void LinuxPlatform::loop() {
@@ -22,4 +22,6 @@ void LinuxPlatform::loop() {
     while (SDL_PollEvent(&ev)) {
         if (ev.type == SDL_QUIT) exit(0);
     }
+
+    Platform::loop();
 }

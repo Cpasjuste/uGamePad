@@ -1,36 +1,28 @@
 //
-// Created by cpasjuste on 28/03/23.
+// Created by cpasjuste on 30/03/23.
 //
 
+#include "platform.h"
+#include "rectangle.h"
 #include "ui.h"
+#include "text.h"
 
 using uGamePad::Ui;
 
-extern unsigned char splash_128x64 PROGMEM[];
+uGamePad::Rectangle *rect;
+uGamePad::Rectangle *rect2;
+uGamePad::Text *text;
 
-Ui::Ui(Vector2 size) {
-    m_size = size;
+Ui::Ui() {
+    rect = new uGamePad::Rectangle(0, 0, 128, 64);
+    //rect2 = new uGamePad::Rectangle{2, 2, 128, 64};
+    //rect2->add(new uGamePad::Rectangle(2, 2, 128, 64, true));
+    //rect->add(rect2);
+
+    text = new Text(2, 2, "Hello uGamePad");
+    rect->add(text);
 }
 
-
-
-void Ui::drawSplash() {
-    p_display->drawBitmap(0, 0, splash_128x64, m_size.x, m_size.y, getColor(White));
-    p_display->setTextColor(getColor(White));
-    p_display->setCursor(42, 56);
-    p_display->print("uGamePad");
-    flip();
-}
-
-uint16_t Ui::getColor(uGamePad::Ui::Color color) {
-    switch (color) {
-        case Black:
-            return 0;
-        case White:
-            return 1;
-        case Inverse:
-            return 2;
-    }
-
-    return 0;
+void uGamePad::Ui::update() {
+    rect->update(rect->getPosition());
 }

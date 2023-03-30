@@ -97,8 +97,8 @@ inline uint8_t * pgm_read_bitmap_ptr(const GFXfont *gfxFont)
 /**************************************************************************/
 /*!
    @brief    Instatiate a GFX context for graphics! Can only be done by a superclass
-   @param    w   Display width, in pixels
-   @param    h   Display height, in pixels
+   @param    w   Gfx width, in pixels
+   @param    h   Gfx height, in pixels
 */
 /**************************************************************************/
 Adafruit_GFX::Adafruit_GFX(int16_t w, int16_t h):
@@ -1659,8 +1659,8 @@ boolean Adafruit_GFX_Button::justReleased() { return (!currstate && laststate); 
 /**************************************************************************/
 /*!
    @brief    Instatiate a GFX 1-bit canvas context for graphics
-   @param    w   Display width, in pixels
-   @param    h   Display height, in pixels
+   @param    w   Gfx width, in pixels
+   @param    h   Gfx height, in pixels
 */
 /**************************************************************************/
 GFXcanvas1::GFXcanvas1(uint16_t w, uint16_t h) : Adafruit_GFX(w, h) {
@@ -1743,8 +1743,8 @@ void GFXcanvas1::fillScreen(uint16_t color) {
 /**************************************************************************/
 /*!
    @brief    Instatiate a GFX 8-bit canvas context for graphics
-   @param    w   Display width, in pixels
-   @param    h   Display height, in pixels
+   @param    w   Gfx width, in pixels
+   @param    h   Gfx height, in pixels
 */
 /**************************************************************************/
 GFXcanvas8::GFXcanvas8(uint16_t w, uint16_t h) : Adafruit_GFX(w, h) {
@@ -1847,8 +1847,8 @@ void GFXcanvas8::writeFastHLine(int16_t x, int16_t y,
 /**************************************************************************/
 /*!
    @brief    Instatiate a GFX 16-bit canvas context for graphics
-   @param    w   Display width, in pixels
-   @param    h   Display height, in pixels
+   @param    w   Gfx width, in pixels
+   @param    h   Gfx height, in pixels
 */
 /**************************************************************************/
 GFXcanvas16::GFXcanvas16(uint16_t w, uint16_t h) : Adafruit_GFX(w, h) {

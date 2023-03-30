@@ -6,20 +6,25 @@
 #define U_GAMEPAD_PLATFORM_H
 
 #include "gamepad.h"
-#include "ui.h"
+#include "gfx.h"
 
 namespace uGamePad {
     class Platform {
     public:
-        virtual void loop() {};
+        Platform();
 
-        virtual Ui *getUi() { return p_ui; };
+        virtual void loop();
+
+        virtual Gfx *getGfx() { return p_gfx; };
 
         virtual GamePad *getPad() { return p_pad; };
 
+        //virtual Ui *getUi() { return p_ui; };
+
     protected:
-        Ui *p_ui = nullptr;
+        Gfx *p_gfx = nullptr;
         GamePad *p_pad = nullptr;
+        //Ui *p_ui = nullptr;
     };
 }
 
