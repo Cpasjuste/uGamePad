@@ -10,19 +10,20 @@
 using uGamePad::GamePad;
 using uGamePad::PicoGamePad;
 
+// RP2040-Zero pinout
 static GamePad::PinMapping pinMapping[MAX_BUTTONS] = {
-        {GamePad::Button::B1,     D2},
-        {GamePad::Button::B2,     D1},
-        {GamePad::Button::B3,     D0},
-        {GamePad::Button::B4,     D10},
-        {GamePad::Button::B5,     D8},
-        {GamePad::Button::B6,     D7},
-        {GamePad::Button::SELECT, D11},
-        {GamePad::Button::START,  D9},
-        {GamePad::Button::UP,     D5},
-        {GamePad::Button::DOWN,   D6},
-        {GamePad::Button::LEFT,   D4},
-        {GamePad::Button::RIGHT,  D3},
+        {GamePad::Button::B1,     D9},
+        {GamePad::Button::B2,     D10},
+        {GamePad::Button::B3,     D11},
+        {GamePad::Button::B4,     D12},
+        {GamePad::Button::B5,     D3},
+        {GamePad::Button::B6,     D8},
+        {GamePad::Button::SELECT, D7},
+        {GamePad::Button::START,  D15},
+        {GamePad::Button::UP,     D26},
+        {GamePad::Button::DOWN,   D27},
+        {GamePad::Button::LEFT,   D28},
+        {GamePad::Button::RIGHT,  D29},
 };
 
 bool PicoGamePad::update(const uint8_t *report, uint16_t len) {
