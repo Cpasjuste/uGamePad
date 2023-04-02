@@ -10,7 +10,7 @@
 namespace uGamePad {
     class Line : public Widget {
     public:
-        Line(const Utility::Vector2i &pos, int16_t size, float rotation = 0);
+        Line(const Utility::Vector2i &pos, int16_t length, float rotation = 0);
 
         void update(const Utility::Vector2i &pos) override;
 
@@ -18,7 +18,7 @@ namespace uGamePad {
         Utility::Line m_line{};
         float m_rotation;
 
-        static Utility::Line calculateLine(Utility::Vector2f position, float rotation, float length);
+        Utility::Line calculateLine(Utility::Vector2f position, float length, float rotation);
     };
 }
 

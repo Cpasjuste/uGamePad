@@ -39,19 +39,10 @@ namespace uGamePad {
             Vector2f points[3];
         };
 
-        struct Matrix2D {
-            float m11, m12;
-            float m21, m22;
-        };
-
         struct Line {
             Vector2f start;
             Vector2f end;
         };
-
-        static Matrix2D rotationMatrix(float angle);
-
-        static Vector2f transformPoint(Vector2f point, Matrix2D matrix);
 
         static void reboot(bool bootloader = false);
 

@@ -10,8 +10,7 @@
 namespace uGamePad {
     class Triangle : public Widget {
     public:
-        Triangle(const Utility::Vector2i &pos, uint16_t base, uint16_t height,
-                 uint8_t rotation = 0, bool fill = false);
+        Triangle(const Utility::Vector2i &pos, uint16_t size, float rotation = 0, bool fill = false);
 
         void setPosition(int16_t x, int16_t y) override;
 
@@ -24,9 +23,7 @@ namespace uGamePad {
         float m_rotation = 0;
         bool m_fill = false;
 
-        static Utility::Vector2f rotate(Utility::Vector2f point, float rotation);
-
-        static Utility::Vector6f calculateTriangle(Utility::Vector2i position, float rotation, float base, float height);
+        Utility::Vector6f calculateTriangle(Utility::Vector2i position, float size, float rotation);
     };
 }
 

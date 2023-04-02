@@ -11,18 +11,21 @@
 
 using namespace uGamePad;
 
-Rectangle *rect;
+Rectangle *screen;
 
 Ui::Ui() {
-    rect = new Rectangle(0, 0, 128, 64);
+    screen = new Rectangle(0, 0, 128, 64);
     for (uint16_t i = 0; i < 6; i++) {
         //rect->add(new Text(5, (i * 9) + 6, "Hello uGamePad"));
     }
 
-    auto line = new Line({5, 0}, 10, 90);
-    rect->add(line);
+    auto line = new Line({2, 2}, 8, 90);
+    screen->add(line);
+
+    auto triangle = new Triangle({8, 8}, 8, -90);
+    screen->add(triangle);
 }
 
 void Ui::loop() {
-    rect->update(rect->getPosition());
+    screen->update(screen->getPosition());
 }

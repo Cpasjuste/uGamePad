@@ -9,7 +9,6 @@
 #endif
 #endif
 
-#include <cmath>
 #include <string>
 #include "gamepad.h"
 #include "utility.h"
@@ -46,20 +45,4 @@ std::string Utility::toString(uint32_t buttons) {
     if (buttons & GamePad::Button::RIGHT) ret += "RIGHT ";
 
     return ret;
-}
-
-Utility::Matrix2D Utility::rotationMatrix(float angle) {
-    Matrix2D matrix{};
-    matrix.m11 = std::cos(angle);
-    matrix.m12 = -std::sin(angle);
-    matrix.m21 = std::sin(angle);
-    matrix.m22 = std::cos(angle);
-    return matrix;
-}
-
-Utility::Vector2f Utility::transformPoint(Utility::Vector2f point, Utility::Matrix2D matrix) {
-    Vector2f result{};
-    result.x = point.x * matrix.m11 + point.y * matrix.m12;
-    result.y = point.x * matrix.m21 + point.y * matrix.m22;
-    return result;
 }
