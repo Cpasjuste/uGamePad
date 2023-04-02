@@ -12,9 +12,9 @@
 namespace uGamePad {
     class Gfx {
     public:
-        explicit Gfx(Utility::Vector2 size = {128, 64});
+        explicit Gfx(Utility::Vector2i size = {128, 64});
 
-        virtual Utility::Vector2 getSize();
+        virtual Utility::Vector2i getSize();
 
         virtual void flip() {};
 
@@ -22,7 +22,7 @@ namespace uGamePad {
 
     protected:
         Adafruit_GFX *p_display = nullptr;
-        Utility::Vector2 m_size = {128, 64};
+        Utility::Vector2i m_size = {128, 64};
     };
 }
 

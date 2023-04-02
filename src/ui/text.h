@@ -12,9 +12,9 @@ namespace uGamePad {
     public:
         Text(int16_t x, int16_t y, const std::string &text);
 
-        Text(const Utility::Vector2 &pos, const std::string &text);
+        Text(const Utility::Vector2i &pos, const std::string &text);
 
-        void update(const Utility::Vector2 &pos) override;
+        void update(const Utility::Vector2i &pos) override;
 
     private:
         std::string m_text;

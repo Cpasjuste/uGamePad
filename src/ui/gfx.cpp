@@ -9,11 +9,11 @@ using uGamePad::Utility;
 
 //extern unsigned char splash_128x64 PROGMEM[];
 
-Gfx::Gfx(Utility::Vector2 size) {
+Gfx::Gfx(Utility::Vector2i size) {
     m_size = size;
 }
 
-Utility::Vector2 Gfx::getSize() {
+Utility::Vector2i Gfx::getSize() {
     return {p_display->width(), p_display->height()};
 }
 

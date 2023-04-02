@@ -25,15 +25,15 @@ namespace uGamePad {
 
         virtual void setPosition(int16_t x, int16_t y);
 
-        virtual void setPosition(const Utility::Vector2 &pos);
+        virtual void setPosition(const Utility::Vector2i &pos);
 
-        virtual Utility::Vector2 getPosition();
+        virtual Utility::Vector2i getPosition();
 
         virtual void setSize(int16_t x, int16_t y);
 
-        virtual void setSize(const Utility::Vector2 &size);
+        virtual void setSize(const Utility::Vector2i &size);
 
-        virtual Utility::Vector2 getSize() { return m_size; };
+        virtual Utility::Vector2i getSize() { return m_size; };
 
         virtual bool isVisible() { return m_visibility == Visibility::Visible; };
 
@@ -41,14 +41,14 @@ namespace uGamePad {
 
         virtual Adafruit_GFX *getGfx();
 
-        virtual void update(const Utility::Vector2 &pos);
+        virtual void update(const Utility::Vector2i &pos);
 
     protected:
         Widget *p_parent = nullptr;
         std::vector<Widget *> p_child_list;
         Visibility m_visibility = Visibility::Visible;
-        Utility::Vector2 m_position{};
-        Utility::Vector2 m_size{};
+        Utility::Vector2i m_position{};
+        Utility::Vector2i m_size{};
     };
 }
 

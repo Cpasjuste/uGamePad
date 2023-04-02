@@ -28,11 +28,11 @@ void Widget::setPosition(int16_t x, int16_t y) {
     m_position.y = y;
 }
 
-void Widget::setPosition(const Utility::Vector2 &pos) {
+void Widget::setPosition(const Utility::Vector2i &pos) {
     setPosition(pos.x, pos.y);
 }
 
-Utility::Vector2 Widget::getPosition() {
+Utility::Vector2i Widget::getPosition() {
     return m_position;
 }
 
@@ -41,7 +41,7 @@ void Widget::setSize(int16_t x, int16_t y) {
     m_size.y = y;
 }
 
-void Widget::setSize(const Utility::Vector2 &size) {
+void Widget::setSize(const Utility::Vector2i &size) {
     m_size.x = size.x;
     m_size.y = size.y;
 }
@@ -50,11 +50,11 @@ Adafruit_GFX *Widget::getGfx() {
     return getPlatform()->getGfx()->getDisplay();
 }
 
-void Widget::update(const Utility::Vector2 &pos) {
+void Widget::update(const Utility::Vector2i &pos) {
     for (auto &widget: p_child_list) {
         if (widget) {
-            Utility::Vector2 v = {(int16_t) (pos.x + widget->m_position.x),
-                                  (int16_t) (pos.y + widget->m_position.y)};
+            Utility::Vector2i v = {(int16_t) (pos.x + widget->m_position.x),
+                                   (int16_t) (pos.y + widget->m_position.y)};
             widget->update(v);
         }
     }

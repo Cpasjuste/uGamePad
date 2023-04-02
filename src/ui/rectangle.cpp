@@ -2,12 +2,10 @@
 // Created by cpasjuste on 30/03/23.
 //
 
-#include "main.h"
 #include "platform.h"
 #include "rectangle.h"
 
-using uGamePad::Gfx;
-using uGamePad::Rectangle;
+using namespace uGamePad;
 
 Rectangle::Rectangle(int16_t x, int16_t y, int16_t w, int16_t h,
                      bool fill, int16_t radius) : Widget() {
@@ -17,7 +15,7 @@ Rectangle::Rectangle(int16_t x, int16_t y, int16_t w, int16_t h,
     m_radius = radius;
 }
 
-Rectangle::Rectangle(const Utility::Vector2 &pos, const Utility::Vector2 &size,
+Rectangle::Rectangle(const Utility::Vector2i &pos, const Utility::Vector2i &size,
                      bool fill, int16_t radius) : Widget() {
     Widget::setPosition(pos);
     Widget::setSize(size);
@@ -25,7 +23,7 @@ Rectangle::Rectangle(const Utility::Vector2 &pos, const Utility::Vector2 &size,
     m_radius = radius;
 }
 
-void Rectangle::update(const Utility::Vector2 &pos) {
+void Rectangle::update(const Utility::Vector2i &pos) {
     if (isVisible()) {
         if (m_fill) {
             if (m_radius > 0) {

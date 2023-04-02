@@ -6,6 +6,7 @@
 #define U_GAMEPAD_UTILITY_H
 
 #include <cstdint>
+#include <cmath>
 #include <string>
 
 namespace uGamePad {
@@ -17,17 +18,40 @@ namespace uGamePad {
             Inverse = 2
         };
 
-        struct Vector2 {
+        struct Vector2f {
+            float x;
+            float y;
+        };
+
+        struct Vector2i {
             int16_t x;
             int16_t y;
         };
 
-        struct Vector4 {
+        struct Vector4i {
             int16_t x;
             int16_t y;
             int16_t w;
             int16_t h;
         };
+
+        struct Vector6f {
+            Vector2f points[3];
+        };
+
+        struct Matrix2D {
+            float m11, m12;
+            float m21, m22;
+        };
+
+        struct Line {
+            Vector2f start;
+            Vector2f end;
+        };
+
+        static Matrix2D rotationMatrix(float angle);
+
+        static Vector2f transformPoint(Vector2f point, Matrix2D matrix);
 
         static void reboot(bool bootloader = false);
 

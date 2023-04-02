@@ -13,10 +13,10 @@ namespace uGamePad {
         Rectangle(int16_t x, int16_t y, int16_t w, int16_t h,
                   bool fill = false, int16_t radius = 0);
 
-        Rectangle(const Utility::Vector2 &pos, const Utility::Vector2 &size,
+        Rectangle(const Utility::Vector2i &pos, const Utility::Vector2i &size,
                   bool fill = false, int16_t radius = 0);
 
-        void update(const Utility::Vector2 &pos) override;
+        void update(const Utility::Vector2i &pos) override;
 
     private:
         int16_t m_radius = 0;

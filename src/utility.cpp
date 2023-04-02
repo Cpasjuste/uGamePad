@@ -9,11 +9,14 @@
 #endif
 #endif
 
+#include <cmath>
 #include <string>
 #include "gamepad.h"
 #include "utility.h"
 
-void uGamePad::Utility::reboot(bool bootloader) {
+using namespace uGamePad;
+
+void Utility::reboot(bool bootloader) {
 #ifndef NATIVE
     if (bootloader) {
 #if ARDUINO_ARCH_RP2040
@@ -26,7 +29,7 @@ void uGamePad::Utility::reboot(bool bootloader) {
 #endif
 }
 
-std::string uGamePad::Utility::toString(uint32_t buttons) {
+std::string Utility::toString(uint32_t buttons) {
     std::string ret;
 
     if (buttons & GamePad::Button::B1) ret += "1 ";
@@ -43,4 +46,20 @@ std::string uGamePad::Utility::toString(uint32_t buttons) {
     if (buttons & GamePad::Button::RIGHT) ret += "RIGHT ";
 
     return ret;
+}
+
+Utility::Matrix2D Utility::rotationMatrix(float angle) {
+    Matrix2D matrix{};
+    matrix.m11 = std::cos(angle);
+    matrix.m12 = -std::sin(angle);
+    matrix.m21 = std::sin(angle);
+    matrix.m22 = std::cos(angle);
+    return matrix;
+}
+
+Utility::Vector2f Utility::transformPoint(Utility::Vector2f point, Utility::Matrix2D matrix) {
+    Vector2f result{};
+    result.x = point.x * matrix.m11 + point.y * matrix.m12;
+    result.y = point.x * matrix.m21 + point.y * matrix.m22;
+    return result;
 }
