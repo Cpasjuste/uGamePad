@@ -11,7 +11,12 @@
 namespace uGamePad {
     class Widget {
     public:
-        enum class Visibility : int {
+        enum class Origin : uint8_t {
+            Left, TopLeft, Top, TopRight,
+            Right, BottomRight, Bottom, BottomLeft, Center
+        };
+
+        enum class Visibility : uint8_t {
             Visible, Hidden
         };
 
@@ -35,6 +40,12 @@ namespace uGamePad {
 
         virtual Utility::Vector2i getSize() { return m_size; };
 
+        virtual Utility::Vector4i getBounds();
+
+        virtual void setOrigin(const Origin &origin) { m_origin = origin; };
+
+        virtual Origin getOrigin() { return m_origin; };
+
         virtual bool isVisible() { return m_visibility == Visibility::Visible; };
 
         virtual void setVisibility(Visibility visibility) { m_visibility = visibility; };
@@ -49,6 +60,7 @@ namespace uGamePad {
         Visibility m_visibility = Visibility::Visible;
         Utility::Vector2i m_position{};
         Utility::Vector2i m_size{};
+        Origin m_origin = Origin::TopLeft;
     };
 }
 

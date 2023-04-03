@@ -71,18 +71,16 @@ Utility::Vector6f Triangle::calculateTriangle(Utility::Vector2i position, float 
 }
 
 void Triangle::update(const Utility::Vector2i &pos) {
-    if (isVisible()) {
-        if (m_fill) {
-            getGfx()->fillTriangle((int16_t) m_triangle.points[0].x, (int16_t) m_triangle.points[0].y,
-                                   (int16_t) m_triangle.points[1].x, (int16_t) m_triangle.points[1].y,
-                                   (int16_t) m_triangle.points[2].x, (int16_t) m_triangle.points[2].y,
-                                   Utility::Color::White);
-        } else {
-            getGfx()->drawTriangle((int16_t) m_triangle.points[0].x, (int16_t) m_triangle.points[0].y,
-                                   (int16_t) m_triangle.points[1].x, (int16_t) m_triangle.points[1].y,
-                                   (int16_t) m_triangle.points[2].x, (int16_t) m_triangle.points[2].y,
-                                   Utility::Color::White);
-        }
+    if (m_fill) {
+        getGfx()->fillTriangle((int16_t) m_triangle.points[0].x, (int16_t) m_triangle.points[0].y,
+                               (int16_t) m_triangle.points[1].x, (int16_t) m_triangle.points[1].y,
+                               (int16_t) m_triangle.points[2].x, (int16_t) m_triangle.points[2].y,
+                               Utility::Color::White);
+    } else {
+        getGfx()->drawTriangle((int16_t) m_triangle.points[0].x, (int16_t) m_triangle.points[0].y,
+                               (int16_t) m_triangle.points[1].x, (int16_t) m_triangle.points[1].y,
+                               (int16_t) m_triangle.points[2].x, (int16_t) m_triangle.points[2].y,
+                               Utility::Color::White);
     }
 
     Widget::update(pos);

@@ -14,23 +14,6 @@ Line::Line(const Utility::Vector2i &pos, int16_t length, float rotation) : Widge
     m_line = calculateLine({(float) pos.x, (float) pos.y}, (float) length, m_rotation);
 }
 
-void Line::update(const Utility::Vector2i &pos) {
-    if (isVisible()) {
-        if (m_rotation == 0 || m_rotation == 180 || m_rotation == 360) {
-            getGfx()->drawFastHLine((int16_t) m_line.start.x, (int16_t) m_line.start.y,
-                                    m_size.x, Utility::Color::White);
-        } else if (m_rotation == 90 || m_rotation == 270) {
-            getGfx()->drawFastVLine((int16_t) m_line.start.x, (int16_t) m_line.start.y,
-                                    m_size.x, Utility::Color::White);
-        } else {
-            getGfx()->drawLine((int16_t) m_line.start.x, (int16_t) m_line.start.y,
-                               (int16_t) m_line.end.x, (int16_t) m_line.end.y, Utility::Color::White);
-        }
-    }
-
-    Widget::update(pos);
-}
-
 Utility::Line Line::calculateLine(Utility::Vector2f position, float length, float rotation) {
     Utility::Line line{};
     Utility::Vector2f start = {0.0f, 0.0f};
@@ -61,4 +44,19 @@ Utility::Line Line::calculateLine(Utility::Vector2f position, float length, floa
     line.end = end;
 
     return line;
+}
+
+void Line::update(const Utility::Vector2i &pos) {
+    if (m_rotation == 0 || m_rotation == 180 || m_rotation == 360) {
+        getGfx()->drawFastHLine((int16_t) m_line.start.x, (int16_t) m_line.start.y,
+                                m_size.x, Utility::Color::White);
+    } else if (m_rotation == 90 || m_rotation == 270) {
+        getGfx()->drawFastVLine((int16_t) m_line.start.x, (int16_t) m_line.start.y,
+                                m_size.x, Utility::Color::White);
+    } else {
+        getGfx()->drawLine((int16_t) m_line.start.x, (int16_t) m_line.start.y,
+                           (int16_t) m_line.end.x, (int16_t) m_line.end.y, Utility::Color::White);
+    }
+
+    Widget::update(pos);
 }

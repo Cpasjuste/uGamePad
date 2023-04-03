@@ -7,6 +7,8 @@
 
 #include <cstdint>
 
+#define UI_MAX_LINES    4
+
 namespace uGamePad {
     class Ui {
     public:

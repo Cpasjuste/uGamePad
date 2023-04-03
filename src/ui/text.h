@@ -14,6 +14,8 @@ namespace uGamePad {
 
         Text(const Utility::Vector2i &pos, const std::string &text);
 
+        void setString(const std::string &str);
+
         void update(const Utility::Vector2i &pos) override;
 
     private:

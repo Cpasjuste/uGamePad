@@ -24,19 +24,17 @@ Rectangle::Rectangle(const Utility::Vector2i &pos, const Utility::Vector2i &size
 }
 
 void Rectangle::update(const Utility::Vector2i &pos) {
-    if (isVisible()) {
-        if (m_fill) {
-            if (m_radius > 0) {
-                getGfx()->fillRoundRect(pos.x, pos.y, m_size.x, m_size.y, m_radius, Utility::Color::White);
-            } else {
-                getGfx()->fillRect(pos.x, pos.y, m_size.x, m_size.y, Utility::Color::White);
-            }
+    if (m_fill) {
+        if (m_radius > 0) {
+            getGfx()->fillRoundRect(pos.x, pos.y, m_size.x, m_size.y, m_radius, Utility::Color::White);
         } else {
-            if (m_radius > 0) {
-                getGfx()->drawRoundRect(pos.x, pos.y, m_size.x, m_size.y, m_radius, Utility::Color::White);
-            } else {
-                getGfx()->drawRect(pos.x, pos.y, m_size.x, m_size.y, Utility::Color::White);
-            }
+            getGfx()->fillRect(pos.x, pos.y, m_size.x, m_size.y, Utility::Color::White);
+        }
+    } else {
+        if (m_radius > 0) {
+            getGfx()->drawRoundRect(pos.x, pos.y, m_size.x, m_size.y, m_radius, Utility::Color::White);
+        } else {
+            getGfx()->drawRect(pos.x, pos.y, m_size.x, m_size.y, Utility::Color::White);
         }
     }
 
