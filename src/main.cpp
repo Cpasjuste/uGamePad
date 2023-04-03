@@ -27,6 +27,13 @@ Platform *getPlatform() {
 }
 
 void setup() {
+    // setup serial debug
+#if defined(ARDUINO_RASPBERRY_PI_PICO)
+    Debug.setTX(D16);
+    Debug.setRX(D17);
+#endif
+    Debug.begin(115200);
+
     // motd
     printf("        _____                      _____          _ \r\n"
            "       / ____|                    |  __ \\        | |\r\n"

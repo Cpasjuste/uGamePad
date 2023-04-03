@@ -75,12 +75,12 @@ void Triangle::update(const Utility::Vector2i &pos) {
         getGfx()->fillTriangle((int16_t) m_triangle.points[0].x, (int16_t) m_triangle.points[0].y,
                                (int16_t) m_triangle.points[1].x, (int16_t) m_triangle.points[1].y,
                                (int16_t) m_triangle.points[2].x, (int16_t) m_triangle.points[2].y,
-                               Utility::Color::White);
+                               m_color);
     } else {
         getGfx()->drawTriangle((int16_t) m_triangle.points[0].x, (int16_t) m_triangle.points[0].y,
                                (int16_t) m_triangle.points[1].x, (int16_t) m_triangle.points[1].y,
                                (int16_t) m_triangle.points[2].x, (int16_t) m_triangle.points[2].y,
-                               Utility::Color::White);
+                               m_color);
     }
 
     Widget::update(pos);

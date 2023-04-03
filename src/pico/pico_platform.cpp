@@ -12,13 +12,6 @@ using uGamePad::PicoPlatform;
 using uGamePad::PicoGamePad;
 
 PicoPlatform::PicoPlatform() {
-    // setup serial debug
-#if defined(ARDUINO_RASPBERRY_PI_PICO)
-    Debug.setTX(D16);
-    Debug.setRX(D17);
-#endif
-    Debug.begin(115200);
-
     // setup pins
     // init output pins
     /*

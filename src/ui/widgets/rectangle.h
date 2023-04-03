@@ -11,10 +11,12 @@ namespace uGamePad {
     class Rectangle : public Widget {
     public:
         Rectangle(int16_t x, int16_t y, int16_t w, int16_t h,
-                  bool fill = false, int16_t radius = 0);
+                  bool fill = false, int16_t radius = 0,
+                  const Utility::Color &color = Utility::Color::White);
 
         Rectangle(const Utility::Vector2i &pos, const Utility::Vector2i &size,
-                  bool fill = false, int16_t radius = 0);
+                  bool fill = false, int16_t radius = 0,
+                  const Utility::Color &color = Utility::Color::White);
 
         void update(const Utility::Vector2i &pos) override;
 

@@ -4,10 +4,7 @@
 
 #include "gfx.h"
 
-using uGamePad::Gfx;
-using uGamePad::Utility;
-
-//extern unsigned char splash_128x64 PROGMEM[];
+using namespace uGamePad;
 
 Gfx::Gfx(Utility::Vector2i size) {
     m_size = size;
@@ -17,12 +14,6 @@ Utility::Vector2i Gfx::getSize() {
     return {p_display->width(), p_display->height()};
 }
 
-/*
-void Gfx::drawSplash() {
-    p_gfx->drawBitmap(0, 0, splash_128x64, m_size.x, m_size.y, getColor(White));
-    p_gfx->setTextColor(getColor(White));
-    p_gfx->setCursor(42, 56);
-    p_gfx->print("uGamePad");
-    flip();
+void Gfx::clear() {
+    getDisplay()->fillRect(0, 0, getSize().x, getSize().y, Utility::Color::Black);
 }
-*/

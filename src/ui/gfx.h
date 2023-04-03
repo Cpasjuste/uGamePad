@@ -16,6 +16,8 @@ namespace uGamePad {
 
         virtual Utility::Vector2i getSize();
 
+        virtual void clear();
+
         virtual void flip() {};
 
         Adafruit_GFX *getDisplay() { return p_display; };

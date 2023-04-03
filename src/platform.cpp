@@ -14,6 +14,7 @@ uGamePad::Platform::Platform() {
 }
 
 void uGamePad::Platform::loop() {
+    p_gfx->clear();
     p_ui->loop();
     p_gfx->flip();
 }

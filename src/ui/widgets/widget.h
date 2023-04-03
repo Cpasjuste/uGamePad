@@ -46,6 +46,10 @@ namespace uGamePad {
 
         virtual Origin getOrigin() { return m_origin; };
 
+        virtual void setColor(const Utility::Color &color) { m_color = color; };
+
+        virtual Utility::Color getColor() { return m_color; };
+
         virtual bool isVisible() { return m_visibility == Visibility::Visible; };
 
         virtual void setVisibility(Visibility visibility) { m_visibility = visibility; };
@@ -61,6 +65,7 @@ namespace uGamePad {
         Utility::Vector2i m_position{};
         Utility::Vector2i m_size{};
         Origin m_origin = Origin::TopLeft;
+        Utility::Color m_color = Utility::Color::White;
     };
 }
 
