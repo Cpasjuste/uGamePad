@@ -13,18 +13,18 @@ using uGamePad::PicoGamePad;
 // RP2040-Zero pinout
 static GamePad::PinMapping pinMapping[MAX_BUTTONS] = {
 #if ARDUINO_SEEED_XIAO_RP2040
-        {GamePad::Button::B1,     D0},
-        {GamePad::Button::B2,     D1},
-        {GamePad::Button::B3,     D2},
-        {GamePad::Button::B4,     D3},
-        {GamePad::Button::B5,     D4},
-        {GamePad::Button::B6,     D5},
+        {GamePad::Button::B1, D0},
+        {GamePad::Button::B2, D1},
+        {GamePad::Button::B3, D2},
+        {GamePad::Button::B4, D3},
+        {GamePad::Button::B5, D4},
+        {GamePad::Button::B6, D5},
         {GamePad::Button::SELECT, D8},
-        {GamePad::Button::START,  D9},
-        {GamePad::Button::UP,     D10},
-        {GamePad::Button::DOWN,   0},
-        {GamePad::Button::LEFT,   0},
-        {GamePad::Button::RIGHT,  0},
+        {GamePad::Button::START, D9},
+        {GamePad::Button::UP, D10},
+        {GamePad::Button::DOWN, 0},
+        {GamePad::Button::LEFT, 0},
+        {GamePad::Button::RIGHT, 0},
 #else
         {GamePad::Button::B1,     D9},
         {GamePad::Button::B2,     D10},
@@ -117,6 +117,22 @@ bool PicoGamePad::update(const uint8_t *report, uint16_t len) {
             if (m_buttons != 0) TU_LOG1("ds5: %s\r\n", Utility::toString(m_buttons).c_str());
         } else {
             TU_LOG2("tuh_hid_report_received_cb: skipping report, wrong packet (ds5)\r\n");
+            return false;
+        }
+    } else if (p_device->type == TYPE_NEOGEO_MINI) {
+        if (len == 27) {
+            auto r = reinterpret_cast<const NEOGEOMINIReport *>(report);
+            m_buttons =
+                    (r->buttons & NEOGEOMINIReport::Button::A ? GamePad::Button::B1 : 0) |
+                    (r->buttons & NEOGEOMINIReport::Button::B ? GamePad::Button::B2 : 0) |
+                    (r->buttons & NEOGEOMINIReport::Button::C ? GamePad::Button::B3 : 0) |
+                    (r->buttons & NEOGEOMINIReport::Button::D ? GamePad::Button::B4 : 0) |
+                    (r->buttons & NEOGEOMINIReport::Button::SELECT ? GamePad::Button::SELECT : 0) |
+                    (r->buttons & NEOGEOMINIReport::Button::START ? GamePad::Button::START : 0);
+            m_buttons |= GamePad::getButtonsFromHat(r->pad);
+            if (m_buttons != 0) TU_LOG1("ng-mini: %s\r\n", Utility::toString(m_buttons).c_str());
+        } else {
+            TU_LOG2("tuh_hid_report_received_cb: skipping report, wrong packet (ng-mini)\r\n");
             return false;
         }
     } else {

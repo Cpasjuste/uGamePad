@@ -6,11 +6,8 @@
 
 using namespace uGamePad;
 
-// trying to do as much static allocation as possible...
-Ui ui;
-
-uGamePad::Platform::Platform() {
-    p_ui = &ui;
+void Platform::setup() {
+    p_ui = new Ui();
 }
 
 void uGamePad::Platform::loop() {

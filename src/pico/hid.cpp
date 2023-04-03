@@ -9,26 +9,24 @@
 #include "devices.h"
 #include "pico/pico_platform.h"
 
-extern uGamePad::Platform platform;
-
-//#define MAX_REPORT 4
-//uint8_t _report_count[CFG_TUH_HID];
-//tuh_hid_report_info_t _report_info_arr[CFG_TUH_HID][MAX_REPORT];
+#define MAX_REPORT 4
+uint8_t _report_count[CFG_TUH_HID];
+tuh_hid_report_info_t _report_info_arr[CFG_TUH_HID][MAX_REPORT];
 
 void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t idx, uint8_t const *report_desc, uint16_t desc_len) {
     uint16_t vid, pid;
     tuh_vid_pid_get(dev_addr, &vid, &pid);
 
-    if (platform.getPad()) return;
+    if (!getPlatform()->getPad()) return;
 
     //printf("mount_cb: vid: %x, pid: %x, addr: %i, instance: %i, len: %i\r\n",
     //       vid, pid, dev_addr, idx, desc_len);
 
     auto device = find_device(vid, pid);
     if (device) {  // a know controller was plugged in (see devices.c)
-        if (device->idVendor != platform.getPad()->getDevice()->idVendor ||
-            device->idProduct != platform.getPad()->getDevice()->idProduct) {
-            platform.getPad()->setCurrentDevice(device, dev_addr, idx);
+        if (device->idVendor != getPlatform()->getPad()->getDevice()->idVendor ||
+            device->idProduct != getPlatform()->getPad()->getDevice()->idProduct) {
+            getPlatform()->getPad()->setCurrentDevice(device, dev_addr, idx);
             // set default led value
             if (device->type == TYPE_XBOX360) {
                 uint8_t msg[3] = {0x01, 0x03, 0x02};
@@ -40,8 +38,8 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t idx, uint8_t const *report_desc,
     }
 
     // Parse report descriptor with built-in parser
-    //_report_count[instance] = tuh_hid_parse_report_descriptor(
-    //      _report_info_arr[instance], MAX_REPORT, desc_report, desc_len);
+    _report_count[idx] = tuh_hid_parse_report_descriptor(
+            _report_info_arr[idx], MAX_REPORT, report_desc, desc_len);
 
     if (!tuh_hid_receive_report(dev_addr, idx)) {
         printf("mount_cb: tuh_hid_receive_report failed\r\n");
@@ -53,39 +51,38 @@ void tuh_hid_umount_cb(uint8_t dev_addr, uint8_t instance) {
 }
 
 void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *report, uint16_t len) {
-    //uint8_t const rpt_count = _report_count[instance];
-    //tuh_hid_report_info_t *rpt_info_arr = _report_info_arr[instance];
-    //tuh_hid_report_info_t *rpt_info = nullptr;
+    uint8_t const rpt_count = _report_count[instance];
+    tuh_hid_report_info_t *rpt_info_arr = _report_info_arr[instance];
+    tuh_hid_report_info_t *rpt_info = nullptr;
     uint16_t vid, pid;
 
-    if (!platform.getPad()) return;
+    if (!getPlatform()->getPad()) return;
 
     tuh_vid_pid_get(dev_addr, &vid, &pid);
-    if (platform.getPad()->getDevice()->idProduct != pid || platform.getPad()->getDevice()->idVendor != vid) {
-        printf("received_cb: skipping report, wrong vid or pid for %s...\r\n", platform.getPad()->getDevice()->name);
+    if (getPlatform()->getPad()->getDevice()->idProduct != pid
+        || getPlatform()->getPad()->getDevice()->idVendor != vid) {
+        printf("received_cb: skipping report, wrong vid or pid for %s...\r\n",
+               getPlatform()->getPad()->getDevice()->name);
         tuh_hid_receive_report(dev_addr, instance);
         return;
     }
 
     //printf("tuh_hid_report_received_cb: addr: %i, instance: %i, len: %i\r\n", dev_addr, instance, len);
-    if (!platform.getPad()->update(report, len)) {
-        // TODO: handle this
-#if 0
+    if (!getPlatform()->getPad()->update(report, len)) {
+        // try to handle generic pads
         if (rpt_count == 1 && rpt_info_arr[0].report_id == 0) {
-            // Simple report without report ID as 1st byte
+            // simple report without report ID as 1st byte
             rpt_info = &rpt_info_arr[0];
         } else {
-            // Composite report, 1st byte is report ID, data starts from 2nd byte
+            // composite report, 1st byte is report ID, data starts from 2nd byte
             uint8_t const rpt_id = report[0];
-
-            // Find report id in the arrray
+            // find report id in the arrray
             for (uint8_t i = 0; i < rpt_count; i++) {
                 if (rpt_id == rpt_info_arr[i].report_id) {
                     rpt_info = &rpt_info_arr[i];
                     break;
                 }
             }
-
             report++;
             len--;
         }
@@ -98,40 +95,28 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
         //printf("usage %d, %d\n", rpt_info->usage_page, rpt_info->usage);
         if (rpt_info->usage_page == HID_USAGE_PAGE_DESKTOP) {
             switch (rpt_info->usage) {
-                case HID_USAGE_DESKTOP_GAMEPAD:
                 case HID_USAGE_DESKTOP_MOUSE:
                 case HID_USAGE_DESKTOP_KEYBOARD:
                     //TU_LOG1("HID receive mouse/keyboard report\n");
-                    // Assume mouse follow boot report layout
-                    //                process_mouse_report((hid_mouse_report_t const *)report);
                     break;
                 case HID_USAGE_DESKTOP_JOYSTICK: {
                     // TU_LOG1("HID receive joystick report\n");
                     struct JoyStickReport {
                         uint8_t axis[3];
                         uint8_t buttons;
-                        // 実際のところはしらん
                     };
                     auto *rep = reinterpret_cast<const JoyStickReport *>(report);
-                    printf("x %d y %d button %02x\n", rep->axis[0], rep->axis[1], rep->buttons);
-                    /*
-                    auto &gp = uGamePad::getState();
-                    gp.axis[0] = rep->axis[0];
-                    gp.axis[1] = rep->axis[1];
-                    gp.axis[2] = rep->axis[2];
-                    gp.buttons = rep->buttons;
-                    gp.convertButtonsFromAxis(0, 1);
-                    */
-
-                    // BUFFALO BGC-FC801
-                    // VID = 0411, PID = 00c6
+                    //printf("x %d y %d button %02x\r\n", rep->axis[0], rep->axis[1], rep->buttons);
+                }
+                    break;
+                case HID_USAGE_DESKTOP_GAMEPAD: {
+                    // TODO
                 }
                     break;
                 default:
                     break;
             }
         }
-#endif
     }
 
     if (!tuh_hid_receive_report(dev_addr, instance)) {

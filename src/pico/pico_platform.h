@@ -20,6 +20,8 @@ namespace uGamePad {
     public:
         PicoPlatform();
 
+        void setup() override;
+
         void loop() override;
     };
 }

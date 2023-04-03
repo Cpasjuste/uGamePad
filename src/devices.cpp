@@ -263,6 +263,8 @@ static constexpr Device devices[] PROGMEM = {
         {0x054c, 0x09cc, (char *) "DualShock 4 (2nd Gen)",                                0,                 TYPE_DS4},
         {0x054c, 0x0ce6, (char *) "DualSense",                                            0,                 TYPE_DS5},
         ///
+        {0xe6f,  0x1112, (char *) "SNK Neo-Geo Mini",                                     0,                 TYPE_NEOGEO_MINI},
+        ///
         /// Unknown
         ///
         {0x0000, 0x0000, (char *) "Unknown device",                                       0,                 TYPE_UNKNOWN},

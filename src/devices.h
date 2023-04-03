@@ -20,6 +20,7 @@
 #define TYPE_XBOXONE     4
 #define TYPE_DS4         5
 #define TYPE_DS5         6
+#define TYPE_NEOGEO_MINI 7
 
 struct Device {
     uint16_t idVendor;
@@ -38,7 +39,6 @@ struct XBOXReport {
     int16_t stickL[2];
     int16_t stickR[2];
     uint8_t unused[6];
-    // ...
 
     // is "partsnotincluded" wrong (not the same button order on my "Hori GEM Xbox controller" gamepad) ?
     struct Button {
@@ -118,6 +118,20 @@ struct DS5Report {
         inline static constexpr int R3 = 1 << 15;
         inline static constexpr int PS = 1 << 16;
         inline static constexpr int T_PAD = 1 << 17;
+    };
+};
+
+struct NEOGEOMINIReport {
+    uint16_t buttons;
+    uint8_t pad;
+
+    struct Button {
+        inline static constexpr int D = 1 << 0;
+        inline static constexpr int B = 1 << 1;
+        inline static constexpr int A = 1 << 2;
+        inline static constexpr int C = 1 << 3;
+        inline static constexpr int SELECT = 1 << 8;
+        inline static constexpr int START = 1 << 9;
     };
 };
 

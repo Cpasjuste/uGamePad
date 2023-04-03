@@ -11,40 +11,34 @@
 using uGamePad::PicoPlatform;
 using uGamePad::PicoGamePad;
 
-PicoPlatform::PicoPlatform() {
-    // setup pins
-    // init output pins
-    /*
-    pinMode(D0, OUTPUT);
-    pinMode(D1, OUTPUT);
-    pinMode(D2, OUTPUT);
-    pinMode(D3, OUTPUT);
-    pinMode(D4, OUTPUT);
-    pinMode(D5, OUTPUT);
-    pinMode(D6, OUTPUT);
-    pinMode(D7, OUTPUT);
-    pinMode(D8, OUTPUT);
-    pinMode(D9, OUTPUT);
-    pinMode(D10, OUTPUT);
-    pinMode(D11, OUTPUT);
-    */
+PicoPlatform::PicoPlatform() = default;
+
+void uGamePad::PicoPlatform::setup() {
+    // setup serial debug
+#if defined(ARDUINO_RASPBERRY_PI_PICO)
+    Debug.setTX(D16);
+    Debug.setRX(D17);
+#endif
+    Debug.begin(115200);
+
+    // init gfx
+    p_gfx = new PicoGfx();
+
+    // init gamepad
+    p_pad = new PicoGamePad();
 
     // init usb host stack
     if (!tusb_init()) {
         printf("tusb_init failed...\r\n");
         while (true);
     }
-
     if (!tuh_init(0)) {
         printf("tuh_init failed...\r\n");
         while (true);
     }
 
-    // init gamepad
-    p_pad = new PicoGamePad();
-
-    // init ui
-    p_gfx = new PicoGfx();
+    // all done
+    Platform::setup();
 }
 
 void PicoPlatform::loop() {
@@ -52,10 +46,12 @@ void PicoPlatform::loop() {
     if (tuh_inited()) {
         tuh_task();
     } else {
-        Debug.println("oops, tinyusb host service not inited...");
+        printf("oops, tinyusb host service not inited...\r\n");
         while (true);
     }
 
     // handle led updates
     //Led::Update();
+
+    Platform::loop();
 }

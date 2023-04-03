@@ -4,7 +4,10 @@
 
 #include <cstdio>
 #include <complex>
+#include <Arduino.h>
 #include "gamepad.h"
+
+#define printf Serial1.printf
 
 using namespace uGamePad;
 

@@ -12,7 +12,9 @@
 namespace uGamePad {
     class Platform {
     public:
-        Platform();
+        Platform() = default;
+
+        virtual void setup();
 
         virtual void loop();
 
