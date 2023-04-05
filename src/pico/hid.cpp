@@ -22,15 +22,15 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t idx, uint8_t const *report_desc,
     //printf("mount_cb: vid: %x, pid: %x, addr: %i, instance: %i, len: %i\r\n",
     //       vid, pid, dev_addr, idx, desc_len);
 
-    auto device = find_device(vid, pid);
+    auto device = get_device(vid, pid);
     if (device) {  // a know controller was plugged in (see devices.c)
         if (device->idVendor != getPlatform()->getPad()->getDevice()->idVendor ||
             device->idProduct != getPlatform()->getPad()->getDevice()->idProduct) {
             getPlatform()->getPad()->setCurrentDevice(device, dev_addr, idx);
-            // set default led value
-            if (device->type == TYPE_XBOX360) {
-                uint8_t msg[3] = {0x01, 0x03, 0x02};
-                tuh_hid_set_report(dev_addr, idx, 5, HID_REPORT_TYPE_OUTPUT, &msg, 3);
+            // send init message if provided
+            if (device->report->init.size > 0) {
+                tuh_hid_set_report(dev_addr, idx, 5, HID_REPORT_TYPE_OUTPUT,
+                                   &device->report->init.msg, device->report->init.size);
             }
         }
     } else {

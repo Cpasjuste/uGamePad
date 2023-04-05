@@ -13,14 +13,9 @@
 #include <avr/pgmspace.h>
 #endif
 
-#define TYPE_UNKNOWN        0
-#define TYPE_XBOX           1
-#define TYPE_XBOX360        2
-#define TYPE_XBOX360W       3
-#define TYPE_XBOX_ONE       4
-#define TYPE_DS4            5
-#define TYPE_DS5            6
-#define TYPE_NEOGEO_MINI    7
+#ifndef BIT
+#define BIT(n) (1U<<(n))
+#endif
 
 #define INDEX_NONE UINT16_MAX
 #define BUTTON_NONE UINT16_MAX
@@ -29,35 +24,42 @@ namespace uGamePad {
     class Report {
     public:
         enum AxisType : uint8_t {
-            AXIS_32767 = 0,
-            AXIS_255 = 4,
-            AXIS_FLIP_Y = 8
+            AXIS_NONE = BIT(0),
+            AXIS_I16 = BIT(1),
+            AXIS_UI8 = BIT(2),
+            AXIS_FLIP_Y = BIT(3)
         };
-        struct ReportButton {
+
+        struct Button {
             uint16_t byte_index;
             uint16_t button_index;
         };
 
-        struct ReportAxis {
+        struct Axis {
             uint16_t byte_index;
-            AxisType type;
+            uint8_t type;
         };
 
-        ReportButton buttons[12]{};
-        ReportAxis axis[4]{};
-        ReportButton hat{};
-        uint8_t min_bytes = 4;
+        struct Init {
+            uint8_t msg[4];
+            uint8_t size;
+        };
+
+        Button buttons[12]{};
+        Axis axis[4]{};
+        Button hat{};
+        Init init{};
+        uint8_t min_size = 4;
     };
 
     struct Device {
         uint16_t idVendor{};
         uint16_t idProduct{};
         char *name{};
-        uint8_t type{};
         Report *report = nullptr;
     };
 }
 
-const uGamePad::Device *find_device(uint16_t vid, uint16_t pid);
+const uGamePad::Device *get_device(uint16_t vid, uint16_t pid);
 
 #endif //U_GAMEPAD_DEVICES_H

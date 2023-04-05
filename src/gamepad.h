@@ -15,24 +15,18 @@ namespace uGamePad {
     class GamePad {
     public:
         enum Button {
-            B1 = 1 << 0,
-            B2 = 1 << 1,
-            B3 = 1 << 2,
-            B4 = 1 << 3,
-            B5 = 1 << 4,
-            B6 = 1 << 5,
-            START = 1 << 6,
-            SELECT = 1 << 7,
-            LEFT = 1 << 8,
-            RIGHT = 1 << 9,
-            UP = 1 << 10,
-            DOWN = 1 << 11
-        };
-
-        enum AxisType : uint8_t {
-            AXIS_32767 = 0,
-            AXIS_255 = 4,
-            AXIS_FLIP_Y = 8
+            B1 = BIT(0),
+            B2 = BIT(1),
+            B3 = BIT(2),
+            B4 = BIT(3),
+            B5 = BIT(4),
+            B6 = BIT(5),
+            START = BIT(6),
+            SELECT = BIT(7),
+            LEFT = BIT(8),
+            RIGHT = BIT(9),
+            UP = BIT(10),
+            DOWN = BIT(11)
         };
 
         enum Led {
@@ -61,7 +55,7 @@ namespace uGamePad {
     protected:
         uint8_t m_addr = 0;
         uint8_t m_instance = 0;
-        const Device p_device_unknown = {0x0000, 0x0000, (char *) "Unknown device", 0, TYPE_UNKNOWN};
+        const Device p_device_unknown = {0x0000, 0x0000, (char *) "Unknown device"};
         const Device *p_device = &p_device_unknown;
         uint16_t m_buttons{0};
 
@@ -84,7 +78,7 @@ namespace uGamePad {
 
         int calc_bezier_y(float t);
 
-        uint16_t getButtonsFromAxis(int x, int y, uint8_t type = AXIS_32767);
+        uint16_t getButtonsFromAxis(int x, int y, uint8_t type = Report::AxisType::AXIS_I16);
 
         static uint16_t getButtonsFromHat(int hat);
     };

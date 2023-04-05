@@ -52,12 +52,12 @@ uint16_t GamePad::getButtonsFromAxis(int x, int y, uint8_t type) {
     float slope = 0.414214f; // tangent of 22.5 degrees for size of angular zones
     auto analogX = (float) x, analogY = (float) y;
 
-    if (type & AXIS_255) {
+    if (type & Report::AxisType::AXIS_UI8) {
         analogX = (float) m_analog_map[x];
         analogY = (float) m_analog_map[y];
     }
 
-    if (type & AXIS_FLIP_Y) {
+    if (type & Report::AxisType::AXIS_FLIP_Y) {
         analogY = -analogY;
     }
 
