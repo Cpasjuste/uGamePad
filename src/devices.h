@@ -62,4 +62,6 @@ namespace uGamePad {
 
 const uGamePad::Device *get_device(uint16_t vid, uint16_t pid);
 
+const uGamePad::Device *get_device_at(uint16_t i);
+
 #endif //U_GAMEPAD_DEVICES_H

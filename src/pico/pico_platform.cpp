@@ -3,13 +3,13 @@
 //
 
 #include <Arduino.h>
+#include "tusb.h"
 #include "pico_platform.h"
 #include "pico_gamepad.h"
 #include "pico_gfx.h"
-#include "tusb.h"
+#include "pico_fs.h"
 
-using uGamePad::PicoPlatform;
-using uGamePad::PicoGamePad;
+using namespace uGamePad;
 
 PicoPlatform::PicoPlatform() = default;
 
@@ -20,6 +20,9 @@ void uGamePad::PicoPlatform::setup() {
     Debug.setRX(D17);
 #endif
     Debug.begin(115200);
+
+    // init filesystem
+    p_fs = new PicoFs();
 
     // init gfx
     p_gfx = new PicoGfx();

@@ -8,6 +8,7 @@
 #include "gamepad.h"
 #include "gfx.h"
 #include "ui.h"
+#include "fs.h"
 
 namespace uGamePad {
     class Platform {
@@ -24,10 +25,13 @@ namespace uGamePad {
 
         virtual Ui *getUi() { return p_ui; };
 
+        virtual Fs *getFs() { return p_fs; };
+
     protected:
         Gfx *p_gfx = nullptr;
         GamePad *p_pad = nullptr;
         Ui *p_ui = nullptr;
+        Fs *p_fs = nullptr;
     };
 }
 

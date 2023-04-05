@@ -403,3 +403,7 @@ const Device *get_device(uint16_t vid, uint16_t pid) {
 
     return nullptr;
 }
+
+const uGamePad::Device *get_device_at(uint16_t i) {
+    return &devices[i];
+}
