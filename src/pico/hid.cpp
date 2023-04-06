@@ -9,9 +9,13 @@
 #include "devices.h"
 #include "pico/pico_platform.h"
 
+using namespace uGamePad;
+
 #define MAX_REPORT 4
 uint8_t _report_count[CFG_TUH_HID];
 tuh_hid_report_info_t _report_info_arr[CFG_TUH_HID][MAX_REPORT];
+
+#define TESTING 0
 
 void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t idx, uint8_t const *report_desc, uint16_t desc_len) {
     uint16_t vid, pid;
@@ -35,6 +39,12 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t idx, uint8_t const *report_desc,
         }
     } else {
         printf("mount_cb: unknown device %x:%x\r\n", vid, pid);
+#if TESTING
+        // wip/testing
+        auto dev = new Device();
+        dev->idVendor = vid;
+        dev->idProduct = pid;
+#endif
     }
 
     // Parse report descriptor with built-in parser
@@ -66,6 +76,22 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
         tuh_hid_receive_report(dev_addr, instance);
         return;
     }
+
+#if TESTING
+    static uint8_t report_old[128];
+    if (memcmp(report_old, report, len) != 0) {
+        printf("report data changed (size: %i), bits: ", len);
+        for (uint16_t i = 0; i < len; i++) {
+            if (report[i] != report_old[i]) {
+                printf("%i ", i);
+            }
+        }
+        printf("\r\n");
+        memcpy(report_old, report, len);
+        tuh_hid_receive_report(dev_addr, instance);
+        return;
+    }
+#endif
 
     //printf("tuh_hid_report_received_cb: addr: %i, instance: %i, len: %i\r\n", dev_addr, instance, len);
     if (!getPlatform()->getPad()->update(report, len)) {
