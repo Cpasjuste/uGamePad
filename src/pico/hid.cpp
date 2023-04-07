@@ -7,7 +7,6 @@
 
 #include "main.h"
 #include "devices.h"
-#include "pico/pico_platform.h"
 
 using namespace uGamePad;
 
@@ -28,13 +27,13 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t idx, uint8_t const *report_desc,
 
     auto device = get_device(vid, pid);
     if (device) {  // a know controller was plugged in (see devices.c)
-        if (device->idVendor != getPlatform()->getPad()->getDevice()->idVendor ||
-            device->idProduct != getPlatform()->getPad()->getDevice()->idProduct) {
+        if (device->vendor != getPlatform()->getPad()->getDevice()->vendor ||
+            device->product != getPlatform()->getPad()->getDevice()->product) {
             getPlatform()->getPad()->setCurrentDevice(device, dev_addr, idx);
             // send init message if provided
-            if (device->report->init.size > 0) {
+            if (device->data->init.size > 0) {
                 tuh_hid_set_report(dev_addr, idx, 5, HID_REPORT_TYPE_OUTPUT,
-                                   &device->report->init.msg, device->report->init.size);
+                                   &device->data->init.msg, device->data->init.size);
             }
         }
     } else {
@@ -42,12 +41,12 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t idx, uint8_t const *report_desc,
 #if TESTING
         // wip/testing
         auto dev = new Device();
-        dev->idVendor = vid;
-        dev->idProduct = pid;
+        dev->vendor = vid;
+        dev->product = pid;
 #endif
     }
 
-    // Parse report descriptor with built-in parser
+    // Parse data descriptor with built-in parser
     _report_count[idx] = tuh_hid_parse_report_descriptor(
             _report_info_arr[idx], MAX_REPORT, report_desc, desc_len);
 
@@ -69,9 +68,9 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
     if (!getPlatform()->getPad()) return;
 
     tuh_vid_pid_get(dev_addr, &vid, &pid);
-    if (getPlatform()->getPad()->getDevice()->idProduct != pid
-        || getPlatform()->getPad()->getDevice()->idVendor != vid) {
-        printf("received_cb: skipping report, wrong vid or pid for %s...\r\n",
+    if (getPlatform()->getPad()->getDevice()->product != pid
+        || getPlatform()->getPad()->getDevice()->vendor != vid) {
+        printf("received_cb: skipping data, wrong vid or pid for %s...\r\n",
                getPlatform()->getPad()->getDevice()->name);
         tuh_hid_receive_report(dev_addr, instance);
         return;
@@ -79,15 +78,15 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
 
 #if TESTING
     static uint8_t report_old[128];
-    if (memcmp(report_old, report, len) != 0) {
-        printf("report data changed (size: %i), bits: ", len);
+    if (memcmp(report_old, data, len) != 0) {
+        printf("data data changed (size: %i), bits: ", len);
         for (uint16_t i = 0; i < len; i++) {
-            if (report[i] != report_old[i]) {
+            if (data[i] != report_old[i]) {
                 printf("%i ", i);
             }
         }
         printf("\r\n");
-        memcpy(report_old, report, len);
+        memcpy(report_old, data, len);
         tuh_hid_receive_report(dev_addr, instance);
         return;
     }
@@ -97,12 +96,12 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
     if (!getPlatform()->getPad()->update(report, len)) {
         // try to handle generic pads
         if (rpt_count == 1 && rpt_info_arr[0].report_id == 0) {
-            // simple report without report ID as 1st byte
+            // simple data without data ID as 1st byte
             rpt_info = &rpt_info_arr[0];
         } else {
-            // composite report, 1st byte is report ID, data starts from 2nd byte
+            // composite data, 1st byte is data ID, data starts from 2nd byte
             uint8_t const rpt_id = report[0];
-            // find report id in the arrray
+            // find data id in the arrray
             for (uint8_t i = 0; i < rpt_count; i++) {
                 if (rpt_id == rpt_info_arr[i].report_id) {
                     rpt_info = &rpt_info_arr[i];
@@ -114,7 +113,7 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
         }
 
         if (!rpt_info) {
-            printf("couldn't find the report info for this report !\r\n");
+            printf("couldn't find the data info for this data !\r\n");
             return;
         }
 
@@ -123,10 +122,10 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
             switch (rpt_info->usage) {
                 case HID_USAGE_DESKTOP_MOUSE:
                 case HID_USAGE_DESKTOP_KEYBOARD:
-                    //TU_LOG1("HID receive mouse/keyboard report\n");
+                    //TU_LOG1("HID receive mouse/keyboard data\n");
                     break;
                 case HID_USAGE_DESKTOP_JOYSTICK: {
-                    // TU_LOG1("HID receive joystick report\n");
+                    // TU_LOG1("HID receive joystick data\n");
                     struct JoyStickReport {
                         uint8_t axis[3];
                         uint8_t buttons;
@@ -146,6 +145,6 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
     }
 
     if (!tuh_hid_receive_report(dev_addr, instance)) {
-        printf("received_cb: cannot request to receive report\r\n");
+        printf("received_cb: cannot request to receive data\r\n");
     }
 }

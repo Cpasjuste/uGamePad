@@ -3,7 +3,7 @@
 //
 
 #include <cmath>
-#include "platform.h"
+#include "main.h"
 #include "triangle.h"
 
 using namespace uGamePad;

@@ -5,8 +5,6 @@
 #ifndef U_GAMEPAD_PICO_GAMEPAD_H
 #define U_GAMEPAD_PICO_GAMEPAD_H
 
-#include "gamepad.h"
-
 namespace uGamePad {
     class PicoGamePad : public GamePad {
     public:

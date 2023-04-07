@@ -5,6 +5,7 @@
 #ifndef U_GAMEPAD_FS_H
 #define U_GAMEPAD_FS_H
 
+#include <string>
 #include <cstdint>
 #include "devices.h"
 
@@ -12,15 +13,26 @@ namespace uGamePad {
     class Fs {
     public:
         struct DeviceInfo {
-            std::size_t totalBytes;
-            std::size_t usedBytes;
+            uint64_t totalBytes;
+            uint64_t usedBytes;
         };
 
         Fs();
 
-        virtual DeviceInfo getDeviceInfo() { return {0, 0}; };
+        virtual bool isAvailable() { return m_available; };
+
+        virtual std::string getHome() { return "/"; };
+
+        virtual Device *load(uint16_t vid, uint16_t pid) { return nullptr; };
+
+        virtual Device *load(const std::string &path) { return nullptr; };
 
         virtual bool save(Device *device) { return false; };
+
+        virtual DeviceInfo getDeviceInfo() { return {0, 0}; };
+
+    protected:
+        bool m_available = false;
     };
 }
 

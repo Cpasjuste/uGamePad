@@ -4,7 +4,7 @@
 
 #include <Arduino.h>
 #include "tusb.h"
-#include "pico_gamepad.h"
+#include "main.h"
 #include "devices.h"
 #include "utility.h"
 
@@ -42,44 +42,44 @@ static GamePad::PinMapping pinMapping[MAX_BUTTONS] = {
 };
 
 bool PicoGamePad::update(const uint8_t *report, uint16_t len) {
-    if (!p_device || !p_device->report) {
+    if (!p_device || !p_device->data) {
         TU_LOG1("uGamePad::loop: error: device not set\r\n");
         return false;
     }
 
-    TU_LOG2("uGamePad::loop: received report for '%s': type: %i, len: %i)\r\n",
+    TU_LOG2("uGamePad::loop: received data for '%s': type: %i, len: %i)\r\n",
             p_device->name, p_device->type, len);
 
     // do not process bytes if less than x bytes
-    if (len < p_device->report->min_size) return true;
+    if (len < p_device->data->min_report_size) return true;
 
     // reset buttons state
     m_buttons = 0;
 
     // process buttons
     for (int i = 0; i < MAX_BUTTONS; i++) {
-        if (p_device->report->buttons[i].byte_index >= len) continue;
-        m_buttons |= report[p_device->report->buttons[i].byte_index] &
-                     p_device->report->buttons[i].button_index ? (1 << i) : 0;
+        if (p_device->data->buttons[i].byte >= len) continue;
+        m_buttons |= report[p_device->data->buttons[i].byte] &
+                     p_device->data->buttons[i].bit ? (1 << i) : 0;
     }
 
     // process axis
     for (int i = 0; i < 3; i += 2) {
-        if (p_device->report->axis[i].byte_index >= len) continue;
-        if (p_device->report->axis[i].type & Report::AxisType::AXIS_I16) {
-            int16_t x = (int16_t &) report[p_device->report->axis[i].byte_index];
-            int16_t y = (int16_t &) report[p_device->report->axis[i + 1].byte_index];
-            m_buttons |= GamePad::getButtonsFromAxis(x, y, p_device->report->axis[i].type);
-        } else if (p_device->report->axis[i].type & Report::AxisType::AXIS_UI8) {
-            uint8_t x = (uint8_t &) report[p_device->report->axis[i].byte_index];
-            uint8_t y = (uint8_t &) report[p_device->report->axis[i + 1].byte_index];
-            m_buttons |= GamePad::getButtonsFromAxis(x, y, p_device->report->axis[i].type);
+        if (p_device->data->axis[i].byte >= len) continue;
+        if (p_device->data->axis[i].type & ReportData::AxisType::AXIS_I16) {
+            int16_t x = (int16_t &) report[p_device->data->axis[i].byte];
+            int16_t y = (int16_t &) report[p_device->data->axis[i + 1].byte];
+            m_buttons |= GamePad::getButtonsFromAxis(x, y, p_device->data->axis[i].type);
+        } else if (p_device->data->axis[i].type & ReportData::AxisType::AXIS_UI8) {
+            uint8_t x = (uint8_t &) report[p_device->data->axis[i].byte];
+            uint8_t y = (uint8_t &) report[p_device->data->axis[i + 1].byte];
+            m_buttons |= GamePad::getButtonsFromAxis(x, y, p_device->data->axis[i].type);
         }
     }
 
     // process hat
-    if (p_device->report->hat.byte_index < len) {
-        m_buttons |= GamePad::getButtonsFromHat(report[p_device->report->hat.byte_index]);
+    if (p_device->data->hat.byte < len) {
+        m_buttons |= GamePad::getButtonsFromHat(report[p_device->data->hat.byte]);
     }
 
     if (m_buttons != 0) TU_LOG1("%s: %s\r\n", p_device->name, Utility::toString(m_buttons).c_str());

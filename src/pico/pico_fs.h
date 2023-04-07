@@ -5,12 +5,14 @@
 #ifndef U_GAMEPAD_PICO_FS_H
 #define U_GAMEPAD_PICO_FS_H
 
-#include "fs.h"
-
 namespace uGamePad {
     class PicoFs : public Fs {
     public:
         PicoFs();
+
+        Device *load(uint16_t vid, uint16_t pid) override;
+
+        Device *load(const std::string &path) override;
 
         bool save(Device *device) override;
 

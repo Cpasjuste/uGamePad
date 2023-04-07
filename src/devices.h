@@ -6,12 +6,7 @@
 #define U_GAMEPAD_DEVICES_H
 
 #include <cstdint>
-
-#ifdef NATIVE
-#define PROGMEM
-#else
-#include <avr/pgmspace.h>
-#endif
+#include <cstring>
 
 #ifndef BIT
 #define BIT(n) (1U<<(n))
@@ -21,7 +16,7 @@
 #define BUTTON_NONE UINT16_MAX
 
 namespace uGamePad {
-    class Report {
+    class ReportData {
     public:
         enum AxisType : uint8_t {
             AXIS_NONE = BIT(0),
@@ -31,12 +26,12 @@ namespace uGamePad {
         };
 
         struct Button {
-            uint16_t byte_index;
-            uint16_t button_index;
+            uint16_t byte;
+            uint16_t bit;
         };
 
         struct Axis {
-            uint16_t byte_index;
+            uint16_t byte;
             uint8_t type;
         };
 
@@ -49,14 +44,14 @@ namespace uGamePad {
         Axis axis[4]{};
         Button hat{};
         Init init{};
-        uint8_t min_size = 4;
+        uint8_t min_report_size = 4;
     };
 
     struct Device {
-        uint16_t idVendor{};
-        uint16_t idProduct{};
-        char *name{};
-        Report *report = nullptr;
+        uint16_t vendor = 0;
+        uint16_t product = 0;
+        char name[64]{};
+        ReportData *data = nullptr;
     };
 }
 

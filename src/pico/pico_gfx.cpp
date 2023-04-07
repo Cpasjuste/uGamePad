@@ -4,8 +4,7 @@
 
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-
-#include "pico_gfx.h"
+#include "main.h"
 
 #define SCREEN_WIDTH 128 // display width, in pixels
 #define SCREEN_HEIGHT 64 // display height, in pixels

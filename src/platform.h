@@ -5,11 +5,6 @@
 #ifndef U_GAMEPAD_PLATFORM_H
 #define U_GAMEPAD_PLATFORM_H
 
-#include "gamepad.h"
-#include "gfx.h"
-#include "ui.h"
-#include "fs.h"
-
 namespace uGamePad {
     class Platform {
     public:
@@ -26,6 +21,8 @@ namespace uGamePad {
         virtual Ui *getUi() { return p_ui; };
 
         virtual Fs *getFs() { return p_fs; };
+
+        virtual int getFreeHeap() { return 0; };
 
     protected:
         Gfx *p_gfx = nullptr;

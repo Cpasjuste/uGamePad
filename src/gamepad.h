@@ -9,6 +9,7 @@
 #include "devices.h"
 
 #define MAX_BUTTONS 12
+#define MAX_AXIS 4
 #define DEAD_ZONE 4000
 
 namespace uGamePad {
@@ -55,7 +56,7 @@ namespace uGamePad {
     protected:
         uint8_t m_addr = 0;
         uint8_t m_instance = 0;
-        const Device p_device_unknown = {0x0000, 0x0000, (char *) "Unknown device"};
+        const Device p_device_unknown = {0x0000, 0x0000, "Unknown device", nullptr};
         const Device *p_device = &p_device_unknown;
         uint16_t m_buttons{0};
 
@@ -78,7 +79,7 @@ namespace uGamePad {
 
         int calc_bezier_y(float t);
 
-        uint16_t getButtonsFromAxis(int x, int y, uint8_t type = Report::AxisType::AXIS_I16);
+        uint16_t getButtonsFromAxis(int x, int y, uint8_t type = ReportData::AxisType::AXIS_I16);
 
         static uint16_t getButtonsFromHat(int hat);
     };

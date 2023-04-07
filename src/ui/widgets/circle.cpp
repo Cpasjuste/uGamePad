@@ -2,7 +2,7 @@
 // Created by cpasjuste on 03/04/23.
 //
 
-#include "platform.h"
+#include "main.h"
 #include "circle.h"
 
 using namespace uGamePad;

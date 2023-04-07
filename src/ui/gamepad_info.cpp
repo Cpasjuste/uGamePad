@@ -2,11 +2,10 @@
 // Created by cpasjuste on 03/04/23.
 //
 
-#include "platform.h"
+#include "main.h"
 #include "gamepad_info.h"
 #include "triangle.h"
 #include "rectangle.h"
-#include "main.h"
 
 using namespace uGamePad;
 

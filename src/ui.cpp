@@ -2,7 +2,7 @@
 // Created by cpasjuste on 30/03/23.
 //
 
-#include "platform.h"
+#include "main.h"
 #include "rectangle.h"
 #include "ui.h"
 #include "text.h"

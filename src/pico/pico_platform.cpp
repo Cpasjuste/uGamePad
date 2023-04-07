@@ -4,12 +4,15 @@
 
 #include <Arduino.h>
 #include "tusb.h"
-#include "pico_platform.h"
-#include "pico_gamepad.h"
-#include "pico_gfx.h"
-#include "pico_fs.h"
+#include "main.h"
 
 using namespace uGamePad;
+
+#ifdef __arm__
+extern "C" char *sbrk(int incr);
+#else  // __ARM__
+extern char *__brkval;
+#endif  // __arm__
 
 PicoPlatform::PicoPlatform() = default;
 
@@ -57,4 +60,15 @@ void PicoPlatform::loop() {
     //Led::Update();
 
     Platform::loop();
+}
+
+int PicoPlatform::getFreeHeap() {
+    char top;
+#ifdef __arm__
+    return &top - reinterpret_cast<char *>(sbrk(0));
+#elif defined(CORE_TEENSY) || (ARDUINO > 103 && ARDUINO != 151)
+    return &top - __brkval;
+#else  // __arm__
+    return __brkval ? &top - __brkval : &top - __malloc_heap_start;
+#endif  // __arm__
 }

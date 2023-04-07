@@ -2,11 +2,7 @@
 // Created by cpasjuste on 29/03/23.
 //
 
-#ifdef NATIVE
-#include "linux_platform.h"
-#else
-#include "pico_platform.h"
-#endif
+#include "main.h"
 
 using namespace uGamePad;
 
@@ -25,15 +21,6 @@ void setup() {
     platform = new PicoPlatform();
 #endif
     platform->setup();
-
-    // motd
-    printf("        _____                      _____          _ \r\n"
-           "       / ____|                    |  __ \\        | |\r\n"
-           " _   _| |  __  __ _ _ __ ___   ___| |__) |_ _  __| |\r\n"
-           "| | | | | |_ |/ _` | '_ ` _ \\ / _ \\  ___/ _` |/ _` |\r\n"
-           "| |_| | |__| | (_| | | | | | |  __/ |  | (_| | (_| |\r\n"
-           " \\__,_|\\_____|\\__,_|_| |_| |_|\\___|_|   \\__,_|\\__,_|\r\n\n");
-    fflush(stdout);
 }
 
 void loop() {
