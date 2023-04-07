@@ -19,6 +19,7 @@ PicoFs::PicoFs() : Fs() {
         return;
     }
 
+    // be sure we still have enough space to work with
     auto info = PicoFs::getDeviceInfo();
     m_available = info.usedBytes < info.totalBytes;
 }
@@ -34,7 +35,6 @@ Device *PicoFs::load(uint16_t vid, uint16_t pid) {
     snprintf(vendor, 5, "%04x", vid);
     snprintf(product, 5, "%04x", pid);
     std::string path = getHome() + vendor + "-" + product + ".cfg";
-
     return PicoFs::load(path);
 }
 
@@ -87,6 +87,8 @@ Device *PicoFs::load(const std::string &path) {
         device->data->hat.byte = hat[0]["byte"];
         device->data->hat.bit = hat[0]["bit"];
     }
+
+    // TODO: init message
 
     file.close();
 
@@ -143,8 +145,7 @@ bool PicoFs::save(Device *device) {
         h_item["bit"] = device->data->hat.bit;
     }
 
-    // init
-    // TODO
+    // TODO: init message
 
     if (serializeJsonPretty(doc, file) == 0) {
         printf("PicoFs::save: failed to write to %s...\r\n", path.c_str());
