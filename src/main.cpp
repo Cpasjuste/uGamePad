@@ -7,8 +7,7 @@
 using namespace uGamePad;
 
 Platform *platform;
-uint16_t buttons;
-uint16_t buttons_old;
+uint16_t buttons, buttons_old, buttons_diff;
 
 Platform *getPlatform() {
     return platform;
@@ -28,16 +27,17 @@ void loop() {
 
     // get gamepad sate
     buttons = platform->getPad()->getButtons();
+
     // only loop on button change
-    bool changed = buttons_old ^ buttons;
+    buttons_diff = buttons_old ^ buttons;
     buttons_old = buttons;
-    if (changed) {
+    if (buttons_diff) {
 #ifndef NATIVE
         GamePad::PinMapping *mapping = platform->getPad()->getPinMapping();
-        if (mapping) {
-            // generate pin output
-            for (int i = 0; i < MAX_BUTTONS; i++) {
-                //digitalWrite(mapping[i].pin, pad.buttons & mapping[i].button ? HIGH : LOW);
+        // generate pin output
+        for (int i = 0; i < MAX_BUTTONS; i++) {
+            if (buttons_diff & mapping[i].button) {
+                digitalWrite(mapping[i].pin, buttons & mapping[i].button ? HIGH : LOW);
             }
         }
 #endif
