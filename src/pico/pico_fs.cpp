@@ -162,4 +162,3 @@ bool PicoFs::save(Device *device) {
 
     return true;
 }
-
