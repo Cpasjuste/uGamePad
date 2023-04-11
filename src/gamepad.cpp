@@ -5,8 +5,6 @@
 #include <complex>
 #include "main.h"
 
-#define printf Serial1.printf
-
 using namespace uGamePad;
 
 GamePad::GamePad() {

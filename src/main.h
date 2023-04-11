@@ -13,6 +13,9 @@
 
 #if NATIVE
 #include "linux_platform.h"
+#include "linux_gamepad.h"
+#include "linux_gfx.h"
+#include "fs.h"
 #else
 #include "pico_platform.h"
 #include "pico_gamepad.h"

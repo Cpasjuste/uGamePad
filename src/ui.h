@@ -6,15 +6,25 @@
 #define U_GAMEPAD_UI_H
 
 #include <cstdint>
-
-#define UI_MAX_LINES    4
+#include "rectangle.h"
+#include "gamepad_info.h"
 
 namespace uGamePad {
     class Ui {
     public:
         explicit Ui();
 
-        virtual void loop();
+        void loop();
+
+        void showSplash();
+
+        bool isActive();
+
+    private:
+        Widget *p_screen;
+        Bitmap *p_splash;
+        Text *p_splash_text;
+        GamePadInfo *p_gamePadInfo;
     };
 }
 

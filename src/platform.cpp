@@ -21,11 +21,13 @@ void Platform::setup() {
     auto info = p_fs->getDeviceInfo();
     printf("Platform: filesystem size: %llu, used: %llu (available: %i)\r\n",
            info.totalBytes, info.usedBytes, p_fs->isAvailable());
-    printf("Platform: free heap size: %i\r\n", getFreeHeap());
+    printf("Platform: heap size: %i\r\n", getFreeHeap());
 }
 
 void uGamePad::Platform::loop() {
-    p_gfx->clear();
-    p_ui->loop();
-    p_gfx->flip();
+    if (p_ui->isActive()) {
+        p_gfx->clear();
+        p_ui->loop();
+        p_gfx->flip();
+    }
 }

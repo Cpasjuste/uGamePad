@@ -2,17 +2,23 @@
 // Created by cpasjuste on 29/03/23.
 //
 
+#include "main.h"
 #include "linux_platform.h"
-#include "linux_gamepad.h"
-#include "linux_gfx.h"
 
 using namespace uGamePad;
 
-LinuxPlatform::LinuxPlatform() : Platform() {
+void LinuxPlatform::setup() {
+    // init filesystem
+    p_fs = new Fs();
+
     // init display
     p_gfx = new LinuxGfx();
+
     // init gamepad
     p_pad = new LinuxGamePad();
+
+    // all done
+    Platform::setup();
 }
 
 void LinuxPlatform::loop() {
