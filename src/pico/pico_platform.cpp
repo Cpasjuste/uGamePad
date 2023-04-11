@@ -8,6 +8,8 @@
 
 using namespace uGamePad;
 
+#define DEBUG_RP2040_ZERO 1
+
 #ifdef __arm__
 extern "C" char *sbrk(int incr);
 #else  // __ARM__
@@ -19,8 +21,14 @@ PicoPlatform::PicoPlatform() = default;
 void uGamePad::PicoPlatform::setup() {
     // setup serial debug
 #if defined(ARDUINO_RASPBERRY_PI_PICO)
+#if defined(DEBUG_RP2040_ZERO)
+    // use pins 12 and 13 for tx/rx (b4/b5)
+    Debug.setTX(D12); // vga pin 14 orange
+    Debug.setRX(D13); // vga pin 15 (yellow)
+#else
     Debug.setTX(D16);
     Debug.setRX(D17);
+#endif
 #endif
     Debug.begin(115200);
 
