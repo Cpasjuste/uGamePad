@@ -8,6 +8,8 @@
 namespace uGamePad {
     class PicoGamePad : public GamePad {
     public:
+        PicoGamePad();
+
         bool update(const uint8_t *report, uint16_t len) override;
 
         PinMapping *getPinMapping() override;

@@ -21,6 +21,9 @@ namespace uGamePad {
         void loop() override;
 
         int getFreeHeap() override;
+
+    private:
+        uint16_t buttons, buttons_old, buttons_diff;
     };
 }
 

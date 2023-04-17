@@ -67,6 +67,25 @@ void PicoPlatform::loop() {
     // handle led updates
     //Led::Update();
 
+    // handle gamepad states
+    if (!p_ui->isActive()) {
+        // get gamepad sate
+        buttons = p_pad->getButtons();
+
+        // only send buttons changed
+        buttons_diff = buttons_old ^ buttons;
+        buttons_old = buttons;
+        if (buttons_diff) {
+            GamePad::PinMapping *mapping = p_pad->getPinMapping();
+            // generate pin output
+            for (int i = 0; i < MAX_BUTTONS; i++) {
+                if (buttons_diff & mapping[i].button) {
+                    digitalWrite(mapping[i].pin, buttons & mapping[i].button ? LOW : HIGH);
+                }
+            }
+        }
+    }
+
     Platform::loop();
 }
 

@@ -12,9 +12,11 @@
 using uGamePad::PicoGfx;
 
 PicoGfx::PicoGfx() : Gfx({128, 64}) {
+#if UGP_V10
     // use GP0/GP1 for OLED screen of pico / rp2040 zero
     Wire.setSDA(0);
     Wire.setSCL(1);
+#endif
 
     // init OLED display
     p_display = new Adafruit_SSD1306(m_size.x, m_size.y, &Wire, -1);

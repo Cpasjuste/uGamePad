@@ -5,6 +5,9 @@
 #ifndef U_GAMEPAD_MAIN_H
 #define U_GAMEPAD_MAIN_H
 
+// uGamePad v1.0 board
+#define UGP_V10 1
+
 #include "gamepad.h"
 #include "fs.h"
 #include "gfx.h"
