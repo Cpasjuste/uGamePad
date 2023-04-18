@@ -12,9 +12,9 @@
 
 using namespace uGamePad;
 
-// RP2040-Zero pinout
 static GamePad::PinMapping pinMapping[MAX_BUTTONS] = {
 #if UGP_V10
+        // uGamePad v1.0 (rp2040-zero vga) pinout
         {GamePad::Button::B1, D9},
         {GamePad::Button::B2, D10},
         {GamePad::Button::B3, D11},

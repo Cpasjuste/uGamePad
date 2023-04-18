@@ -1,10 +1,45 @@
 # uGamePad
 
-````
-Resolving seeed_xiao_rp2040 dependencies...
-Platform raspberrypi @ 1.8.0+sha.5a533d6 (required: git+https://github.com/maxgerhardt/platform-raspberrypi.git)
-├── framework-arduinopico @ 1.30100.0+sha.7851dc8 (required: git+https://github.com/earlephilhower/arduino-pico.git#7851dc8cb70af5bee0308566770c2f472d27a71a)
-├── tool-mklittlefs-rp2040-earlephilhower @ 5.100300.230216 (required: earlephilhower/tool-mklittlefs-rp2040-earlephilhower @ ~5.100300.0)
-├── tool-openocd-rp2040-earlephilhower @ 5.100300.230216 (required: earlephilhower/tool-openocd-rp2040-earlephilhower @ ~5.100300.0)
-├── tool-rp2040tools @ 1.0.2 (required: platformio/tool-rp2040tools @ ~1.0.2)
-└── toolchain-rp2040-earlephilhower @ 5.100300.230216 (required: earlephilhower/toolchain-rp2040-earlephilhower @ ~5.100300.0)
+## Nintendo Nes
+
+Resources :
+* 1 - [nesdev](https://www.nesdev.org/wiki/Controller_port_pinout)
+
+Controller pinout :
+
+![nessnes-pinout](https://www.igorkromin.net/fp-content/images/snestones/NesSnesPinout.png)
+
+[Nintendo Nes wire colors (aliexpress)](https://fr.aliexpress.com/item/33011370991.html?spm=a2g0o.order_list.order_list_main.6.6bf65e5bZjQmvi&gatewayAdapt=glo2fra) :
+```
+1   gnd     white
+2   clock   green
+3   latch   yellow
+4   data    red
+5   5v      black
+
+```
+
+## Sega Genesis
+
+Resources : 
+* 1 - [plutiedev](https://plutiedev.com/io-pinout#md-port)
+* 2 - [jonthysell](https://github.com/jonthysell/SegaController/wiki/How-To-Read-Sega-Controllers)
+* 3 - [raspberryfield](https://www.raspberryfield.life/2019/02/15/sega-mega-drive-genesis-3-button-abc-controller/)
+* 4 - [pinoutguide](https://pinoutguide.com/Game/genesiscontroller_pinout.shtml)
+
+Controller pinout :
+
+![genesis-pinout](https://plutiedev.com/img/md-port-pinout.png)
+
+[Sega Genesis wire colors (aliexpress)](https://fr.aliexpress.com/item/1005002864827866.html?spm=a2g0o.order_detail.order_detail_item.13.22277d56hgr2Fe&gatewayAdapt=glo2fra) :
+```
+1   data0   red
+2   data1   black
+3   data2   grey
+4   data3   orange
+5   5v      brown
+6   tl      green
+7   th      white
+8   gnd     blue
+9   tr      yellow
+```
