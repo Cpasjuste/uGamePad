@@ -5,6 +5,17 @@
 #ifndef U_GAMEPAD_PICO_GAMEPAD_H
 #define U_GAMEPAD_PICO_GAMEPAD_H
 
+// nes testing
+#if ARDUINO_SEEED_XIAO_RP2040
+#define NES_LATCH   D10
+#define NES_CLOCK   D9
+#define NES_DATA    D8
+#else
+#define NES_LATCH   D21
+#define NES_CLOCK   D20
+#define NES_DATA    D19
+#endif
+
 namespace uGamePad {
     class PicoGamePad : public GamePad {
     public:
@@ -14,7 +25,7 @@ namespace uGamePad {
 
         PinMapping *getPinMapping() override;
 
-        void setLed(uint8_t type) override;
+        void setMode(const Mode &mode) override;
     };
 }
 

@@ -9,11 +9,11 @@
 #include "utility.h"
 #include "pico_gamepad.h"
 
-
 using namespace uGamePad;
 
 static GamePad::PinMapping pinMapping[MAX_BUTTONS] = {
-#if UGP_V10
+#if defined(UGP_V10)
+#if ARDUINO_RASPBERRY_PI_PICO
         // uGamePad v1.0 (rp2040-zero vga) pinout
         {GamePad::Button::B1, D9},
         {GamePad::Button::B2, D10},
@@ -28,15 +28,32 @@ static GamePad::PinMapping pinMapping[MAX_BUTTONS] = {
         {GamePad::Button::LEFT, D29},
         {GamePad::Button::RIGHT, D28},
 #endif
+#endif
 };
 
 PicoGamePad::PicoGamePad() : GamePad() {
-    // enable pin output
-    for (auto &i: pinMapping) {
-        pinMode(i.pin, OUTPUT);
-        // mvs use pull-up pins it seems
-        digitalWrite(i.pin, HIGH);
+    PicoGamePad::setMode(m_mode);
+}
+
+void PicoGamePad::setMode(const GamePad::Mode &mode) {
+    if (mode == Mode::Mvs) {
+        for (auto &i: pinMapping) {
+            pinMode(i.pin, OUTPUT);
+            // mvs use pull-up
+            digitalWrite(i.pin, HIGH);
+        }
+    } else if (mode == Mode::Nes) {
+        pinMode(NES_LATCH, INPUT);
+        pinMode(NES_CLOCK, INPUT);
+        pinMode(NES_DATA, OUTPUT);
+        digitalWrite(NES_DATA, HIGH);
     }
+
+    GamePad::setMode(mode);
+}
+
+GamePad::PinMapping *PicoGamePad::getPinMapping() {
+    return pinMapping;
 }
 
 bool PicoGamePad::update(const uint8_t *report, uint16_t len) {
@@ -83,12 +100,4 @@ bool PicoGamePad::update(const uint8_t *report, uint16_t len) {
     if (m_buttons != 0) TU_LOG1("%s: %s\r\n", p_device->name, Utility::toString(m_buttons).c_str());
 
     return true;
-}
-
-GamePad::PinMapping *PicoGamePad::getPinMapping() {
-    return pinMapping;
-}
-
-void PicoGamePad::setLed(uint8_t type) {
-    // TODO: handle type, ds4, etc...
 }

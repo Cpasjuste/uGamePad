@@ -5,10 +5,9 @@
 #include <Arduino.h>
 #include "tusb.h"
 #include "main.h"
+#include "clock.h"
 
 using namespace uGamePad;
-
-#define DEBUG_RP2040_ZERO 1
 
 #ifdef __arm__
 extern "C" char *sbrk(int incr);
@@ -26,6 +25,7 @@ void uGamePad::PicoPlatform::setup() {
     Debug.setTX(D12); // vga pin 14 orange
     Debug.setRX(D13); // vga pin 15 (yellow)
 #else
+    // pico
     Debug.setTX(D16);
     Debug.setRX(D17);
 #endif
@@ -55,6 +55,52 @@ void uGamePad::PicoPlatform::setup() {
     Platform::setup();
 }
 
+static Clock m_clock;
+
+static bool waitLatch() {
+    // use a clock/timer, do not lock ourselves if something went wrong...
+    m_clock.restart();
+    while (!digitalRead(NES_LATCH)) {
+        if (m_clock.getElapsedTime().asMilliseconds() > 20) {
+            printf("waitLatch failed (LOW > 20 ms)\r\n");
+            return false;
+        }
+    }
+
+    m_clock.restart();
+    while (digitalRead(NES_LATCH)) {
+        if (m_clock.getElapsedTime().asMicroseconds() > 12) {
+            printf("waitLatch failed (HIGH > 12 μs)\r\n");
+            return false;
+        }
+    }
+
+    return true;
+}
+
+static void waitClock() {
+    // use a clock/timer, do not lock ourselves if something went wrong...
+    //m_clock.restart();
+    while (!digitalRead(NES_CLOCK)) {
+        /*
+        if (m_clock.getElapsedTime().asMilliseconds() > 1) {
+            printf("waitClock failed (LOW > 1 ms)\r\n");
+            return;
+        }
+        */
+    }
+
+    //m_clock.restart();
+    while (digitalRead(NES_CLOCK)) {
+        /*
+        if (m_clock.getElapsedTime().asMilliseconds() > 1) {
+            printf("waitClock failed (HIGH > 1 ms)\r\n");
+            return;
+        }
+        */
+    }
+}
+
 void PicoPlatform::loop() {
     // handle usb host updates
     if (tuh_inited()) {
@@ -72,17 +118,52 @@ void PicoPlatform::loop() {
         // get gamepad sate
         buttons = p_pad->getButtons();
 
-        // only send buttons changed
-        buttons_diff = buttons_old ^ buttons;
-        buttons_old = buttons;
-        if (buttons_diff) {
-            GamePad::PinMapping *mapping = p_pad->getPinMapping();
-            // generate pin output
-            for (int i = 0; i < MAX_BUTTONS; i++) {
-                if (buttons_diff & mapping[i].button) {
-                    digitalWrite(mapping[i].pin, buttons & mapping[i].button ? LOW : HIGH);
+        // handle mvs mode
+        if (p_pad->getMode() == GamePad::Mode::Mvs) {
+            // only send buttons changed
+            buttons_diff = buttons_old ^ buttons;
+            buttons_old = buttons;
+            if (buttons_diff) {
+                GamePad::PinMapping *mapping = p_pad->getPinMapping();
+                // generate pin output
+                for (int i = 0; i < MAX_BUTTONS; i++) {
+                    if (buttons_diff & mapping[i].button) {
+                        digitalWrite(mapping[i].pin, buttons & mapping[i].button ? LOW : HIGH);
+                    }
                 }
             }
+        } else { // handle nes mode
+            // wait for latch, should be called every ~16ms for around 12μs
+            //printf("latch wait...\r\n");
+            if (!waitLatch()) {
+                Platform::loop();
+                return;
+            }
+            //printf("latched\r\n");
+
+            digitalWrite(NES_DATA, buttons & GamePad::Button::B2 ? LOW : HIGH);
+            waitClock();
+
+            digitalWrite(NES_DATA, buttons & GamePad::Button::B1 ? LOW : HIGH);
+            waitClock();
+
+            digitalWrite(NES_DATA, buttons & GamePad::Button::SELECT ? LOW : HIGH);
+            waitClock();
+
+            digitalWrite(NES_DATA, buttons & GamePad::Button::START ? LOW : HIGH);
+            waitClock();
+
+            digitalWrite(NES_DATA, buttons & GamePad::Button::UP ? LOW : HIGH);
+            waitClock();
+
+            digitalWrite(NES_DATA, buttons & GamePad::Button::DOWN ? LOW : HIGH);
+            waitClock();
+
+            digitalWrite(NES_DATA, buttons & GamePad::Button::LEFT ? LOW : HIGH);
+            waitClock();
+
+            digitalWrite(NES_DATA, buttons & GamePad::Button::RIGHT ? LOW : HIGH);
+            waitClock();
         }
     }
 

@@ -4,6 +4,7 @@
 
 Resources :
 * 1 - [nesdev](https://www.nesdev.org/wiki/Controller_port_pinout)
+* 2 - [tresi](https://tresi.github.io/nes/)
 
 Controller pinout :
 
@@ -14,8 +15,8 @@ Controller pinout :
 1   gnd     white
 2   clock   green
 3   latch   yellow
-4   data    red
-5   5v      black
+4   data    black
+7   5v      red
 
 ```
 

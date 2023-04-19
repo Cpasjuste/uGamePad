@@ -34,6 +34,11 @@ namespace uGamePad {
             LED_P1, LED_P2, LED_P3, LED_P4
         };
 
+        enum Mode {
+            Mvs,
+            Nes
+        };
+
         struct PinMapping {
             uint16_t button;
             uint8_t pin;
@@ -47,6 +52,10 @@ namespace uGamePad {
 
         virtual void setLed(uint8_t type) {};
 
+        virtual void setMode(const Mode &mode) { m_mode = mode; };
+
+        virtual Mode getMode() { return m_mode; };
+
         virtual bool update(const uint8_t *report, uint16_t len) { return false; };
 
         virtual PinMapping *getPinMapping() { return nullptr; };
@@ -54,6 +63,7 @@ namespace uGamePad {
         uint16_t &getButtons() { return m_buttons; };
 
     protected:
+        Mode m_mode = Nes;
         uint8_t m_addr = 0;
         uint8_t m_instance = 0;
         const Device p_device_unknown = {0x0000, 0x0000, "Unknown device", nullptr};

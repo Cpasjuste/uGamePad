@@ -13,9 +13,11 @@ using uGamePad::PicoGfx;
 
 PicoGfx::PicoGfx() : Gfx({128, 64}) {
 #if UGP_V10
+#if !defined(ARDUINO_SEEED_XIAO_RP2040)
     // use GP0/GP1 for OLED screen of pico / rp2040 zero
     Wire.setSDA(0);
     Wire.setSCL(1);
+#endif
 #endif
 
     // init OLED display
