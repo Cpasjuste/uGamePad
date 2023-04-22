@@ -23,9 +23,12 @@ namespace uGamePad {
 
         bool update(const uint8_t *report, uint16_t len) override;
 
-        PinMapping *getPinMapping() override;
+        Output *getOutputMode() override;
 
-        void setMode(const Mode &mode) override;
+    private:
+        static void onLatchRising();
+
+        static void onClockFalling();
     };
 }
 

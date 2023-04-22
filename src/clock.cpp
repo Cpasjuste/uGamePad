@@ -2,25 +2,26 @@
 // Created by cpasjuste on 18/04/23.
 //
 
+#ifdef NATIVE
 #include <ctime>
 #include <sys/time.h>
+#else
+#include <api/ArduinoAPI.h>
+#endif
 #include "clock.h"
-
-//extern "C" int clock_gettime(clockid_t cid, struct timespec *tp);
 
 uGamePad::Clock::Clock() {
     m_startTime = Clock::getCurrentTime();
 }
 
 uGamePad::Time uGamePad::Clock::getCurrentTime() const {
-    /*
+#ifdef NATIVE
     timespec time = {};
-    clock_gettime(CLOCK_REALTIME, &time);
+    clock_gettime(CLOCK_MONOTONIC, &time);
     return microseconds((long) time.tv_sec * 1000000 + time.tv_nsec / 1000);
-    */
-    struct timeval time{};
-    gettimeofday(&time, nullptr);
-    return microseconds((long) 1000000 * time.tv_sec + time.tv_usec);
+#else
+    return microseconds((long) micros());
+#endif
 }
 
 uGamePad::Time uGamePad::Clock::getElapsedTime() const {

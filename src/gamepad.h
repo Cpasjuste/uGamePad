@@ -6,6 +6,7 @@
 #define U_GAMEPAD_GAMEPAD_H
 
 #include <cstdint>
+#include <vector>
 #include "devices.h"
 
 #define MAX_BUTTONS 12
@@ -42,6 +43,13 @@ namespace uGamePad {
         struct PinMapping {
             uint16_t button;
             uint8_t pin;
+            int pinMode;
+            int pinStatus;
+        };
+
+        struct Output {
+            Mode mode = Mode::Nes;
+            std::vector<PinMapping> mappings;
         };
 
         GamePad();
@@ -52,18 +60,13 @@ namespace uGamePad {
 
         virtual void setLed(uint8_t type) {};
 
-        virtual void setMode(const Mode &mode) { m_mode = mode; };
-
-        virtual Mode getMode() { return m_mode; };
-
         virtual bool update(const uint8_t *report, uint16_t len) { return false; };
 
-        virtual PinMapping *getPinMapping() { return nullptr; };
+        virtual Output *getOutputMode() { return nullptr; };
 
         uint16_t &getButtons() { return m_buttons; };
 
     protected:
-        Mode m_mode = Nes;
         uint8_t m_addr = 0;
         uint8_t m_instance = 0;
         const Device p_device_unknown = {0x0000, 0x0000, "Unknown device", nullptr};

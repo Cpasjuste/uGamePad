@@ -11,7 +11,10 @@
 
 using namespace uGamePad;
 
-static GamePad::PinMapping pinMapping[MAX_BUTTONS] = {
+static PicoGamePad *s_picoGamePad = nullptr;
+static volatile uint8_t m_clock_count = 0;
+
+static GamePad::Output nes_output = {
 #if defined(UGP_V10)
 #if ARDUINO_RASPBERRY_PI_PICO
         // uGamePad v1.0 (rp2040-zero vga) pinout
@@ -27,33 +30,58 @@ static GamePad::PinMapping pinMapping[MAX_BUTTONS] = {
         {GamePad::Button::DOWN, D27},
         {GamePad::Button::LEFT, D29},
         {GamePad::Button::RIGHT, D28},
+#elif ARDUINO_SEEED_XIAO_RP2040
+        .mode = GamePad::Mode::Nes,
+        .mappings = {
+                {GamePad::Button::B2,     NES_LATCH, -1,     -1}, // use interrupts
+                {GamePad::Button::B1,     NES_CLOCK, -1,     -1}, // use interrupts
+                {GamePad::Button::SELECT, NES_DATA,  OUTPUT, HIGH},
+                {GamePad::Button::START,  UINT8_MAX, -1,     -1},
+                {GamePad::Button::UP,     UINT8_MAX, -1,     -1},
+                {GamePad::Button::DOWN,   UINT8_MAX, -1,     -1},
+                {GamePad::Button::LEFT,   UINT8_MAX, -1,     -1},
+                {GamePad::Button::RIGHT,  UINT8_MAX, -1,     -1},
+        }
 #endif
 #endif
 };
 
 PicoGamePad::PicoGamePad() : GamePad() {
-    PicoGamePad::setMode(m_mode);
-}
+    s_picoGamePad = this;
 
-void PicoGamePad::setMode(const GamePad::Mode &mode) {
-    if (mode == Mode::Mvs) {
-        for (auto &i: pinMapping) {
-            pinMode(i.pin, OUTPUT);
-            // mvs use pull-up
-            digitalWrite(i.pin, HIGH);
+    auto output = PicoGamePad::getOutputMode();
+    for (auto &mapping: output->mappings) {
+        if (mapping.pin != UINT8_MAX) {
+            pinMode(mapping.pin, mapping.pinMode);
+            if (mapping.pinStatus != -1) {
+                digitalWrite(mapping.pin, mapping.pinStatus);
+            }
         }
-    } else if (mode == Mode::Nes) {
-        pinMode(NES_LATCH, INPUT);
-        pinMode(NES_CLOCK, INPUT);
-        pinMode(NES_DATA, OUTPUT);
-        digitalWrite(NES_DATA, HIGH);
     }
 
-    GamePad::setMode(mode);
+    if (output->mode == Mode::Nes) {
+        attachInterrupt(digitalPinToInterrupt(NES_LATCH), onLatchRising, RISING);
+        attachInterrupt(digitalPinToInterrupt(NES_CLOCK), onClockFalling, FALLING);
+    } else {
+        detachInterrupt(digitalPinToInterrupt(NES_LATCH));
+        detachInterrupt(digitalPinToInterrupt(NES_CLOCK));
+    }
 }
 
-GamePad::PinMapping *PicoGamePad::getPinMapping() {
-    return pinMapping;
+void PicoGamePad::onLatchRising() {
+    Output *out = s_picoGamePad->getOutputMode();
+    digitalWrite(NES_DATA, s_picoGamePad->getButtons() & out->mappings[m_clock_count].button ? LOW : HIGH);
+    m_clock_count = 1;
+}
+
+void PicoGamePad::onClockFalling() {
+    static Output *out = s_picoGamePad->getOutputMode();
+    digitalWrite(NES_DATA, s_picoGamePad->getButtons() & out->mappings[m_clock_count].button ? LOW : HIGH);
+    m_clock_count++;
+}
+
+GamePad::Output *PicoGamePad::getOutputMode() {
+    return &nes_output;
 }
 
 bool PicoGamePad::update(const uint8_t *report, uint16_t len) {
@@ -101,3 +129,4 @@ bool PicoGamePad::update(const uint8_t *report, uint16_t len) {
 
     return true;
 }
+

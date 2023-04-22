@@ -23,7 +23,7 @@ namespace uGamePad {
         int getFreeHeap() override;
 
     private:
-        uint16_t buttons, buttons_old, buttons_diff;
+        uint16_t m_buttons_old{}, m_buttons_diff{};
     };
 }
 
