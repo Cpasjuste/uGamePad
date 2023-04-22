@@ -48,16 +48,7 @@ static GamePad::Output nes_output = {
 
 PicoGamePad::PicoGamePad() : GamePad() {
     s_picoGamePad = this;
-
     auto output = PicoGamePad::getOutputMode();
-    for (auto &mapping: output->mappings) {
-        if (mapping.pin != UINT8_MAX) {
-            pinMode(mapping.pin, mapping.pinMode);
-            if (mapping.pinStatus != -1) {
-                digitalWrite(mapping.pin, mapping.pinStatus);
-            }
-        }
-    }
 
     if (output->mode == Mode::Nes) {
         attachInterrupt(digitalPinToInterrupt(NES_LATCH), onLatchRising, RISING);
@@ -65,6 +56,15 @@ PicoGamePad::PicoGamePad() : GamePad() {
     } else {
         detachInterrupt(digitalPinToInterrupt(NES_LATCH));
         detachInterrupt(digitalPinToInterrupt(NES_CLOCK));
+    }
+
+    for (auto &mapping: output->mappings) {
+        if (mapping.pin != UINT8_MAX) {
+            pinMode(mapping.pin, mapping.pinMode);
+            if (mapping.pinStatus != -1) {
+                digitalWrite(mapping.pin, mapping.pinStatus);
+            }
+        }
     }
 }
 
@@ -75,7 +75,7 @@ void PicoGamePad::onLatchRising() {
 }
 
 void PicoGamePad::onClockFalling() {
-    static Output *out = s_picoGamePad->getOutputMode();
+    Output *out = s_picoGamePad->getOutputMode();
     digitalWrite(NES_DATA, s_picoGamePad->getButtons() & out->mappings[m_clock_count].button ? LOW : HIGH);
     m_clock_count++;
 }
