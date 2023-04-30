@@ -20,6 +20,16 @@ Controller pinout :
 
 ```
 
+[Nintendo Snes wire colors (aliexpress)](https://fr.aliexpress.com/item/33011370991.html?spm=a2g0o.order_list.order_list_main.6.6bf65e5bZjQmvi&gatewayAdapt=glo2fra) :
+```
+1   gnd     black 
+2   clock   yellow
+3   latch   white
+4   data    red
+7   5v      green
+
+```
+
 ## Sega Genesis
 
 Resources : 
