@@ -6,6 +6,7 @@
 #include "tusb.h"
 #include "main.h"
 #include "clock.h"
+#include "pico_platform.h"
 
 using namespace uGamePad;
 
@@ -15,9 +16,9 @@ void uGamePad::PicoPlatform::setup() {
     // setup serial debug
 #if defined(ARDUINO_RASPBERRY_PI_PICO)
 #if defined(DEBUG_RP2040_ZERO)
-    // use pins 12 and 13 for tx/rx (b4/b5)
-    Debug.setTX(D12); // vga pin 14 orange
-    Debug.setRX(D13); // vga pin 15 (yellow)
+    // use pins 0 and 1 for tx/rx (b5/b6)
+    Debug.setTX(D0); // vga pin 10
+    Debug.setRX(D1); // vga pin 2
 #else
     // pico
     Debug.setTX(D16);
@@ -29,17 +30,28 @@ void uGamePad::PicoPlatform::setup() {
     // init filesystem
     p_fs = new PicoFs();
 
+    // check for usb msc button press
+    // TODO
+    /*
+    if (!digitalRead(GPIO_BUTTON_ENTER)) {
+        p_fs->share();
+        return;
+    }
+    */
+
     // init gfx
     p_gfx = new PicoGfx();
 
     // init gamepad
     p_pad = new PicoGamePad();
 
-    // init usb host stack
+    // init usb stack
     if (!tusb_init()) {
         printf("tusb_init failed...\r\n");
         while (true);
     }
+
+    // init usb host stack
     if (!tuh_init(0)) {
         printf("tuh_init failed...\r\n");
         while (true);
@@ -50,6 +62,9 @@ void uGamePad::PicoPlatform::setup() {
 }
 
 void PicoPlatform::loop() {
+    // if flash filesystem is in usb msc mode (shared), just return
+    if (p_fs->isShared()) return;
+
     // handle usb host updates
     if (tuh_inited()) {
         tuh_task();
@@ -58,11 +73,8 @@ void PicoPlatform::loop() {
         while (true);
     }
 
-    // handle led updates
-    //Led::Update();
-
     // handle gamepad states
-    if (!p_ui->isActive()) {
+    if (p_ui && !p_ui->isActive()) {
         // get output mode/mapping
         GamePad::Output *output = p_pad->getOutputMode();
 

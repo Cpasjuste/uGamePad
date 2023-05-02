@@ -23,5 +23,4 @@ void setup() {
 
 void loop() {
     platform->loop();
-    //delay(1);
 }

@@ -29,10 +29,15 @@ namespace uGamePad {
 
         virtual bool save(Device *device) { return false; };
 
+        virtual void share() {};
+
+        virtual bool isShared() { return m_shared; };
+
         virtual DeviceInfo getDeviceInfo() { return {0, 0}; };
 
     protected:
         bool m_available = false;
+        bool m_shared = false;
     };
 }
 

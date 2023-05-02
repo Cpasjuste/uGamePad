@@ -1,6 +1,9 @@
-[submodule "lib/FlashStorage"]
-	path = lib/FlashStorage
-	url = https://github.com/cmaglie/FlashStorage.git
 [submodule "lib/Adafruit_TinyUSB_Arduino"]
 	path = lib/Adafruit_TinyUSB_Arduino
 	url = git@github.com:Cpasjuste/Adafruit_TinyUSB_Arduino.git
+[submodule "lib/Adafruit_SPIFlash"]
+	path = lib/Adafruit_SPIFlash
+	url = https://github.com/adafruit/Adafruit_SPIFlash
+[submodule "lib/SdFat"]
+	path = lib/SdFat
+	url = https://github.com/adafruit/SdFat

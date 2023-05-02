@@ -25,7 +25,7 @@ void Platform::setup() {
 }
 
 void uGamePad::Platform::loop() {
-    if (p_ui->isActive()) {
+    if (p_ui && p_ui->isActive()) {
         p_gfx->clear();
         p_ui->loop();
         p_gfx->flip();

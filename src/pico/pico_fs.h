@@ -5,6 +5,8 @@
 #ifndef U_GAMEPAD_PICO_FS_H
 #define U_GAMEPAD_PICO_FS_H
 
+#include "SdFat.h"
+
 namespace uGamePad {
     class PicoFs : public Fs {
     public:
@@ -17,6 +19,8 @@ namespace uGamePad {
         bool save(Device *device) override;
 
         DeviceInfo getDeviceInfo() override;
+
+        void share() override;
     };
 }
 

@@ -11,6 +11,10 @@
 #define printf Serial1.printf
 #endif
 
+#define GPIO_BUTTON_UP      D14
+#define GPIO_BUTTON_DOWN    D15
+#define GPIO_BUTTON_ENTER   D26
+
 namespace uGamePad {
     class PicoPlatform : public Platform {
     public:
