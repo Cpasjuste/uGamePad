@@ -17,6 +17,7 @@ static volatile uint8_t m_clock_count = 0;
 static GamePad::Output nes_output = {
 #if defined(UGP_V10)
 #if ARDUINO_RASPBERRY_PI_PICO
+        /*
         // uGamePad v1.0 (rp2040-zero vga) pinout
         {GamePad::Button::B1, D9},
         {GamePad::Button::B2, D10},
@@ -30,6 +31,18 @@ static GamePad::Output nes_output = {
         {GamePad::Button::DOWN, D27},
         {GamePad::Button::LEFT, D29},
         {GamePad::Button::RIGHT, D28},
+        */
+        .mode = GamePad::Mode::Nes,
+        .mappings = {
+                {GamePad::Button::B2,     NES_LATCH, -1,     -1}, // use interrupts
+                {GamePad::Button::B1,     NES_CLOCK, -1,     -1}, // use interrupts
+                {GamePad::Button::SELECT, NES_DATA,  OUTPUT, HIGH},
+                {GamePad::Button::START,  UINT8_MAX, -1,     -1},
+                {GamePad::Button::UP,     UINT8_MAX, -1,     -1},
+                {GamePad::Button::DOWN,   UINT8_MAX, -1,     -1},
+                {GamePad::Button::LEFT,   UINT8_MAX, -1,     -1},
+                {GamePad::Button::RIGHT,  UINT8_MAX, -1,     -1},
+        }
 #elif ARDUINO_SEEED_XIAO_RP2040
         .mode = GamePad::Mode::Nes,
         .mappings = {

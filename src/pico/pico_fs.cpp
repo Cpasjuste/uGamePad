@@ -2,7 +2,6 @@
 // Created by cpasjuste on 05/04/23.
 //
 
-#include <LittleFS.h>
 #include <Adafruit_SPIFlash.h>
 #include <msc/Adafruit_USBD_MSC.h>
 #include <ArduinoJson.h>
@@ -23,32 +22,16 @@ void msc_flush_cb();
 using namespace uGamePad;
 
 PicoFs::PicoFs() : Fs() {
-
-    /*
-    // init little-fs with auto-format
-    LittleFSConfig cfg;
-    cfg.setAutoFormat(true);
-    LittleFS.setConfig(cfg);
-    if (!LittleFS.begin()) {
-        printf("PicoFs: filesystem init failed\r\n");
-        return;
-    }
-
-    // be sure we still have enough space to work with
-    auto info = PicoFs::getDeviceInfo();
-    m_available = info.usedBytes < info.totalBytes;
-    */
-
     if (!flash.begin()) {
         printf("PicoFs: failed to initialize flash chip!\r\n");
         return;
     }
 
     if (!m_fatfs.begin(&flash)) {
-        printf("PicoFs: could not mount fat partition, formatting...\r\n");
+        printf("PicoFs: failed to mount fat partition, formatting...\r\n");
         format_fat12();
         if (!m_fatfs.begin(&flash)) {
-            printf("PicoFs: could not mount fat partition, formatting failed...\r\n");
+            printf("PicoFs: failed to mount fat partition, formatting failed...\r\n");
             return;
         }
     }
@@ -57,11 +40,7 @@ PicoFs::PicoFs() : Fs() {
 }
 
 Fs::DeviceInfo PicoFs::getDeviceInfo() {
-    /*
-    FSInfo64 info{};
-    LittleFS.info64(info);
-    return {info.totalBytes, info.usedBytes};
-    */
+    // TODO: move to fatfs
     return {flash.size(), 0};
 }
 
@@ -74,18 +53,15 @@ Device *PicoFs::load(uint16_t vid, uint16_t pid) {
 }
 
 Device *PicoFs::load(const std::string &path) {
-    auto device = new Device();
-    device->data = new ReportData();
-
     if (!m_available) {
         printf("PicoFs::load: filesystem not available...\r\n");
-        return device;
+        return nullptr;
     }
 
-    File file = LittleFS.open(path.c_str(), "r");
+    File32 file = m_fatfs.open(path.c_str(), FILE_READ);
     if (!file) {
-        printf("PicoFs::load: could not open %s\r\n", path.c_str());
-        return device;
+        printf("PicoFs::load: failed to open %s\r\n", path.c_str());
+        return nullptr;
     }
 
     // json doc deserialization
@@ -94,8 +70,12 @@ Device *PicoFs::load(const std::string &path) {
     if (err) {
         printf("PicoFs::load: failed to deserialize %s (err: %s)\r\n", path.c_str(), err.c_str());
         file.close();
-        return device;
+        return nullptr;
     }
+
+    // create new device
+    auto device = new Device();
+    device->data = new ReportData();
 
     // device info
     strlcpy(device->name, doc["name"], sizeof(device->name));
@@ -140,7 +120,8 @@ bool PicoFs::save(Device *device) {
     snprintf(vendor, 5, "%04x", device->vendor);
     snprintf(product, 5, "%04x", device->product);
     std::string path = getHome() + vendor + "-" + product + ".cfg";
-    File file = LittleFS.open(path.c_str(), "w");
+
+    File32 file = m_fatfs.open(path.c_str(), FILE_WRITE);
     if (!file) {
         printf("PicoFs::save: could not open %s for writing...\r\n", path.c_str());
         return false;
@@ -189,6 +170,8 @@ bool PicoFs::save(Device *device) {
     }
 
     file.close();
+    flash.syncBlocks();
+    m_fatfs.cacheClear();
     printf("PicoFs::save: device configuration saved to %s\r\n", path.c_str());
 
     return true;
