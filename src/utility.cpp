@@ -20,8 +20,8 @@ void Utility::reboot(bool bootloader) {
     if (bootloader) {
 #if ARDUINO_ARCH_RP2040
         reset_usb_boot(0, 0);
-#elif ARDUINO_ARCH_SAMD
-        *((volatile uint32_t *) (HMCRAMC0_ADDR + HMCRAMC0_SIZE - 4)) = 0xf01669ef;
+#else
+        printf("Utility::reboot: reboot to bootloader not implemented...");
 #endif
     }
     NVIC_SystemReset();
