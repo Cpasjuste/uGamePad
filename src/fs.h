@@ -17,6 +17,11 @@ namespace uGamePad {
             uint64_t usedBytes;
         };
 
+        enum UsbMode {
+            Host,
+            Msc
+        };
+
         Fs();
 
         virtual bool isAvailable() { return m_available; };
@@ -31,15 +36,15 @@ namespace uGamePad {
 
         virtual bool save(Device *device) { return false; };
 
-        virtual void share() {};
+        virtual void setUsbMode(UsbMode mode) { m_usb_mode = mode; };
 
-        virtual bool isShared() { return m_shared; };
+        virtual UsbMode getUsbMode() { return m_usb_mode; };
 
         virtual DeviceInfo getDeviceInfo() { return {0, 0}; };
 
     protected:
         bool m_available = false;
-        bool m_shared = false;
+        UsbMode m_usb_mode = UsbMode::Host;
     };
 }
 

@@ -31,25 +31,33 @@ static GamePad::Output nes_output = {
 static GamePad::Output jamma_output = {
         .mode = GamePad::Mode::Jamma,
         .mappings = {
-                {GamePad::Button::B1,     D3,  OUTPUT, HIGH},
-                {GamePad::Button::B2,     D4,  OUTPUT, HIGH},
-                {GamePad::Button::B3,     D5,  OUTPUT, HIGH},
-                {GamePad::Button::B4,     D9,  OUTPUT, HIGH},
-                {GamePad::Button::B5,     D0,  OUTPUT, HIGH},
-                {GamePad::Button::B6,     D1,  OUTPUT, HIGH},
-                {GamePad::Button::SELECT, D8,  OUTPUT, HIGH},
-                {GamePad::Button::START,  D6,  OUTPUT, HIGH},
-                {GamePad::Button::UP,     D10, OUTPUT, HIGH},
-                {GamePad::Button::DOWN,   D11, OUTPUT, HIGH},
-                {GamePad::Button::LEFT,   D2,  OUTPUT, HIGH},
-                {GamePad::Button::RIGHT,  D7,  OUTPUT, HIGH},
+                {GamePad::Button::B1, D3, OUTPUT, HIGH},
+                {GamePad::Button::B2, D4, OUTPUT, HIGH},
+                {GamePad::Button::B3, D5, OUTPUT, HIGH},
+                {GamePad::Button::B4, D9, OUTPUT, HIGH},
+#if !defined(DEBUG_RP2040_ZERO) // used by tx/rx serial debug
+                {GamePad::Button::B5, D0, OUTPUT, HIGH},
+                {GamePad::Button::B6, D1, OUTPUT, HIGH},
+#endif
+                {GamePad::Button::SELECT, D8, OUTPUT, HIGH},
+                {GamePad::Button::START, D6, OUTPUT, HIGH},
+                {GamePad::Button::UP, D10, OUTPUT, HIGH},
+                {GamePad::Button::DOWN, D11, OUTPUT, HIGH},
+                {GamePad::Button::LEFT, D2, OUTPUT, HIGH},
+                {GamePad::Button::RIGHT, D7, OUTPUT, HIGH},
         }
 };
 
 PicoGamePad::PicoGamePad() : GamePad() {
     s_picoGamePad = this;
-    auto output = PicoGamePad::getOutputMode();
 
+    // setup hardware buttons
+    pinMode(GPIO_BUTTON_UP, INPUT_PULLUP);
+    pinMode(GPIO_BUTTON_DOWN, INPUT_PULLUP);
+    pinMode(GPIO_BUTTON_ENTER, INPUT_PULLUP);
+
+    // setup output pins
+    auto output = PicoGamePad::getOutputMode();
     if (output->mode == Mode::Nes) {
         attachInterrupt(digitalPinToInterrupt(NES_LATCH), onLatchRising, RISING);
         attachInterrupt(digitalPinToInterrupt(NES_CLOCK), onClockFalling, FALLING);
@@ -66,6 +74,9 @@ PicoGamePad::PicoGamePad() : GamePad() {
             }
         }
     }
+
+    // update hardware buttons states
+    PicoGamePad::loop();
 }
 
 void PicoGamePad::onLatchRising() {
@@ -80,11 +91,43 @@ void PicoGamePad::onClockFalling() {
     m_clock_count++;
 }
 
+void PicoGamePad::loop() {
+    // handle hardware buttons
+    if (!digitalRead(GPIO_BUTTON_UP)) m_buttons |= GamePad::Button::UP;
+    if (!digitalRead(GPIO_BUTTON_DOWN)) m_buttons |= GamePad::Button::DOWN;
+    if (!digitalRead(GPIO_BUTTON_ENTER)) m_buttons |= GamePad::Button::START;
+
+    // handle gamepad states
+    auto ui = getPlatform()->getUi();
+    if (ui && !ui->isActive()) {
+        // get output mode/mapping
+        GamePad::Output *output = getOutputMode();
+        // handle jamma mode
+        if (output->mode == GamePad::Mode::Jamma) {
+            // get gamepad sate
+            uint16_t buttons = getButtons();
+            // only send buttons changed states
+            m_buttons_diff = m_buttons_old ^ buttons;
+            m_buttons_old = buttons;
+            if (m_buttons_diff) {
+                // generate pin output
+                for (const auto &mapping: output->mappings) {
+                    if (m_buttons_diff & mapping.button) {
+                        digitalWrite(mapping.pin, buttons & mapping.button ? LOW : HIGH);
+                    }
+                }
+            }
+        }
+    }
+
+    GamePad::loop();
+}
+
 GamePad::Output *PicoGamePad::getOutputMode() {
     return &nes_output;
 }
 
-bool PicoGamePad::update(const uint8_t *report, uint16_t len) {
+bool PicoGamePad::usb_report(const uint8_t *report, uint16_t len) {
     if (!p_device || !p_device->data) {
         TU_LOG1("uGamePad::loop: error: device not set\r\n");
         return false;

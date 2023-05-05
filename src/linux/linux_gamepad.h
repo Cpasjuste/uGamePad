@@ -10,7 +10,7 @@
 namespace uGamePad {
     class LinuxGamePad : public GamePad {
     public:
-        bool update(const uint8_t *report, uint16_t len) override;
+        void loop () override;
     };
 }
 

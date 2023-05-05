@@ -19,12 +19,13 @@ void Platform::setup() {
     fflush(stdout);
 
     auto info = p_fs->getDeviceInfo();
-    printf("Platform: filesystem size: %llu, used: %llu (available: %i)\r\n",
+    printf("Platform: filesystem size: %llu Bytes, used: %llu Bytes (available: %i)\r\n",
            info.totalBytes, info.usedBytes, p_fs->isAvailable());
     printf("Platform: heap size: %i\r\n", getFreeHeap());
 }
 
 void uGamePad::Platform::loop() {
+    if (p_pad) p_pad->loop();
     if (p_ui && p_ui->isActive()) {
         p_gfx->clear();
         p_ui->loop();

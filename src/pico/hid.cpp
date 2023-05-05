@@ -64,19 +64,18 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
     tuh_hid_report_info_t *rpt_info = nullptr;
     uint16_t vid, pid;
 
-    if (!getPlatform()->getPad()) return;
+    auto pad = (PicoGamePad *) getPlatform()->getPad();
+    if (!pad) return;
 
     tuh_vid_pid_get(dev_addr, &vid, &pid);
-    if (getPlatform()->getPad()->getDevice()->product != pid
-        || getPlatform()->getPad()->getDevice()->vendor != vid) {
-        printf("received_cb: skipping data, wrong vid or pid for %s...\r\n",
-               getPlatform()->getPad()->getDevice()->name);
+    if (pad->getDevice()->product != pid || pad->getDevice()->vendor != vid) {
+        printf("received_cb: skipping data, wrong vid or pid for %s...\r\n", pad->getDevice()->name);
         tuh_hid_receive_report(dev_addr, instance);
         return;
     }
 
     //printf("tuh_hid_report_received_cb: addr: %i, instance: %i, len: %i\r\n", dev_addr, instance, len);
-    if (!getPlatform()->getPad()->update(report, len)) {
+    if (!pad->usb_report(report, len)) {
         // try to handle generic pads
         if (rpt_count == 1 && rpt_info_arr[0].report_id == 0) {
             // simple data without data ID as 1st byte

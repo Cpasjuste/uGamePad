@@ -13,8 +13,6 @@ namespace uGamePad {
     class LinuxPlatform : public Platform {
     public:
         void setup() override;
-
-        void loop() override;
     };
 }
 

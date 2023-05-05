@@ -15,7 +15,9 @@ namespace uGamePad {
     public:
         PicoGamePad();
 
-        bool update(const uint8_t *report, uint16_t len) override;
+        bool usb_report(const uint8_t *report, uint16_t len);
+
+        void loop() override;
 
         Output *getOutputMode() override;
 
@@ -23,6 +25,8 @@ namespace uGamePad {
         static void onLatchRising();
 
         static void onClockFalling();
+
+        uint16_t m_buttons_old{}, m_buttons_diff{};
     };
 }
 

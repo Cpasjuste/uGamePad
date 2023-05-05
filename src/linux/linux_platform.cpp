@@ -20,8 +20,3 @@ void LinuxPlatform::setup() {
     // all done
     Platform::setup();
 }
-
-void LinuxPlatform::loop() {
-    p_pad->update(nullptr, 0);
-    Platform::loop();
-}

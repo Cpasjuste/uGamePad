@@ -184,22 +184,24 @@ bool PicoFs::save(Device *device) {
     return true;
 }
 
-void PicoFs::share() {
+void PicoFs::setUsbMode(uGamePad::Fs::UsbMode mode) {
     if (!m_available) {
         printf("PicoFs::share: error: flash filesystem not available...\r\n");
         return;
     }
 
-    usb_msc.setID("uGamePad", "FlashFs", "1.0");
-    usb_msc.setReadWriteCallback(msc_read_cb, msc_write_cb, msc_flush_cb);
-    usb_msc.setCapacity(flash.size() / 512, 512);
-    usb_msc.setUnitReady(true);
-    if (!usb_msc.begin()) {
-        printf("PicoFs::share: error: usb msc begin failed\r\n");
-        return;
+    if (mode == UsbMode::Msc) {
+        usb_msc.setID("uGamePad", "FlashFs", "1.0");
+        usb_msc.setReadWriteCallback(msc_read_cb, msc_write_cb, msc_flush_cb);
+        usb_msc.setCapacity(flash.size() / 512, 512);
+        usb_msc.setUnitReady(true);
+        if (!usb_msc.begin()) {
+            printf("PicoFs::share: error: usb msc begin failed\r\n");
+            return;
+        }
     }
 
-    m_shared = true;
+    Fs::setUsbMode(mode);
 }
 
 /*

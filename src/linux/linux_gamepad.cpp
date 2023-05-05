@@ -7,7 +7,7 @@
 
 using namespace uGamePad;
 
-bool LinuxGamePad::update(const uint8_t *report, uint16_t len) {
+void LinuxGamePad::loop() {
     SDL_Event ev;
 
     while (SDL_PollEvent(&ev)) {
@@ -46,6 +46,4 @@ bool LinuxGamePad::update(const uint8_t *report, uint16_t len) {
                 break;
         }
     }
-
-    return true;
 }

@@ -31,10 +31,6 @@ namespace uGamePad {
             DOWN = BIT(11)
         };
 
-        enum Led {
-            LED_P1, LED_P2, LED_P3, LED_P4
-        };
-
         enum Mode {
             Jamma,
             Nes
@@ -58,9 +54,7 @@ namespace uGamePad {
 
         const Device *getDevice() { return p_device; };
 
-        virtual void setLed(uint8_t type) {};
-
-        virtual bool update(const uint8_t *report, uint16_t len) { return false; };
+        virtual void loop() {};
 
         virtual Output *getOutputMode() { return nullptr; };
 

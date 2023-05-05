@@ -17,7 +17,7 @@ GamePad::GamePad() {
 }
 
 void GamePad::setCurrentDevice(const Device *device, uint8_t dev_addr, uint8_t instance) {
-    printf("new gamepad discovered: %s\r\n", device->name);
+    printf("new gamepad configured: %s\r\n", device->name);
     p_device = device;
     m_addr = dev_addr;
     m_instance = instance;

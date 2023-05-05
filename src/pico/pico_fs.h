@@ -20,7 +20,7 @@ namespace uGamePad {
 
         DeviceInfo getDeviceInfo() override;
 
-        void share() override;
+        void setUsbMode(UsbMode mode) override;
     };
 }
 
