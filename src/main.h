@@ -7,7 +7,6 @@
 
 // uGamePad v1.0 board
 #define UGP_V10 1
-//#define DEBUG_RP2040_ZERO 1
 
 #include "gamepad.h"
 #include "fs.h"

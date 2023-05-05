@@ -14,30 +14,31 @@ PicoPlatform::PicoPlatform() = default;
 
 void uGamePad::PicoPlatform::setup() {
     // setup serial debug
-#if defined(ARDUINO_RASPBERRY_PI_PICO)
-#if defined(DEBUG_RP2040_ZERO)
-    // use pins 0 and 1 for tx/rx (b5/b6)
-    Debug.setTX(D0); // vga pin 10
-    Debug.setRX(D1); // vga pin 2
-#else
-    // pico
-    Debug.setTX(D16);
-    Debug.setRX(D17);
-#endif
-#endif
-    Debug.begin(115200);
+    Debug.setTX(PIN_TX);
+    Debug.setRX(PIN_RX);
+    Debug.begin();
 
     // init filesystem
     p_fs = new PicoFs();
 
+    // init hardware buttons
+    pinMode(GPIO_BUTTON_UP, INPUT_PULLUP);
+    pinMode(GPIO_BUTTON_DOWN, INPUT_PULLUP);
+    pinMode(GPIO_BUTTON_ENTER, INPUT_PULLUP);
+
+    // check for bootloader mode button press
+    if (!digitalRead(GPIO_BUTTON_UP)) {
+        printf("GPIO_BUTTON_UP: bootloader mode called\r\n");
+        Utility::reboot(true);
+        return;
+    }
+
     // check for usb msc button press
-    // TODO
-    /*
     if (!digitalRead(GPIO_BUTTON_ENTER)) {
+        printf("GPIO_BUTTON_ENTER: usb msc mode called\r\n");
         p_fs->share();
         return;
     }
-    */
 
     // init gfx
     p_gfx = new PicoGfx();
@@ -69,7 +70,7 @@ void PicoPlatform::loop() {
     if (tuh_inited()) {
         tuh_task();
     } else {
-        printf("oops, tinyusb host service not inited...\r\n");
+        printf("error: tinyusb host service not inited...\r\n");
         while (true);
     }
 

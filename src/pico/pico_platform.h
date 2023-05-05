@@ -11,6 +11,21 @@
 #define printf Serial1.printf
 #endif
 
+//#define DEBUG_RP2040_ZERO 1
+
+#if defined(ARDUINO_RASPBERRY_PI_PICO)
+#if defined(DEBUG_RP2040_ZERO)
+// uGamePad retail board
+// use pins 0 and 1 for tx/rx (bouttons 5/6)
+#define PIN_TX  D0  // vga pin 10
+#define PIN_RX  D1  // vga pin 2
+#else
+// uGamePad pico dev board
+#define PIN_TX  D16
+#define PIN_RX  D17
+#endif
+#endif
+
 #define GPIO_BUTTON_UP      D14
 #define GPIO_BUTTON_DOWN    D15
 #define GPIO_BUTTON_ENTER   D26
