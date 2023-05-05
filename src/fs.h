@@ -22,8 +22,6 @@ namespace uGamePad {
             Msc
         };
 
-        Fs();
-
         virtual bool isAvailable() { return m_available; };
 
         virtual std::string getHome() { return "/"; };
@@ -31,8 +29,6 @@ namespace uGamePad {
         virtual std::string getDevicesDirectory() { return getHome() + "devices"; };
 
         virtual Device *load(uint16_t vid, uint16_t pid) { return nullptr; };
-
-        virtual Device *load(const std::string &filename) { return nullptr; };
 
         virtual bool save(Device *device) { return false; };
 
@@ -43,6 +39,7 @@ namespace uGamePad {
         virtual DeviceInfo getDeviceInfo() { return {0, 0}; };
 
     protected:
+        virtual Device *load(const std::string &filename) { return nullptr; };
         bool m_available = false;
         UsbMode m_usb_mode = UsbMode::Host;
     };

@@ -6,7 +6,7 @@
 #include "tusb.h"
 #include "main.h"
 #include "devices.h"
-#include "utility.h"
+#include "utility/utility.h"
 #include "pico_gamepad.h"
 
 using namespace uGamePad;

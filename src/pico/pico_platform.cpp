@@ -5,7 +5,7 @@
 #include <Arduino.h>
 #include "tusb.h"
 #include "main.h"
-#include "clock.h"
+#include "utility/clock.h"
 #include "pico_platform.h"
 
 using namespace uGamePad;

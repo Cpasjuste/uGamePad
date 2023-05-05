@@ -14,13 +14,14 @@ namespace uGamePad {
 
         Device *load(uint16_t vid, uint16_t pid) override;
 
-        Device *load(const std::string &filename) override;
-
         bool save(Device *device) override;
 
         DeviceInfo getDeviceInfo() override;
 
         void setUsbMode(UsbMode mode) override;
+
+    private:
+        Device *load(const std::string &filename) override;
     };
 }
 

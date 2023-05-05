@@ -7,7 +7,7 @@
 
 #include <cstdint>
 #include "Adafruit_GFX.h"
-#include "utility.h"
+#include "utility/utility.h"
 
 namespace uGamePad {
     class Gfx {
