@@ -15,6 +15,7 @@ static PicoGamePad *s_picoGamePad = nullptr;
 static volatile uint8_t m_clock_count = 0;
 
 static GamePad::Output nes_output = {
+        .name = "Nes",
         .mode = GamePad::Mode::Nes,
         .mappings = {
                 {GamePad::Button::B2,     NES_LATCH, -1,     -1},   // use interrupts
@@ -29,6 +30,7 @@ static GamePad::Output nes_output = {
 };
 
 static GamePad::Output jamma_output = {
+        .name = "Jamma",
         .mode = GamePad::Mode::Jamma,
         .mappings = {
                 {GamePad::Button::B1, D3, OUTPUT, HIGH},
@@ -99,7 +101,7 @@ void PicoGamePad::loop() {
 
     // handle gamepad states
     auto ui = getPlatform()->getUi();
-    if (ui && !ui->isActive()) {
+    if (!ui->isVisible()) {
         // get output mode/mapping
         GamePad::Output *output = getOutputMode();
         // handle jamma mode

@@ -7,7 +7,6 @@
 #include "gamepad_info.h"
 #include "ui.h"
 #include "text.h"
-#include "line.h"
 #include "bitmap.h"
 #include "bitmaps.h"
 
@@ -16,9 +15,6 @@ using namespace uGamePad;
 Ui::Ui() {
     p_screen = new Widget();
     p_screen->setSize(getPlatform()->getGfx()->getSize());
-
-    //auto cursor = new Line({2, 2}, 8, 90);
-    //p_screen->add(cursor);
 
     // gamepad info menu
     p_gamePadInfo = new GamePadInfo({64, 32}, {90, 60}, bmp_gamepad_90x60);
@@ -29,29 +25,36 @@ Ui::Ui() {
     // splash
     p_splash = new Bitmap({64, 28}, {64, 43}, bmp_gamepad_64x43);
     p_splash->setOrigin(Widget::Origin::Center);
-    //p_splash->setVisibility(Widget::Visibility::Hidden);
     p_screen->add(p_splash);
-    p_splash_text = new Text(64, 62, "uGamePad - jamma");
-    p_splash_text->setOrigin(Widget::Origin::Bottom);
-    //p_splash_text->setVisibility(Widget::Visibility::Hidden);
-    p_screen->add(p_splash_text);
+    p_splashText = new Text(64, 62, "uGamePad @ " + getPlatform()->getPad()->getOutputMode()->name);
+    p_splashText->setOrigin(Widget::Origin::Bottom);
+    p_screen->add(p_splashText);
 
-    // show splash
-    showSplash();
+    // show splash screen
+    Ui::loop();
+
+    // disable screen updates when not needed (not in menu)
+    p_screen->setVisibility(Widget::Visibility::Hidden);
 }
 
 void Ui::loop() {
-    p_screen->update(p_screen->getPosition());
-}
+    // check for menu combo keys
+    uint16_t buttons = getPlatform()->getPad()->getButtons();
+    if (buttons & GamePad::Button::START && buttons & GamePad::Button::SELECT) {
+        if (m_triggerMenuClock.getElapsedTime().asSeconds() > 5) {
+            // TODO: menu...
+            p_screen->setVisibility(Widget::Visibility::Visible);
+            p_splash->setVisibility(Widget::Visibility::Hidden);
+            p_splashText->setVisibility(Widget::Visibility::Hidden);
+        }
+    } else {
+        m_triggerMenuClock.restart();
+    }
 
-void Ui::showSplash() {
-    getPlatform()->getGfx()->clear();
-    p_splash->setVisibility(Widget::Visibility::Visible);
-    Ui::loop();
-    p_splash->setVisibility(Widget::Visibility::Hidden);
-    getPlatform()->getGfx()->flip();
-}
-
-bool Ui::isActive() {
-    return false;
+    // draw the whole ui
+    if (p_screen->isVisible()) {
+        getPlatform()->getGfx()->clear();
+        p_screen->update(p_screen->getPosition());
+        getPlatform()->getGfx()->flip();
+    }
 }

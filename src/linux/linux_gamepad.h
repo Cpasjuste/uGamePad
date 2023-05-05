@@ -11,6 +11,8 @@ namespace uGamePad {
     class LinuxGamePad : public GamePad {
     public:
         void loop () override;
+
+        Output *getOutputMode() override;
     };
 }
 

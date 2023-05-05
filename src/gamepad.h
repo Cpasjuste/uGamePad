@@ -6,6 +6,7 @@
 #define U_GAMEPAD_GAMEPAD_H
 
 #include <cstdint>
+#include <string>
 #include <vector>
 #include "devices.h"
 
@@ -44,6 +45,7 @@ namespace uGamePad {
         };
 
         struct Output {
+            std::string name;
             Mode mode = Mode::Nes;
             std::vector<PinMapping> mappings;
         };

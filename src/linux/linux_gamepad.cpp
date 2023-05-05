@@ -7,6 +7,30 @@
 
 using namespace uGamePad;
 
+// fake/testing output mode
+static GamePad::Output output = {
+        .name = "Jamma",
+        .mode = GamePad::Mode::Jamma,
+        .mappings = {
+                {GamePad::Button::B1,     SDLK_a,               -1, -1},
+                {GamePad::Button::B2,     SDLK_z,               -1, -1},
+                {GamePad::Button::B3,     SDLK_e,               -1, -1},
+                {GamePad::Button::B4,     SDLK_q,               -1, -1},
+                {GamePad::Button::B5,     SDLK_s,               -1, -1},
+                {GamePad::Button::B6,     SDLK_d,               -1, -1},
+                {GamePad::Button::SELECT, SDLK_SPACE,           -1, -1},
+                {GamePad::Button::START,  SDLK_RETURN,          -1, -1},
+                {GamePad::Button::UP,     (uint8_t) SDLK_UP,    -1, -1},
+                {GamePad::Button::DOWN,   (uint8_t) SDLK_DOWN,  -1, -1},
+                {GamePad::Button::LEFT,   (uint8_t) SDLK_LEFT,  -1, -1},
+                {GamePad::Button::RIGHT,  (uint8_t) SDLK_RIGHT, -1, -1},
+        }
+};
+
+GamePad::Output *LinuxGamePad::getOutputMode() {
+    return &output;
+}
+
 void LinuxGamePad::loop() {
     SDL_Event ev;
 

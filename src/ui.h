@@ -6,6 +6,7 @@
 #define U_GAMEPAD_UI_H
 
 #include <cstdint>
+#include "utility/clock.h"
 #include "rectangle.h"
 #include "gamepad_info.h"
 
@@ -16,15 +17,14 @@ namespace uGamePad {
 
         void loop();
 
-        void showSplash();
-
-        bool isActive();
+        bool isVisible() { return p_screen->isVisible(); };
 
     private:
         Widget *p_screen;
         Bitmap *p_splash;
-        Text *p_splash_text;
+        Text *p_splashText;
         GamePadInfo *p_gamePadInfo;
+        Clock m_triggerMenuClock;
     };
 }
 
