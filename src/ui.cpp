@@ -27,11 +27,11 @@ Ui::Ui() {
     p_screen->add(p_gamePadInfo);
 
     // splash
-    p_splash = new Bitmap({64, 32}, {90, 60}, bmp_gamepad_90x60);
+    p_splash = new Bitmap({64, 28}, {64, 43}, bmp_gamepad_64x43);
     p_splash->setOrigin(Widget::Origin::Center);
     //p_splash->setVisibility(Widget::Visibility::Hidden);
     p_screen->add(p_splash);
-    p_splash_text = new Text(64, 64, "uGamePad");
+    p_splash_text = new Text(64, 62, "uGamePad - jamma");
     p_splash_text->setOrigin(Widget::Origin::Bottom);
     //p_splash_text->setVisibility(Widget::Visibility::Hidden);
     p_screen->add(p_splash_text);
