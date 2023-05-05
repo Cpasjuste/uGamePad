@@ -45,8 +45,10 @@ PicoFs::PicoFs() : Fs() {
 }
 
 Fs::DeviceInfo PicoFs::getDeviceInfo() {
-    // TODO: move to fatfs
-    return {flash.size(), 0};
+    uint64_t size = m_fatfs.clusterCount() * m_fatfs.bytesPerCluster();
+    auto used = (uint64_t) ((m_fatfs.clusterCount() - m_fatfs.freeClusterCount()) *
+                            (uint64_t) m_fatfs.bytesPerCluster());
+    return {size, used};
 }
 
 Device *PicoFs::load(uint16_t vid, uint16_t pid) {
