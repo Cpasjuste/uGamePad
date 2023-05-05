@@ -36,6 +36,11 @@ PicoFs::PicoFs() : Fs() {
         }
     }
 
+    // create devices directory if needed
+    if (!m_fatfs.exists(PicoFs::getDevicesDirectory().c_str())) {
+        m_fatfs.mkdir(PicoFs::getDevicesDirectory().c_str());
+    }
+
     m_available = true;
 }
 
@@ -48,7 +53,7 @@ Device *PicoFs::load(uint16_t vid, uint16_t pid) {
     char vendor[5], product[5];
     snprintf(vendor, 5, "%04x", vid);
     snprintf(product, 5, "%04x", pid);
-    std::string path = getHome() + vendor + "-" + product + ".cfg";
+    std::string path = getDevicesDirectory() + "/" + vendor + "-" + product + ".cfg";
     return PicoFs::load(path);
 }
 
@@ -119,9 +124,9 @@ bool PicoFs::save(Device *device) {
     char vendor[5], product[5];
     snprintf(vendor, 5, "%04x", device->vendor);
     snprintf(product, 5, "%04x", device->product);
-    std::string path = getHome() + vendor + "-" + product + ".cfg";
+    std::string path = getDevicesDirectory() + "/" + vendor + "-" + product + ".cfg";
 
-    File32 file = m_fatfs.open(path.c_str(), FILE_WRITE);
+    File32 file = m_fatfs.open(path.c_str(), O_RDWR | O_CREAT | O_TRUNC);
     if (!file) {
         printf("PicoFs::save: could not open %s for writing...\r\n", path.c_str());
         return false;

@@ -80,7 +80,7 @@ void PicoPlatform::loop() {
         GamePad::Output *output = p_pad->getOutputMode();
 
         // handle mvs mode
-        if (output->mode == GamePad::Mode::Mvs) {
+        if (output->mode == GamePad::Mode::Jamma) {
             // get gamepad sate
             uint16_t buttons = p_pad->getButtons();
 

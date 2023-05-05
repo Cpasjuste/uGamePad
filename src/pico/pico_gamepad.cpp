@@ -15,22 +15,6 @@ static PicoGamePad *s_picoGamePad = nullptr;
 static volatile uint8_t m_clock_count = 0;
 
 static GamePad::Output nes_output = {
-#if defined(UGP_V10)
-        /*
-        // uGamePad v1.0 (rp2040-zero vga) pinout
-        {GamePad::Button::B1, D9},
-        {GamePad::Button::B2, D10},
-        {GamePad::Button::B3, D11},
-        {GamePad::Button::B4, D12},
-        {GamePad::Button::B5, D3},
-        {GamePad::Button::B6, D8},
-        {GamePad::Button::SELECT, D7},
-        {GamePad::Button::START, D15},
-        {GamePad::Button::UP, D26},
-        {GamePad::Button::DOWN, D27},
-        {GamePad::Button::LEFT, D29},
-        {GamePad::Button::RIGHT, D28},
-        */
         .mode = GamePad::Mode::Nes,
         .mappings = {
                 {GamePad::Button::B2,     NES_LATCH, -1,     -1},   // use interrupts
@@ -42,7 +26,24 @@ static GamePad::Output nes_output = {
                 {GamePad::Button::LEFT,   UINT8_MAX, -1,     -1},
                 {GamePad::Button::RIGHT,  UINT8_MAX, -1,     -1},
         }
-#endif
+};
+
+static GamePad::Output jamma_output = {
+        .mode = GamePad::Mode::Jamma,
+        .mappings = {
+                {GamePad::Button::B1,     D3,  OUTPUT, HIGH},
+                {GamePad::Button::B2,     D4,  OUTPUT, HIGH},
+                {GamePad::Button::B3,     D5,  OUTPUT, HIGH},
+                {GamePad::Button::B4,     D9,  OUTPUT, HIGH},
+                {GamePad::Button::B5,     D0,  OUTPUT, HIGH},
+                {GamePad::Button::B6,     D1,  OUTPUT, HIGH},
+                {GamePad::Button::SELECT, D8,  OUTPUT, HIGH},
+                {GamePad::Button::START,  D6,  OUTPUT, HIGH},
+                {GamePad::Button::UP,     D10, OUTPUT, HIGH},
+                {GamePad::Button::DOWN,   D11, OUTPUT, HIGH},
+                {GamePad::Button::LEFT,   D2,  OUTPUT, HIGH},
+                {GamePad::Button::RIGHT,  D7,  OUTPUT, HIGH},
+        }
 };
 
 PicoGamePad::PicoGamePad() : GamePad() {
@@ -124,7 +125,7 @@ bool PicoGamePad::update(const uint8_t *report, uint16_t len) {
         m_buttons |= GamePad::getButtonsFromHat(report[p_device->data->hat.byte]);
     }
 
-    if (m_buttons != 0) TU_LOG1("%s: %s\r\n", p_device->name, Utility::toString(m_buttons).c_str());
+    if (m_buttons != 0) printf("%s: %s\r\n", p_device->name, Utility::toString(m_buttons).c_str());
 
     return true;
 }

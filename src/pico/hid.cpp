@@ -14,8 +14,6 @@ using namespace uGamePad;
 uint8_t _report_count[CFG_TUH_HID];
 tuh_hid_report_info_t _report_info_arr[CFG_TUH_HID][MAX_REPORT];
 
-#define TESTING 0
-
 void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t idx, uint8_t const *report_desc, uint16_t desc_len) {
     uint16_t vid, pid;
     tuh_vid_pid_get(dev_addr, &vid, &pid);
@@ -25,8 +23,15 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t idx, uint8_t const *report_desc,
     //printf("mount_cb: vid: %x, pid: %x, addr: %i, instance: %i, len: %i\r\n",
     //       vid, pid, dev_addr, idx, desc_len);
 
+    // try to find the gamepad device from devices table
     auto device = get_device(vid, pid);
-    if (device) {  // a know controller was plugged in (see devices.c)
+    if (!device) {
+        // gamepad not found from devices table, try from (user) flash filesystem
+        device = getPlatform()->getFs()->load(vid, pid);
+    }
+
+    // a know controller was plugged in (see devices.c)
+    if (device) {
         if (device->vendor != getPlatform()->getPad()->getDevice()->vendor ||
             device->product != getPlatform()->getPad()->getDevice()->product) {
             getPlatform()->getPad()->setCurrentDevice(device, dev_addr, idx);
@@ -38,12 +43,6 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t idx, uint8_t const *report_desc,
         }
     } else {
         printf("mount_cb: unknown device %x:%x\r\n", vid, pid);
-#if TESTING
-        // wip/testing
-        auto dev = new Device();
-        dev->vendor = vid;
-        dev->product = pid;
-#endif
     }
 
     // Parse data descriptor with built-in parser
@@ -75,22 +74,6 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
         tuh_hid_receive_report(dev_addr, instance);
         return;
     }
-
-#if TESTING
-    static uint8_t report_old[128];
-    if (memcmp(report_old, data, len) != 0) {
-        printf("data data changed (size: %i), bits: ", len);
-        for (uint16_t i = 0; i < len; i++) {
-            if (data[i] != report_old[i]) {
-                printf("%i ", i);
-            }
-        }
-        printf("\r\n");
-        memcpy(report_old, data, len);
-        tuh_hid_receive_report(dev_addr, instance);
-        return;
-    }
-#endif
 
     //printf("tuh_hid_report_received_cb: addr: %i, instance: %i, len: %i\r\n", dev_addr, instance, len);
     if (!getPlatform()->getPad()->update(report, len)) {

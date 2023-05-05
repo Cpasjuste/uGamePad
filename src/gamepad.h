@@ -36,7 +36,7 @@ namespace uGamePad {
         };
 
         enum Mode {
-            Mvs,
+            Jamma,
             Nes
         };
 

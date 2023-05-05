@@ -23,9 +23,11 @@ namespace uGamePad {
 
         virtual std::string getHome() { return "/"; };
 
+        virtual std::string getDevicesDirectory() { return getHome() + "devices"; };
+
         virtual Device *load(uint16_t vid, uint16_t pid) { return nullptr; };
 
-        virtual Device *load(const std::string &path) { return nullptr; };
+        virtual Device *load(const std::string &filename) { return nullptr; };
 
         virtual bool save(Device *device) { return false; };
 
