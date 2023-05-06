@@ -16,6 +16,11 @@ Ui::Ui() {
     p_screen = new Widget();
     p_screen->setSize(getPlatform()->getGfx()->getSize());
 
+    // main menu
+    p_menu = new Menu();
+    p_menu->setVisibility(Widget::Visibility::Hidden);
+    p_screen->add(p_menu);
+
     // gamepad info menu
     p_gamePadInfo = new GamePadInfo({64, 32}, {90, 60}, bmp_gamepad_90x60);
     p_gamePadInfo->setOrigin(Widget::Origin::Center);
@@ -41,9 +46,10 @@ void Ui::loop() {
     // check for menu combo keys
     uint16_t buttons = getPlatform()->getPad()->getButtons();
     if (buttons & GamePad::Button::START && buttons & GamePad::Button::SELECT) {
-        if (m_triggerMenuClock.getElapsedTime().asSeconds() > 5) {
+        if (m_triggerMenuClock.getElapsedTime().asSeconds() > 1) {
             // TODO: menu...
             p_screen->setVisibility(Widget::Visibility::Visible);
+            p_menu->setVisibility(Widget::Visibility::Visible);
             p_splash->setVisibility(Widget::Visibility::Hidden);
             p_splashText->setVisibility(Widget::Visibility::Hidden);
         }

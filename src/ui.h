@@ -7,7 +7,7 @@
 
 #include <cstdint>
 #include "utility/clock.h"
-#include "rectangle.h"
+#include "menu.h"
 #include "gamepad_info.h"
 
 namespace uGamePad {
@@ -21,6 +21,7 @@ namespace uGamePad {
 
     private:
         Widget *p_screen;
+        Menu *p_menu;
         Bitmap *p_splash;
         Text *p_splashText;
         GamePadInfo *p_gamePadInfo;
