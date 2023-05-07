@@ -104,3 +104,19 @@ int GamePad::calc_bezier_y(float t) {
     lerp(&dest, &ab_bc, &bc_cd, t);   /* point on the bezier-curve */
     return dest.y;
 }
+
+void GamePad::loop() {
+    // handle auto-repeat
+    if (m_repeatClock.getElapsedTime().asMilliseconds() >= m_repeatDelayMs) {
+        m_repeatClock.restart();
+        m_buttons_prev = m_buttons;
+    } else {
+        uint16_t diff = m_buttons_prev ^ m_buttons;
+        m_buttons_prev = m_buttons;
+        if (diff > 0) {
+            m_repeatClock.restart();
+        } else {
+            m_buttons = Button::DELAY;
+        }
+    }
+}

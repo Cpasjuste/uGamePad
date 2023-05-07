@@ -53,14 +53,16 @@ void Ui::loop() {
             p_splash->setVisibility(Widget::Visibility::Hidden);
             p_splashText->setVisibility(Widget::Visibility::Hidden);
         }
-    } else {
+    } else if (!(buttons & GamePad::Button::DELAY)) {
         m_triggerMenuClock.restart();
     }
 
-    // draw the whole ui
-    if (p_screen->isVisible()) {
-        getPlatform()->getGfx()->clear();
-        p_screen->update(p_screen->getPosition());
-        getPlatform()->getGfx()->flip();
+    if (!p_screen->isVisible()) {
+        return;
     }
+
+    // draw the whole ui
+    getPlatform()->getGfx()->clear();
+    p_screen->update(p_screen->getPosition());
+    getPlatform()->getGfx()->flip();
 }

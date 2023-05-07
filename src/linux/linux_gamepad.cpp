@@ -12,18 +12,18 @@ static GamePad::Output output = {
         .name = "Jamma",
         .mode = GamePad::Mode::Jamma,
         .mappings = {
-                {GamePad::Button::B1,     SDLK_a,               -1, -1},
-                {GamePad::Button::B2,     SDLK_z,               -1, -1},
-                {GamePad::Button::B3,     SDLK_e,               -1, -1},
-                {GamePad::Button::B4,     SDLK_q,               -1, -1},
-                {GamePad::Button::B5,     SDLK_s,               -1, -1},
-                {GamePad::Button::B6,     SDLK_d,               -1, -1},
-                {GamePad::Button::SELECT, SDLK_SPACE,           -1, -1},
-                {GamePad::Button::START,  SDLK_RETURN,          -1, -1},
-                {GamePad::Button::UP,     (uint8_t) SDLK_UP,    -1, -1},
-                {GamePad::Button::DOWN,   (uint8_t) SDLK_DOWN,  -1, -1},
-                {GamePad::Button::LEFT,   (uint8_t) SDLK_LEFT,  -1, -1},
-                {GamePad::Button::RIGHT,  (uint8_t) SDLK_RIGHT, -1, -1},
+                {GamePad::Button::B1,     SDL_SCANCODE_1,      -1, -1},
+                {GamePad::Button::B2,     SDL_SCANCODE_2,      -1, -1},
+                {GamePad::Button::B3,     SDL_SCANCODE_3,      -1, -1},
+                {GamePad::Button::B4,     SDL_SCANCODE_4,      -1, -1},
+                {GamePad::Button::B5,     SDL_SCANCODE_5,      -1, -1},
+                {GamePad::Button::B6,     SDL_SCANCODE_6,      -1, -1},
+                {GamePad::Button::SELECT, SDL_SCANCODE_SPACE,  -1, -1},
+                {GamePad::Button::START,  SDL_SCANCODE_RETURN, -1, -1},
+                {GamePad::Button::UP,     SDL_SCANCODE_UP,     -1, -1},
+                {GamePad::Button::DOWN,   SDL_SCANCODE_DOWN,   -1, -1},
+                {GamePad::Button::LEFT,   SDL_SCANCODE_LEFT,   -1, -1},
+                {GamePad::Button::RIGHT,  SDL_SCANCODE_RIGHT,  -1, -1},
         }
 };
 
@@ -32,42 +32,19 @@ GamePad::Output *LinuxGamePad::getOutputMode() {
 }
 
 void LinuxGamePad::loop() {
+    // check for quit event
     SDL_Event ev;
-
     while (SDL_PollEvent(&ev)) {
         if (ev.type == SDL_QUIT) exit(0);
-
-        switch (ev.type) {
-            case SDL_KEYDOWN:
-                if (ev.key.keysym.sym == SDLK_UP) m_buttons |= GamePad::Button::UP;
-                if (ev.key.keysym.sym == SDLK_DOWN) m_buttons |= GamePad::Button::DOWN;
-                if (ev.key.keysym.sym == SDLK_LEFT) m_buttons |= GamePad::Button::LEFT;
-                if (ev.key.keysym.sym == SDLK_RIGHT) m_buttons |= GamePad::Button::RIGHT;
-                if (ev.key.keysym.sym == SDLK_a) m_buttons |= GamePad::Button::B1;
-                if (ev.key.keysym.sym == SDLK_z) m_buttons |= GamePad::Button::B2;
-                if (ev.key.keysym.sym == SDLK_e) m_buttons |= GamePad::Button::B3;
-                if (ev.key.keysym.sym == SDLK_q) m_buttons |= GamePad::Button::B4;
-                if (ev.key.keysym.sym == SDLK_s) m_buttons |= GamePad::Button::B5;
-                if (ev.key.keysym.sym == SDLK_d) m_buttons |= GamePad::Button::B6;
-                if (ev.key.keysym.sym == SDLK_SPACE) m_buttons |= GamePad::Button::SELECT;
-                if (ev.key.keysym.sym == SDLK_RETURN) m_buttons |= GamePad::Button::START;
-                break;
-            case SDL_KEYUP:
-                if (ev.key.keysym.sym == SDLK_UP) m_buttons &= ~GamePad::Button::UP;
-                if (ev.key.keysym.sym == SDLK_DOWN) m_buttons &= ~GamePad::Button::DOWN;
-                if (ev.key.keysym.sym == SDLK_LEFT) m_buttons &= ~GamePad::Button::LEFT;
-                if (ev.key.keysym.sym == SDLK_RIGHT) m_buttons &= ~GamePad::Button::RIGHT;
-                if (ev.key.keysym.sym == SDLK_a) m_buttons &= ~GamePad::Button::B1;
-                if (ev.key.keysym.sym == SDLK_z) m_buttons &= ~GamePad::Button::B2;
-                if (ev.key.keysym.sym == SDLK_e) m_buttons &= ~GamePad::Button::B3;
-                if (ev.key.keysym.sym == SDLK_q) m_buttons &= ~GamePad::Button::B4;
-                if (ev.key.keysym.sym == SDLK_s) m_buttons &= ~GamePad::Button::B5;
-                if (ev.key.keysym.sym == SDLK_d) m_buttons &= ~GamePad::Button::B6;
-                if (ev.key.keysym.sym == SDLK_SPACE) m_buttons &= ~GamePad::Button::SELECT;
-                if (ev.key.keysym.sym == SDLK_RETURN) m_buttons &= ~GamePad::Button::START;
-                break;
-            default:
-                break;
-        }
     }
+
+    // reset buttons state
+    m_buttons = 0;
+
+    // check for buttons (keyboard) press
+    for (const auto &mapping: getOutputMode()->mappings) {
+        m_buttons |= SDL_GetKeyboardState(nullptr)[mapping.pin] > 0 ? mapping.button : 0;
+    }
+
+    GamePad::loop();
 }

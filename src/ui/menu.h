@@ -19,8 +19,8 @@ namespace uGamePad {
 
         std::vector<Text *> m_lines;
         uint8_t max_lines = 0;
-        uint8_t file_index = 0;
         uint8_t start_index = 0;
+        uint8_t option_index = 0;
         uint8_t highlight_index = 0;
     };
 }

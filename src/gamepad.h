@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 #include "devices.h"
+#include "utility/clock.h"
 
 #define MAX_BUTTONS 12
 #define MAX_AXIS 4
@@ -29,7 +30,8 @@ namespace uGamePad {
             LEFT = BIT(8),
             RIGHT = BIT(9),
             UP = BIT(10),
-            DOWN = BIT(11)
+            DOWN = BIT(11),
+            DELAY = BIT(12)
         };
 
         enum Mode {
@@ -56,11 +58,11 @@ namespace uGamePad {
 
         const Device *getDevice() { return p_device; };
 
-        virtual void loop() {};
+        virtual void loop();
 
         virtual Output *getOutputMode() { return nullptr; };
 
-        uint16_t &getButtons() { return m_buttons; };
+        virtual uint16_t &getButtons() { return m_buttons; };
 
     protected:
         uint8_t m_addr = 0;
@@ -68,6 +70,9 @@ namespace uGamePad {
         const Device p_device_unknown = {0x0000, 0x0000, "Unknown device", nullptr};
         const Device *p_device = &p_device_unknown;
         uint16_t m_buttons{0};
+        uint16_t m_buttons_prev{0};
+        Clock m_repeatClock;
+        uint16_t m_repeatDelayMs = 500;
 
         ///
         /// axis handling
