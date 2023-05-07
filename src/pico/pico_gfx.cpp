@@ -15,7 +15,9 @@ PicoGfx::PicoGfx() : Gfx({128, 64}) {
     p_display = new Adafruit_SSD1306(m_size.x, m_size.y, &Wire, -1);
     if (!((Adafruit_SSD1306 *) p_display)->begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
         printf("PicoGfx: SSD1306 init failed\r\n");
+        return;
     }
+    p_display->setTextWrap(false);
 }
 
 void PicoGfx::flip() {

@@ -17,6 +17,8 @@ namespace uGamePad {
         Text(const Utility::Vec2i &pos, const std::string &text,
              const Utility::Color &color = Utility::Color::White);
 
+        std::string getString();
+
         void setString(const std::string &str);
 
         void setDrawBackground(bool drawBg);

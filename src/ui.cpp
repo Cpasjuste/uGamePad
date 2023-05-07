@@ -40,6 +40,12 @@ Ui::Ui() {
 
     // disable screen updates when not needed (not in menu)
     p_screen->setVisibility(Widget::Visibility::Hidden);
+
+    // menu debug
+    p_screen->setVisibility(Widget::Visibility::Visible);
+    p_menu->setVisibility(Widget::Visibility::Visible);
+    p_splash->setVisibility(Widget::Visibility::Hidden);
+    p_splashText->setVisibility(Widget::Visibility::Hidden);
 }
 
 void Ui::loop() {

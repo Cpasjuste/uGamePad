@@ -27,6 +27,10 @@ Text::Text(const Utility::Vec2i &pos, const std::string &str, const Utility::Col
     setString(str);
 }
 
+std::string Text::getString() {
+    return m_text;
+}
+
 void Text::setString(const std::string &str) {
     int16_t x, y;
     uint16_t w, h;

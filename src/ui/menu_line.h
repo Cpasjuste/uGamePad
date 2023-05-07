@@ -8,9 +8,23 @@
 #include "widget.h"
 
 namespace uGamePad {
-    class MenuLine : Widget {
+    class MenuLine : public Rectangle {
     public:
-        MenuLine();
+        explicit MenuLine(const Utility::Vec4i &rect);
+
+        std::string getName();
+
+        void setName(const std::string &name);
+
+        std::string getValue();
+
+        void setValue(const std::string &value);
+
+        void setHighlighted(bool highlighted);
+
+    private:
+        Text *m_name;
+        Text *m_value;
     };
 } // uGamePad
 
