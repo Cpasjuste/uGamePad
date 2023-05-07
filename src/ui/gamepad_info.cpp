@@ -37,11 +37,11 @@ GamePadInfo::GamePadInfo(const Utility::Vector2i &pos, const Utility::Vector2i &
     GamePadInfo::add(text);
 }
 
-void GamePadInfo::update(const Utility::Vector2i &pos) {
+void GamePadInfo::loop(const Utility::Vector2i &pos) {
     uint16_t pressed = getPlatform()->getPad()->getButtons();
     for (const auto &button: m_buttons) {
         button.widget->setVisibility(button.button & pressed ? Visibility::Visible : Visibility::Hidden);
     }
 
-    Bitmap::update(pos);
+    Bitmap::loop(pos);
 }

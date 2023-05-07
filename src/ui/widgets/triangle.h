@@ -16,7 +16,7 @@ namespace uGamePad {
 
         void setRotation(float rotation);
 
-        void update(const Utility::Vector2i &pos) override;
+        void loop(const Utility::Vector2i &pos) override;
 
     private:
         Utility::Vector6f m_triangle{};

@@ -12,7 +12,7 @@ namespace uGamePad {
     public:
         Line(const Utility::Vector2i &pos, int16_t length, float rotation = 0);
 
-        void update(const Utility::Vector2i &pos) override;
+        void loop(const Utility::Vector2i &pos) override;
 
     private:
         Utility::Line m_line{};

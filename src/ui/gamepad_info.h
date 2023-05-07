@@ -14,7 +14,7 @@ namespace uGamePad {
     public:
         GamePadInfo(const Utility::Vector2i &pos, const Utility::Vector2i &size, uint8_t *bitmap);
 
-        void update(const Utility::Vector2i &pos) override;
+        void loop(const Utility::Vector2i &pos) override;
 
     private:
         struct GamePadButton {

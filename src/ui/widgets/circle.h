@@ -12,7 +12,7 @@ namespace uGamePad {
     public:
         Circle(const Utility::Vector2i &pos, int16_t size, bool fill = false);
 
-        void update(const Utility::Vector2i &pos) override;
+        void loop(const Utility::Vector2i &pos) override;
 
     private:
         bool m_fill = false;

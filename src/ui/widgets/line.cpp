@@ -46,7 +46,7 @@ Utility::Line Line::calculateLine(Utility::Vector2f position, float length, floa
     return line;
 }
 
-void Line::update(const Utility::Vector2i &pos) {
+void Line::loop(const Utility::Vector2i &pos) {
     if (m_rotation == 0 || m_rotation == 180 || m_rotation == 360) {
         getGfx()->drawFastHLine((int16_t) m_line.start.x, (int16_t) m_line.start.y,
                                 m_size.x, m_color);
@@ -58,5 +58,5 @@ void Line::update(const Utility::Vector2i &pos) {
                            (int16_t) m_line.end.x, (int16_t) m_line.end.y, m_color);
     }
 
-    Widget::update(pos);
+    Widget::loop(pos);
 }

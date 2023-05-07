@@ -18,7 +18,7 @@ namespace uGamePad {
                   bool fill = false, int16_t radius = 0,
                   const Utility::Color &color = Utility::Color::White);
 
-        void update(const Utility::Vector2i &pos) override;
+        void loop(const Utility::Vector2i &pos) override;
 
     private:
         int16_t m_radius = 0;

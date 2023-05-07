@@ -21,7 +21,7 @@ namespace uGamePad {
 
         void setDrawBackground(bool drawBg);
 
-        void update(const Utility::Vector2i &pos) override;
+        void loop(const Utility::Vector2i &pos) override;
 
     private:
         std::string m_text;

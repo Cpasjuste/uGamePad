@@ -40,7 +40,7 @@ void Text::setDrawBackground(bool drawBg) {
     m_bg_rect->setVisibility(drawBg ? Visibility::Visible : Visibility::Hidden);
 }
 
-void Text::update(const Utility::Vector2i &pos) {
+void Text::loop(const Utility::Vector2i &pos) {
     // draw child first (bg)
     if (m_bg_rect->isVisible()) {
         if (m_color == Utility::Color::White) {
@@ -49,7 +49,7 @@ void Text::update(const Utility::Vector2i &pos) {
             m_bg_rect->setColor(Utility::Color::White);
         }
     }
-    Widget::update(pos);
+    Widget::loop(pos);
 
     // now draw the text
     getGfx()->setCursor(pos.x, pos.y);

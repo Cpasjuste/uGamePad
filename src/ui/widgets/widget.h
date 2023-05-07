@@ -56,7 +56,7 @@ namespace uGamePad {
 
         virtual Adafruit_GFX *getGfx();
 
-        virtual void update(const Utility::Vector2i &pos);
+        virtual void loop(const Utility::Vector2i &pos);
 
     protected:
         Widget *p_parent = nullptr;

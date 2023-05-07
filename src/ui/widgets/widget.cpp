@@ -54,7 +54,7 @@ Adafruit_GFX *Widget::getGfx() {
     return getPlatform()->getGfx()->getDisplay();
 }
 
-void Widget::update(const Utility::Vector2i &pos) {
+void Widget::loop(const Utility::Vector2i &pos) {
     if (!isVisible()) return;
 
     for (auto &widget: p_child_list) {
@@ -95,7 +95,7 @@ void Widget::update(const Utility::Vector2i &pos) {
                     break;
             }
 
-            widget->update(v);
+            widget->loop(v);
         }
     }
 }

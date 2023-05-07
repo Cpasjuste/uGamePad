@@ -13,7 +13,7 @@ Bitmap::Bitmap(const Utility::Vector2i &pos, const Utility::Vector2i &size, uint
     Widget::setSize(size);
 }
 
-void Bitmap::update(const Utility::Vector2i &pos) {
+void Bitmap::loop(const Utility::Vector2i &pos) {
     getGfx()->drawBitmap(pos.x, pos.y, m_bitmap, m_size.x, m_size.y, m_color);
-    Widget::update(pos);
+    Widget::loop(pos);
 }

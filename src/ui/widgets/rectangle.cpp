@@ -25,7 +25,7 @@ Rectangle::Rectangle(const Utility::Vector2i &pos, const Utility::Vector2i &size
     m_radius = radius;
 }
 
-void Rectangle::update(const Utility::Vector2i &pos) {
+void Rectangle::loop(const Utility::Vector2i &pos) {
     if (m_fill) {
         if (m_radius > 0) {
             getGfx()->fillRoundRect(pos.x, pos.y, m_size.x, m_size.y, m_radius, m_color);
@@ -40,5 +40,5 @@ void Rectangle::update(const Utility::Vector2i &pos) {
         }
     }
 
-    Widget::update(pos);
+    Widget::loop(pos);
 }

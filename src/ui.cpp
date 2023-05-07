@@ -63,6 +63,6 @@ void Ui::loop() {
 
     // draw the whole ui
     getPlatform()->getGfx()->clear();
-    p_screen->update(p_screen->getPosition());
+    p_screen->loop(p_screen->getPosition());
     getPlatform()->getGfx()->flip();
 }

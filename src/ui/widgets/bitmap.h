@@ -12,7 +12,7 @@ namespace uGamePad {
     public:
         Bitmap(const Utility::Vector2i &pos, const Utility::Vector2i &size, uint8_t *bitmap);
 
-        void update(const Utility::Vector2i &pos) override;
+        void loop(const Utility::Vector2i &pos) override;
 
     private:
         uint8_t *m_bitmap = nullptr;

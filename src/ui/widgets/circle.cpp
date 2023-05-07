@@ -13,12 +13,12 @@ Circle::Circle(const Utility::Vector2i &pos, int16_t size, bool fill) : Widget()
     m_fill = fill;
 }
 
-void Circle::update(const Utility::Vector2i &pos) {
+void Circle::loop(const Utility::Vector2i &pos) {
     if (m_fill) {
         getGfx()->fillCircle(pos.x, pos.y, m_size.x, m_color);
     } else {
         getGfx()->drawCircle(pos.x, pos.y, m_size.x, m_color);
     }
 
-    Widget::update(pos);
+    Widget::loop(pos);
 }

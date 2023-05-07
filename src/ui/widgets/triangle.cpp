@@ -70,7 +70,7 @@ Utility::Vector6f Triangle::calculateTriangle(Utility::Vector2i position, float 
     return triangle;
 }
 
-void Triangle::update(const Utility::Vector2i &pos) {
+void Triangle::loop(const Utility::Vector2i &pos) {
     if (m_fill) {
         getGfx()->fillTriangle((int16_t) m_triangle.points[0].x, (int16_t) m_triangle.points[0].y,
                                (int16_t) m_triangle.points[1].x, (int16_t) m_triangle.points[1].y,
@@ -83,5 +83,5 @@ void Triangle::update(const Utility::Vector2i &pos) {
                                m_color);
     }
 
-    Widget::update(pos);
+    Widget::loop(pos);
 }
