@@ -17,7 +17,7 @@ Text::Text(int16_t x, int16_t y, const std::string &str, const Utility::Color &c
     setString(str);
 }
 
-Text::Text(const Utility::Vector2i &pos, const std::string &str, const Utility::Color &color) : Widget() {
+Text::Text(const Utility::Vec2i &pos, const std::string &str, const Utility::Color &color) : Widget() {
     m_color = color;
     m_bg_rect = new Rectangle(-1, -1, 8, 8, true, 0);
     m_bg_rect->setVisibility(Visibility::Hidden);
@@ -40,7 +40,7 @@ void Text::setDrawBackground(bool drawBg) {
     m_bg_rect->setVisibility(drawBg ? Visibility::Visible : Visibility::Hidden);
 }
 
-void Text::loop(const Utility::Vector2i &pos) {
+void Text::loop(const Utility::Vec2i &pos) {
     // draw child first (bg)
     if (m_bg_rect->isVisible()) {
         if (m_color == Utility::Color::White) {

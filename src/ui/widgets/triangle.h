@@ -10,20 +10,20 @@
 namespace uGamePad {
     class Triangle : public Widget {
     public:
-        Triangle(const Utility::Vector2i &pos, uint16_t size, float rotation = 0, bool fill = false);
+        Triangle(const Utility::Vec2i &pos, uint16_t size, float rotation = 0, bool fill = false);
 
         void setPosition(int16_t x, int16_t y) override;
 
         void setRotation(float rotation);
 
-        void loop(const Utility::Vector2i &pos) override;
+        void loop(const Utility::Vec2i &pos) override;
 
     private:
-        Utility::Vector6f m_triangle{};
+        Utility::Vec6f m_triangle{};
         float m_rotation = 0;
         bool m_fill = false;
 
-        Utility::Vector6f calculateTriangle(Utility::Vector2i position, float size, float rotation);
+        Utility::Vec6f calculateTriangle(Utility::Vec2i position, float size, float rotation);
     };
 }
 

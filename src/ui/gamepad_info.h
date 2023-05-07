@@ -12,9 +12,9 @@
 namespace uGamePad {
     class GamePadInfo : public Bitmap {
     public:
-        GamePadInfo(const Utility::Vector2i &pos, const Utility::Vector2i &size, uint8_t *bitmap);
+        GamePadInfo(const Utility::Vec2i &pos, const Utility::Vec2i &size, uint8_t *bitmap);
 
-        void loop(const Utility::Vector2i &pos) override;
+        void loop(const Utility::Vec2i &pos) override;
 
     private:
         struct GamePadButton {

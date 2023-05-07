@@ -14,14 +14,14 @@ namespace uGamePad {
         Text(int16_t x, int16_t y, const std::string &text,
              const Utility::Color &color = Utility::Color::White);
 
-        Text(const Utility::Vector2i &pos, const std::string &text,
+        Text(const Utility::Vec2i &pos, const std::string &text,
              const Utility::Color &color = Utility::Color::White);
 
         void setString(const std::string &str);
 
         void setDrawBackground(bool drawBg);
 
-        void loop(const Utility::Vector2i &pos) override;
+        void loop(const Utility::Vec2i &pos) override;
 
     private:
         std::string m_text;

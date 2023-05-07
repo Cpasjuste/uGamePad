@@ -10,9 +10,9 @@
 namespace uGamePad {
     class Circle : public Widget {
     public:
-        Circle(const Utility::Vector2i &pos, int16_t size, bool fill = false);
+        Circle(const Utility::Vec2i &pos, int16_t size, bool fill = false);
 
-        void loop(const Utility::Vector2i &pos) override;
+        void loop(const Utility::Vec2i &pos) override;
 
     private:
         bool m_fill = false;

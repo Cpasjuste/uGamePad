@@ -6,11 +6,11 @@
 
 using namespace uGamePad;
 
-Gfx::Gfx(Utility::Vector2i size) {
+Gfx::Gfx(Utility::Vec2i size) {
     m_size = size;
 }
 
-Utility::Vector2i Gfx::getSize() {
+Utility::Vec2i Gfx::getSize() {
     return {p_display->width(), p_display->height()};
 }
 

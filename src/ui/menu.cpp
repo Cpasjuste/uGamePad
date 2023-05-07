@@ -23,7 +23,7 @@ Menu::Menu() : Rectangle({0, 0}, getPlatform()->getGfx()->getSize()) {
     }
 }
 
-void Menu::loop(const Utility::Vector2i &pos) {
+void Menu::loop(const Utility::Vec2i &pos) {
     for (uint8_t i = 0; i < max_lines; i++) {
         /*
         if (start_index + i >= files.size()) {

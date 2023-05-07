@@ -9,7 +9,7 @@
 
 using namespace uGamePad;
 
-GamePadInfo::GamePadInfo(const Utility::Vector2i &pos, const Utility::Vector2i &size, uint8_t *bitmap)
+GamePadInfo::GamePadInfo(const Utility::Vec2i &pos, const Utility::Vec2i &size, uint8_t *bitmap)
         : Bitmap(pos, size, bitmap) {
     m_buttons.push_back({new Circle({70, 32}, 2, true), GamePad::Button::B1});
     m_buttons.push_back({new Circle({78, 24}, 2, true), GamePad::Button::B2});
@@ -37,7 +37,7 @@ GamePadInfo::GamePadInfo(const Utility::Vector2i &pos, const Utility::Vector2i &
     GamePadInfo::add(text);
 }
 
-void GamePadInfo::loop(const Utility::Vector2i &pos) {
+void GamePadInfo::loop(const Utility::Vec2i &pos) {
     uint16_t pressed = getPlatform()->getPad()->getButtons();
     for (const auto &button: m_buttons) {
         button.widget->setVisibility(button.button & pressed ? Visibility::Visible : Visibility::Hidden);

@@ -15,7 +15,7 @@ namespace uGamePad {
         Menu();
 
     private:
-        void loop(const Utility::Vector2i &pos) override;
+        void loop(const Utility::Vec2i &pos) override;
 
         std::vector<Text *> m_lines;
         uint8_t max_lines = 0;

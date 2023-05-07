@@ -7,17 +7,17 @@
 
 using namespace uGamePad;
 
-Line::Line(const Utility::Vector2i &pos, int16_t length, float rotation) : Widget() {
+Line::Line(const Utility::Vec2i &pos, int16_t length, float rotation) : Widget() {
     Widget::setPosition(pos);
     Widget::setSize(length, length);
     m_rotation = rotation;
     m_line = calculateLine({(float) pos.x, (float) pos.y}, (float) length, m_rotation);
 }
 
-Utility::Line Line::calculateLine(Utility::Vector2f position, float length, float rotation) {
+Utility::Line Line::calculateLine(Utility::Vec2f position, float length, float rotation) {
     Utility::Line line{};
-    Utility::Vector2f start = {0.0f, 0.0f};
-    Utility::Vector2f end = {length, 0.0f};
+    Utility::Vec2f start = {0.0f, 0.0f};
+    Utility::Vec2f end = {length, 0.0f};
 
     // Convert rotation to radians
     float radians = rotation * (float) M_PI / 180.0f;
@@ -46,7 +46,7 @@ Utility::Line Line::calculateLine(Utility::Vector2f position, float length, floa
     return line;
 }
 
-void Line::loop(const Utility::Vector2i &pos) {
+void Line::loop(const Utility::Vec2i &pos) {
     if (m_rotation == 0 || m_rotation == 180 || m_rotation == 360) {
         getGfx()->drawFastHLine((int16_t) m_line.start.x, (int16_t) m_line.start.y,
                                 m_size.x, m_color);

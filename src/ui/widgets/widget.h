@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <vector>
+#include "utility/utility.h"
 
 namespace uGamePad {
     class Widget {
@@ -30,17 +31,17 @@ namespace uGamePad {
 
         virtual void setPosition(int16_t x, int16_t y);
 
-        virtual void setPosition(const Utility::Vector2i &pos);
+        virtual void setPosition(const Utility::Vec2i &pos);
 
-        virtual Utility::Vector2i getPosition();
+        virtual Utility::Vec2i getPosition();
 
         virtual void setSize(int16_t x, int16_t y);
 
-        virtual void setSize(const Utility::Vector2i &size);
+        virtual void setSize(const Utility::Vec2i &size);
 
-        virtual Utility::Vector2i getSize() { return m_size; };
+        virtual Utility::Vec2i getSize() { return m_size; };
 
-        virtual Utility::Vector4i getBounds();
+        virtual Utility::Vec4i getBounds();
 
         virtual void setOrigin(const Origin &origin) { m_origin = origin; };
 
@@ -56,14 +57,14 @@ namespace uGamePad {
 
         virtual Adafruit_GFX *getGfx();
 
-        virtual void loop(const Utility::Vector2i &pos);
+        virtual void loop(const Utility::Vec2i &pos);
 
     protected:
         Widget *p_parent = nullptr;
         std::vector<Widget *> p_child_list;
         Visibility m_visibility = Visibility::Visible;
-        Utility::Vector2i m_position{};
-        Utility::Vector2i m_size{};
+        Utility::Vec2i m_position{};
+        Utility::Vec2i m_size{};
         Origin m_origin = Origin::TopLeft;
         Utility::Color m_color = Utility::Color::White;
     };
