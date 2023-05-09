@@ -37,10 +37,20 @@ GamePadInfo::GamePadInfo(const Utility::Vec2i &pos, const Utility::Vec2i &size, 
     GamePadInfo::add(text);
 }
 
+void GamePadInfo::setVisibility(Widget::Visibility visibility) {
+    getPlatform()->getPad()->setRepeatDelay(visibility == Visibility::Visible ? 0 : 500);
+    Widget::setVisibility(visibility);
+}
+
 void GamePadInfo::loop(const Utility::Vec2i &pos) {
-    uint16_t pressed = getPlatform()->getPad()->getButtons();
+    uint16_t buttons = getPlatform()->getPad()->getButtons();
+    if (buttons & GamePad::Button::START && buttons & GamePad::Button::SELECT) {
+        getPlatform()->getUi()->show(Ui::MenuWidget::MainMenu);
+        return;
+    }
+
     for (const auto &button: m_buttons) {
-        button.widget->setVisibility(button.button & pressed ? Visibility::Visible : Visibility::Hidden);
+        button.widget->setVisibility(button.button & buttons ? Visibility::Visible : Visibility::Hidden);
     }
 
     Bitmap::loop(pos);

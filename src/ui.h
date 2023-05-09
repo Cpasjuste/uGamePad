@@ -13,9 +13,19 @@
 namespace uGamePad {
     class Ui {
     public:
+        enum MenuWidget {
+            MainMenu,
+            Splash,
+            GamePadTest
+        };
+
         explicit Ui();
 
         void loop();
+
+        void flip();
+
+        void show(MenuWidget menuWidget);
 
         bool isVisible() { return p_screen->isVisible(); };
 

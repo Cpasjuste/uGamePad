@@ -15,11 +15,11 @@ namespace uGamePad {
     public:
         PicoGamePad();
 
-        bool usb_report(const uint8_t *report, uint16_t len);
+        bool report(const uint8_t *report, uint16_t len);
+
+        void setOutputMode(const Mode &mode) override;
 
         void loop() override;
-
-        Output *getOutputMode() override;
 
     private:
         static void onLatchRising();

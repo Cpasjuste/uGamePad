@@ -34,7 +34,7 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t idx, uint8_t const *report_desc,
     if (device) {
         if (device->vendor != getPlatform()->getPad()->getDevice()->vendor ||
             device->product != getPlatform()->getPad()->getDevice()->product) {
-            getPlatform()->getPad()->setCurrentDevice(device, dev_addr, idx);
+            getPlatform()->getPad()->setDevice(device, dev_addr, idx);
             // send init message if provided
             if (device->data->init.size > 0) {
                 tuh_hid_set_report(dev_addr, idx, 5, HID_REPORT_TYPE_OUTPUT,
@@ -75,7 +75,7 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
     }
 
     //printf("tuh_hid_report_received_cb: addr: %i, instance: %i, len: %i\r\n", dev_addr, instance, len);
-    if (!pad->usb_report(report, len)) {
+    if (!pad->report(report, len)) {
         // try to handle generic pads
         if (rpt_count == 1 && rpt_info_arr[0].report_id == 0) {
             // simple data without data ID as 1st byte

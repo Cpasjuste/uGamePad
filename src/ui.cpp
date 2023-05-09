@@ -36,39 +36,56 @@ Ui::Ui() {
     p_screen->add(p_splashText);
 
     // show splash screen
-    Ui::loop();
+    show(MenuWidget::Splash);
+}
 
-    // disable screen updates when not needed (not in menu)
-    p_screen->setVisibility(Widget::Visibility::Hidden);
+void Ui::show(Ui::MenuWidget menuWidget) {
+    if (menuWidget == MenuWidget::Splash) {
+        p_screen->setVisibility(Widget::Visibility::Visible);
+        p_menu->setVisibility(Widget::Visibility::Hidden);
+        p_gamePadInfo->setVisibility(Widget::Visibility::Hidden);
+        p_splash->setVisibility(Widget::Visibility::Visible);
+        p_splashText->setVisibility(Widget::Visibility::Visible);
+        // draw
+        flip();
+        // disable screen updates when not needed (not in menu)
+        p_screen->setVisibility(Widget::Visibility::Hidden);
+    } else if (menuWidget == MenuWidget::MainMenu) {
+        p_screen->setVisibility(Widget::Visibility::Visible);
+        p_menu->setVisibility(Widget::Visibility::Visible);
+        p_gamePadInfo->setVisibility(Widget::Visibility::Hidden);
+        p_splash->setVisibility(Widget::Visibility::Hidden);
+        p_splashText->setVisibility(Widget::Visibility::Hidden);
+    } else if (menuWidget == MenuWidget::GamePadTest) {
+        p_screen->setVisibility(Widget::Visibility::Visible);
+        p_menu->setVisibility(Widget::Visibility::Hidden);
+        p_gamePadInfo->setVisibility(Widget::Visibility::Visible);
+        p_splash->setVisibility(Widget::Visibility::Hidden);
+        p_splashText->setVisibility(Widget::Visibility::Hidden);
+    }
+}
 
-    // menu debug
-    p_screen->setVisibility(Widget::Visibility::Visible);
-    p_menu->setVisibility(Widget::Visibility::Visible);
-    p_splash->setVisibility(Widget::Visibility::Hidden);
-    p_splashText->setVisibility(Widget::Visibility::Hidden);
+void Ui::flip() {
+    if (p_screen->isVisible()) {
+        // draw the whole ui
+        getPlatform()->getGfx()->clear();
+        p_screen->loop(p_screen->getPosition());
+        getPlatform()->getGfx()->flip();
+    }
 }
 
 void Ui::loop() {
     // check for menu combo keys
-    uint16_t buttons = getPlatform()->getPad()->getButtons();
-    if (buttons & GamePad::Button::START && buttons & GamePad::Button::SELECT) {
-        if (m_triggerMenuClock.getElapsedTime().asSeconds() > 1) {
-            // TODO: menu...
-            p_screen->setVisibility(Widget::Visibility::Visible);
-            p_menu->setVisibility(Widget::Visibility::Visible);
-            p_splash->setVisibility(Widget::Visibility::Hidden);
-            p_splashText->setVisibility(Widget::Visibility::Hidden);
-        }
-    } else if (!(buttons & GamePad::Button::DELAY)) {
-        m_triggerMenuClock.restart();
-    }
-
     if (!p_screen->isVisible()) {
-        return;
+        uint16_t buttons = getPlatform()->getPad()->getButtons();
+        if (buttons & GamePad::Button::START && buttons & GamePad::Button::SELECT) {
+            if (m_triggerMenuClock.getElapsedTime().asSeconds() > 1) {
+                show(MenuWidget::MainMenu);
+            }
+        } else if (!(buttons & GamePad::Button::DELAY)) {
+            m_triggerMenuClock.restart();
+        }
+    } else {
+        flip();
     }
-
-    // draw the whole ui
-    getPlatform()->getGfx()->clear();
-    p_screen->loop(p_screen->getPosition());
-    getPlatform()->getGfx()->flip();
 }

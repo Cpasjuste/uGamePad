@@ -4,6 +4,8 @@
 
 #include <complex>
 #include "main.h"
+#include "gamepad.h"
+
 
 using namespace uGamePad;
 
@@ -11,12 +13,12 @@ GamePad::GamePad() {
     // create an accurate map from ds4/5 analog inputs (0 to 255) to uGamePad metrics (-32768 to 32767)
     for (int i = 0; i < 128; i++) {
         float t = (float) i / 127.0f;
-        m_analog_map[i + 128] = calc_bezier_y(t);
+        m_analog_map[i + 128] = bezierY(t);
         m_analog_map[127 - i] = -1 * m_analog_map[i + 128];
     }
 }
 
-void GamePad::setCurrentDevice(const Device *device, uint8_t dev_addr, uint8_t instance) {
+void GamePad::setDevice(const Device *device, uint8_t dev_addr, uint8_t instance) {
     printf("new gamepad configured: %s\r\n", device->name);
     p_device = device;
     m_addr = dev_addr;
@@ -89,13 +91,13 @@ uint16_t GamePad::getButtonsFromAxis(int x, int y, uint8_t type) {
     return buttons;
 }
 
-void GamePad::lerp(GamePad::point *dest, GamePad::point *first, GamePad::point *second, float t) {
-    dest->x = (int) ((float) first->x + ((float) second->x - (float) first->x) * t);
-    dest->y = (int) ((float) first->y + ((float) second->y - (float) first->y) * t);
+void GamePad::lerp(Utility::Vec2i *dest, Utility::Vec2i *first, Utility::Vec2i *second, float t) {
+    dest->x = (int16_t) ((float) first->x + ((float) second->x - (float) first->x) * t);
+    dest->y = (int16_t) ((float) first->y + ((float) second->y - (float) first->y) * t);
 }
 
-int GamePad::calc_bezier_y(float t) {
-    point ab, bc, cd, ab_bc, bc_cd, dest;
+int GamePad::bezierY(float t) {
+    Utility::Vec2i ab, bc, cd, ab_bc, bc_cd, dest;
     lerp(&ab, &m_pa, &m_pb, t);     /* point between a and b */
     lerp(&bc, &m_pb, &m_pc, t);     /* point between b and c */
     lerp(&cd, &m_pc, &m_pd, t);     /* point between c and d */
@@ -103,6 +105,36 @@ int GamePad::calc_bezier_y(float t) {
     lerp(&bc_cd, &bc, &cd, t);       /* point between bc and cd */
     lerp(&dest, &ab_bc, &bc_cd, t);   /* point on the bezier-curve */
     return dest.y;
+}
+
+GamePad::Output *GamePad::getOutputMode() {
+    for (auto &out: m_outputModes) {
+        if (out.mode == m_outputMode) {
+            return &out;
+        }
+    }
+
+    return nullptr;
+}
+
+void GamePad::setOutputMode(const GamePad::Mode &mode) {
+    for (const auto &out: m_outputModes) {
+        if (out.mode == mode) {
+            m_outputMode = mode;
+            printf("GamePad::setOutputMode: %s\r\n", getOutputMode()->name.c_str());
+            break;
+        }
+    }
+}
+
+void GamePad::setOutputMode(const std::string &modeName) {
+    for (const auto &out: m_outputModes) {
+        if (out.name == modeName) {
+            m_outputMode = out.mode;
+            printf("GamePad::setOutputMode: %s\r\n", getOutputMode()->name.c_str());
+            break;
+        }
+    }
 }
 
 void GamePad::loop() {

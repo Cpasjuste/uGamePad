@@ -14,6 +14,8 @@ namespace uGamePad {
     public:
         GamePadInfo(const Utility::Vec2i &pos, const Utility::Vec2i &size, uint8_t *bitmap);
 
+        void setVisibility(Widget::Visibility visibility) override;
+
         void loop(const Utility::Vec2i &pos) override;
 
     private:

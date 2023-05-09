@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 #include "devices.h"
+#include "utility/utility.h"
 #include "utility/clock.h"
 
 #define MAX_BUTTONS 12
@@ -36,7 +37,9 @@ namespace uGamePad {
 
         enum Mode {
             Jamma,
-            Nes
+            Nes,
+            Snes,
+            Md
         };
 
         struct PinMapping {
@@ -54,15 +57,25 @@ namespace uGamePad {
 
         GamePad();
 
-        void setCurrentDevice(const Device *device, uint8_t dev_addr, uint8_t instance);
+        virtual void loop();
+
+        virtual std::vector<GamePad::Output> getOutputModes() { return m_outputModes; };
+
+        virtual Output *getOutputMode();
+
+        virtual void setOutputMode(const Mode &mode);
+
+        virtual void setOutputMode(const std::string &modeName);
+
+        virtual uint16_t &getButtons() { return m_buttons; };
+
+        void setDevice(const Device *device, uint8_t dev_addr, uint8_t instance);
 
         const Device *getDevice() { return p_device; };
 
-        virtual void loop();
+        uint16_t getRepeatDelay() { return m_repeatDelayMs; };
 
-        virtual Output *getOutputMode() { return nullptr; };
-
-        virtual uint16_t &getButtons() { return m_buttons; };
+        void setRepeatDelay(uint16_t ms) { m_repeatDelayMs = ms; };
 
     protected:
         uint8_t m_addr = 0;
@@ -73,25 +86,22 @@ namespace uGamePad {
         uint16_t m_buttons_prev{0};
         Clock m_repeatClock;
         uint16_t m_repeatDelayMs = 500;
+        std::vector<GamePad::Output> m_outputModes;
+        Mode m_outputMode = Mode::Jamma;
 
         ///
         /// axis handling
         ///
-        typedef struct {
-            int x;
-            int y;
-        } point;
-
-        point m_pa = {0, 0};
-        point m_pb = {0, 0};
-        point m_pc = {128, 32767};
-        point m_pd = {128, 32767};
+        Utility::Vec2i m_pa = {0, 0};
+        Utility::Vec2i m_pb = {0, 0};
+        Utility::Vec2i m_pc = {128, 32767};
+        Utility::Vec2i m_pd = {128, 32767};
 
         int m_analog_map[256]{}; // map analog inputs to -32768 -> 32767 if needed
 
-        static void lerp(point *dest, point *first, point *second, float t);
+        static void lerp(Utility::Vec2i *dest, Utility::Vec2i *first, Utility::Vec2i *second, float t);
 
-        int calc_bezier_y(float t);
+        int bezierY(float t);
 
         uint16_t getButtonsFromAxis(int x, int y, uint8_t type = ReportData::AxisType::AXIS_I16);
 

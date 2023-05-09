@@ -43,6 +43,7 @@ namespace uGamePad {
         std::vector<MenuOption> m_options;
         std::vector<MenuLine *> p_lines;
         uint8_t max_lines = 0;
+        int start_index = 0;
         int option_index = 0;
         int highlight_index = 0;
     };
