@@ -5,23 +5,18 @@
 #ifndef U_GAMEPAD_PICO_FS_H
 #define U_GAMEPAD_PICO_FS_H
 
-#include "SdFat.h"
-
 namespace uGamePad {
     class PicoFs : public Fs {
     public:
         PicoFs();
 
-        Device *load(uint16_t vid, uint16_t pid) override;
+        bool writeFile(const std::string &path, const std::vector<uint8_t> &data) override;
 
-        bool save(Device *device) override;
+        std::vector<uint8_t> readFile(const std::string &path) override;
 
         DeviceInfo getDeviceInfo() override;
 
         void setUsbMode(UsbMode mode) override;
-
-    private:
-        Device *load(const std::string &filename) override;
     };
 }
 

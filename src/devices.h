@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <cstring>
+#include <string>
 
 #ifndef BIT
 #define BIT(n) (1U<<(n))
@@ -52,6 +53,18 @@ namespace uGamePad {
         uint16_t product = 0;
         char name[64]{};
         ReportData *data = nullptr;
+
+        [[nodiscard]] std::string getVendor() const {
+            char str[5];
+            snprintf(str, 5, "%04x", vendor);
+            return str;
+        }
+
+        [[nodiscard]] std::string getProduct() const {
+            char str[5];
+            snprintf(str, 5, "%04x", product);
+            return str;
+        }
     };
 }
 

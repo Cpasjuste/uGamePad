@@ -10,6 +10,7 @@
 
 #include "gamepad.h"
 #include "fs.h"
+#include "config.h"
 #include "gfx.h"
 #include "ui.h"
 #include "platform.h"
@@ -18,7 +19,7 @@
 #include "linux_platform.h"
 #include "linux_gamepad.h"
 #include "linux_gfx.h"
-#include "fs.h"
+#include "linux_fs.h"
 #else
 #include "pico_platform.h"
 #include "pico_gamepad.h"

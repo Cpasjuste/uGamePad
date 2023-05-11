@@ -21,6 +21,9 @@ void PicoPlatform::setup() {
     // init filesystem
     p_fs = new PicoFs();
 
+    // init config
+    p_config = new Config(p_fs);
+
     // init gfx
     p_gfx = new PicoGfx();
 

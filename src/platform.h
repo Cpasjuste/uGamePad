@@ -22,6 +22,8 @@ namespace uGamePad {
 
         virtual Fs *getFs() { return p_fs; };
 
+        virtual Config *getConfig() { return p_config; };
+
         virtual int getFreeHeap() { return 0; };
 
     protected:
@@ -29,6 +31,7 @@ namespace uGamePad {
         GamePad *p_pad = nullptr;
         Ui *p_ui = nullptr;
         Fs *p_fs = nullptr;
+        Config *p_config = nullptr;
     };
 }
 
