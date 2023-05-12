@@ -15,19 +15,19 @@ using namespace uGamePad;
 // xbox 360 data data
 static constexpr ReportData xboxReport PROGMEM = {
         .buttons = {
-                // byte, value, controller button, output button
-                3, BIT(4),      // A         -> B1
-                3, BIT(5),      // B         -> B2
-                3, BIT(6),      // X         -> B3
-                3, BIT(7),      // Y         -> B4
-                3, BIT(0),      // LB        -> B5
-                3, BIT(1),      // LR        -> B6
-                2, BIT(4),      // START     -> START
-                2, BIT(5),      // BACK      -> SELECT
-                2, BIT(2),      // LEFT      -> LEFT
-                2, BIT(3),      // RIGHT     -> RIGHT
-                2, BIT(0),      // UP        -> UP
-                2, BIT(1),      // DOWN      -> DOWN
+                // byte, bit, controller button, output button
+                3, 4,      // A         -> B1
+                3, 5,      // B         -> B2
+                3, 6,      // X         -> B3
+                3, 7,      // Y         -> B4
+                3, 0,      // LB        -> B5
+                3, 1,      // LR        -> B6
+                2, 4,      // START     -> START
+                2, 5,      // BACK      -> SELECT
+                2, 2,      // LEFT      -> LEFT
+                2, 3,      // RIGHT     -> RIGHT
+                2, 0,      // UP        -> UP
+                2, 1,      // DOWN      -> DOWN
         },
         .axis = {
                 // byte, axis type
@@ -37,7 +37,7 @@ static constexpr ReportData xboxReport PROGMEM = {
                 12, ReportData::AXIS_I16,  // AXIS
         },
         .hat = {
-                // byte, value
+                // byte, bit
                 INDEX_NONE, BUTTON_NONE,  // HAT (none)
         },
         .init = {
@@ -49,15 +49,15 @@ static constexpr ReportData xboxReport PROGMEM = {
 // dual shock 4 data data
 static constexpr ReportData ds4Report PROGMEM = {
         .buttons = {
-                // byte, value, controller button, output button
-                5, BIT(5),      // CROSS        -> B1
-                5, BIT(6),      // CIRCLE       -> B2
-                5, BIT(4),      // SQUARE       -> B3
-                5, BIT(7),      // TRIANGLE     -> B4
-                6, BIT(0),      // L1           -> B5
-                6, BIT(1),      // R1           -> B6
-                6, BIT(5),      // OPTIONS      -> START
-                6, BIT(4),      // SHARE        -> SELECT
+                // byte, bit, controller button, output button
+                5, 5,      // CROSS        -> B1
+                5, 6,      // CIRCLE       -> B2
+                5, 4,      // SQUARE       -> B3
+                5, 7,      // TRIANGLE     -> B4
+                6, 0,      // L1           -> B5
+                6, 1,      // R1           -> B6
+                6, 5,      // OPTIONS      -> START
+                6, 4,      // SHARE        -> SELECT
                 INDEX_NONE, BUTTON_NONE,
                 INDEX_NONE, BUTTON_NONE,
                 INDEX_NONE, BUTTON_NONE,
@@ -71,23 +71,23 @@ static constexpr ReportData ds4Report PROGMEM = {
                 4, ReportData::AXIS_UI8 | ReportData::AXIS_FLIP_Y,  // AXIS
         },
         .hat = {
-                // byte, value
-                5, BIT(15), // HAT      -> U/D/L/R
+                // byte, bit
+                5, 15, // HAT      -> U/D/L/R
         }
 };
 
 // dual shock 5 data data
 static constexpr ReportData ds5Report PROGMEM = {
         .buttons = {
-                // byte, value, controller button, output button
-                8, BIT(5),      // CROSS        -> B1
-                8, BIT(6),      // CIRCLE       -> B2
-                8, BIT(4),      // SQUARE       -> B3
-                8, BIT(7),      // TRIANGLE     -> B4
-                9, BIT(0),      // L1           -> B5
-                9, BIT(1),      // R1           -> B6
-                9, BIT(5),      // OPTIONS      -> START
-                9, BIT(4),      // SHARE        -> SELECT
+                // byte, bit, controller button, output button
+                8, 5,      // CROSS        -> B1
+                8, 6,      // CIRCLE       -> B2
+                8, 4,      // SQUARE       -> B3
+                8, 7,      // TRIANGLE     -> B4
+                9, 0,      // L1           -> B5
+                9, 1,      // R1           -> B6
+                9, 5,      // OPTIONS      -> START
+                9, 4,      // SHARE        -> SELECT
                 INDEX_NONE, BUTTON_NONE,
                 INDEX_NONE, BUTTON_NONE,
                 INDEX_NONE, BUTTON_NONE,
@@ -101,8 +101,8 @@ static constexpr ReportData ds5Report PROGMEM = {
                 4, ReportData::AXIS_UI8 | ReportData::AXIS_FLIP_Y,  // AXIS
         },
         .hat = {
-                // byte, value
-                8, BIT(15), // HAT      -> U/D/L/R
+                // byte, bit
+                8, 15, // HAT      -> U/D/L/R
         }
 };
 
@@ -110,14 +110,14 @@ static constexpr ReportData ds5Report PROGMEM = {
 static constexpr ReportData ngMiniReport PROGMEM = {
         .buttons = {
                 // byte, value, controller button, output button
-                0, BIT(2),      // A        -> B1
-                0, BIT(1),      // B        -> B2
-                0, BIT(3),      // C        -> B3
-                0, BIT(0),      // D        -> B4
+                0, 2,      // A        -> B1
+                0, 1,      // B        -> B2
+                0, 3,      // C        -> B3
+                0, 0,      // D        -> B4
                 INDEX_NONE, BUTTON_NONE,
                 INDEX_NONE, BUTTON_NONE,
-                1, BIT(1),      // START    -> START
-                1, BIT(0),      // SELECT   -> SELECT
+                1, 1,      // START    -> START
+                1, 0,      // SELECT   -> SELECT
                 INDEX_NONE, BUTTON_NONE,
                 INDEX_NONE, BUTTON_NONE,
                 INDEX_NONE, BUTTON_NONE,
@@ -132,7 +132,7 @@ static constexpr ReportData ngMiniReport PROGMEM = {
         },
         .hat = {
                 // byte, value
-                2, BIT(0),      // HAT      -> U/D/L/R
+                2, 0,      // HAT      -> U/D/L/R
         }
 };
 

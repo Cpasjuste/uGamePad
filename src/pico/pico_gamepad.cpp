@@ -145,7 +145,7 @@ bool PicoGamePad::report(const uint8_t *report, uint16_t len) {
     for (int i = 0; i < MAX_BUTTONS; i++) {
         if (p_device->data->buttons[i].byte >= len) continue;
         m_buttons |= report[p_device->data->buttons[i].byte] &
-                     p_device->data->buttons[i].bit ? (1 << i) : 0;
+                     BIT(p_device->data->buttons[i].bit) ? (1 << i) : 0;
     }
 
     // process axis
