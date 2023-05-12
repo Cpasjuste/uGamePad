@@ -15,7 +15,7 @@ Config::Config(Fs *fs) {
 
 #if 1 // TESTING
     save(const_cast<Device *>(get_device_at(0)));
-    Device *dev = load(0x0079, 0x18d4);
+    auto dev = load(0x0079, 0x18d4);
     if (dev) {
         printf("device loaded: %s\r\n", dev->name);
     }

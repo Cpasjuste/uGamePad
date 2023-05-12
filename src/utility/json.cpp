@@ -18,7 +18,7 @@ std::vector<uint8_t> Json::getDevice(Device *device) {
     doc["name"] = device->name;
     doc["vendor"] = device->getVendor();
     doc["product"] = device->getProduct();
-    // min data data size
+    // min data data size for a report to be valid
     doc["min_report_size"] = device->data->min_report_size;
 
     // buttons
