@@ -11,14 +11,15 @@ using namespace uGamePad;
 
 Config::Config(Fs *fs) {
     p_fs = fs;
+    p_fs->createDirectory(p_fs->getDeviceDirectory());
 
-    // TESTING
-    //save(const_cast<Device *>(get_device_at(0)));
+#if 0 // TESTING
+    save(const_cast<Device *>(get_device_at(0)));
     Device *dev = load(0x0079, 0x18d4);
     if (dev) {
         printf("device loaded: %s\r\n", dev->name);
     }
-    // TESTING
+#endif
 }
 
 Device *Config::load(uint16_t vid, uint16_t pid) {

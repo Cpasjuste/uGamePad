@@ -10,9 +10,13 @@ namespace uGamePad {
     public:
         PicoFs();
 
+        void createDirectory(const std::string &path) override;
+
         bool writeFile(const std::string &path, const std::vector<uint8_t> &data) override;
 
         std::vector<uint8_t> readFile(const std::string &path) override;
+
+        void sync() override;
 
         DeviceInfo getDeviceInfo() override;
 

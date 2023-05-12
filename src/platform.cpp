@@ -20,7 +20,7 @@ void Platform::setup() {
 
     auto info = p_fs->getDeviceInfo();
     printf("Platform: filesystem size: %lu Bytes, used: %lu Bytes (available: %i)\r\n",
-           info.totalBytes, info.usedBytes, p_fs->isAvailable());
+           info.totalBytes, info.usedBytes, p_fs->isAvailable() ? 1 : 0);
     printf("Platform: heap size: %i\r\n", getFreeHeap());
 }
 

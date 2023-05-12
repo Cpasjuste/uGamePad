@@ -11,8 +11,26 @@ using namespace uGamePad;
 
 LinuxFs::LinuxFs() : Fs() {
     // create devices directory if needed
-    mkdir(LinuxFs::getDeviceDirectory().c_str(), 0755);
+    //mkdir(LinuxFs::getDeviceDirectory().c_str(), 0755);
     m_available = true;
+}
+
+void LinuxFs::createDirectory(const std::string &path) {
+    char *p = strdup(path.c_str());
+    char *dir = p + 1;
+
+    while (dir) {
+        dir = strchr(dir, '/');
+        if (dir) {
+            *dir = 0;
+        }
+        mkdir(p, 0777);
+        if (dir) {
+            *dir++ = '/';
+        }
+    }
+
+    free(p);
 }
 
 bool LinuxFs::writeFile(const std::string &path, const std::vector<uint8_t> &data) {

@@ -103,9 +103,9 @@ void PicoGamePad::onClockFalling() {
 
 void PicoGamePad::setOutputMode(const GamePad::Mode &mode) {
     GamePad::setOutputMode(mode);
-    Output *out = getOutputMode();
+    auto out = getOutputMode();
     if (out) {
-        printf("PicoGamePad::setOutputMode: %s\r\n", out->name);
+        printf("PicoGamePad::setOutputMode: %s\r\n", out->name.c_str());
         // setup output pins
         if (out->mode == Mode::Nes || out->mode == Mode::Snes) {
             attachInterrupt(digitalPinToInterrupt(NES_LATCH), onLatchRising, RISING);
@@ -180,7 +180,7 @@ void PicoGamePad::loop() {
 
     // handle gamepad states
     auto ui = getPlatform()->getUi();
-    if (!ui->isVisible()) {
+    if (ui && !ui->isVisible()) {
         // get output mode/mapping
         GamePad::Output *output = getOutputMode();
         // handle jamma mode

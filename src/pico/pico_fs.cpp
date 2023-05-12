@@ -10,8 +10,8 @@
 #include "utility/json.h"
 
 #include "fat12/ff_format.h"
-Adafruit_USBD_MSC usb_msc;
 extern Adafruit_SPIFlash flash;
+Adafruit_USBD_MSC usb_msc;
 FatVolume m_fatfs;
 
 int32_t msc_read_cb(uint32_t lba, void *buffer, uint32_t bufsize);
@@ -37,12 +37,14 @@ PicoFs::PicoFs() : Fs() {
         }
     }
 
-    // create devices directory if needed
-    if (!m_fatfs.exists(PicoFs::getDeviceDirectory().c_str())) {
-        m_fatfs.mkdir(PicoFs::getDeviceDirectory().c_str());
-    }
-
     m_available = true;
+}
+
+void PicoFs::createDirectory(const std::string &path) {
+    if (m_available) {
+        if (!m_fatfs.exists(path.c_str())) m_fatfs.mkdir(path.c_str(), true);
+        sync();
+    }
 }
 
 std::vector<uint8_t> PicoFs::readFile(const std::string &path) {
@@ -88,9 +90,15 @@ bool PicoFs::writeFile(const std::string &path, const std::vector<uint8_t> &data
     }
 
     file.close();
-    flash.syncBlocks();
-    m_fatfs.cacheClear();
+    sync();
     return true;
+}
+
+void PicoFs::sync() {
+    if (m_available) {
+        flash.syncBlocks();
+        m_fatfs.cacheClear();
+    }
 }
 
 Fs::DeviceInfo PicoFs::getDeviceInfo() {

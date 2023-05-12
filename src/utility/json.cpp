@@ -47,7 +47,7 @@ std::vector<uint8_t> Json::getDevice(Device *device) {
 
     // TODO: init message
 
-    std::vector<uint8_t> buffer(doc.memoryUsage());
+    std::vector<uint8_t> buffer(doc.capacity());
     size_t len = serializeJsonPretty(doc, buffer.data(), buffer.size());
     if (len == 0) {
         printf("Json::getDevice: failed to serialize device...\r\n");

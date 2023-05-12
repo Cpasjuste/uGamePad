@@ -12,6 +12,8 @@ namespace uGamePad {
 
         std::string getHomeDirectory() override { return "cmake-build-native/"; };
 
+        void createDirectory(const std::string &path) override;
+
         bool writeFile(const std::string &path, const std::vector<uint8_t> &data) override;
 
         std::vector<uint8_t> readFile(const std::string &path) override;
