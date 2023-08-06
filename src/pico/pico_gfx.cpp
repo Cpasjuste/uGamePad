@@ -10,8 +10,8 @@ using uGamePad::PicoGfx;
 
 PicoGfx::PicoGfx() : Gfx({128, 64}) {
     // init OLED display
-    Wire.setSDA(D12);
-    Wire.setSCL(D13);
+    Wire.setSDA(GPIO_OLED_SDA);
+    Wire.setSCL(GPIO_OLED_SCL);
     p_display = new Adafruit_SSD1306(m_size.x, m_size.y, &Wire, -1);
     if (!((Adafruit_SSD1306 *) p_display)->begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
         printf("PicoGfx: SSD1306 init failed\r\n");

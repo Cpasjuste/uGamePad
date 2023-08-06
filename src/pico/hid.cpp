@@ -27,7 +27,7 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t idx, uint8_t const *report_desc,
     auto device = get_device(vid, pid);
     if (!device) {
         // gamepad not found from devices table, try from (user) flash filesystem
-        device = getPlatform()->getConfig()->load(vid, pid);
+        device = getPlatform()->getConfig()->loadDevice(vid, pid);
     }
 
     // a know controller was plugged in (see devices.c)

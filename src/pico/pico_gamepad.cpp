@@ -9,7 +9,6 @@
 #include "utility/utility.h"
 #include "pico_gamepad.h"
 
-
 using namespace uGamePad;
 
 static PicoGamePad *s_picoGamePad = nullptr;
@@ -29,48 +28,48 @@ PicoGamePad::PicoGamePad() : GamePad() {
                     .name = "Jamma",
                     .mode = GamePad::Mode::Jamma,
                     .mappings = {
-                            {GamePad::Button::B1, D3, OUTPUT, HIGH},
-                            {GamePad::Button::B2, D4, OUTPUT, HIGH},
-                            {GamePad::Button::B3, D5, OUTPUT, HIGH},
-                            {GamePad::Button::B4, D9, OUTPUT, HIGH},
-#if !defined(DEBUG_RP2040_ZERO) // used by tx/rx serial debug
-                            {GamePad::Button::B5, D0, OUTPUT, HIGH},
-                            {GamePad::Button::B6, D1, OUTPUT, HIGH},
+                            {GamePad::Button::B1, GPIO_BTN_B1, OUTPUT, HIGH},
+                            {GamePad::Button::B2, GPIO_BTN_B2, OUTPUT, HIGH},
+                            {GamePad::Button::B3, GPIO_BTN_B3, OUTPUT, HIGH},
+                            {GamePad::Button::B4, GPIO_BTN_B4, OUTPUT, HIGH},
+#if !defined(UGP_DEBUG) || defined(UGP_DEV_BOARD) // used by tx/rx serial debug
+                            {GamePad::Button::B5, GPIO_BTN_B5, OUTPUT, HIGH},
+                            {GamePad::Button::B6, GPIO_BTN_B6, OUTPUT, HIGH},
 #endif
-                            {GamePad::Button::SELECT, D8, OUTPUT, HIGH},
-                            {GamePad::Button::START, D6, OUTPUT, HIGH},
-                            {GamePad::Button::UP, D10, OUTPUT, HIGH},
-                            {GamePad::Button::DOWN, D11, OUTPUT, HIGH},
-                            {GamePad::Button::LEFT, D2, OUTPUT, HIGH},
-                            {GamePad::Button::RIGHT, D7, OUTPUT, HIGH},
+                            {GamePad::Button::SELECT, GPIO_BTN_SELECT, OUTPUT, HIGH},
+                            {GamePad::Button::START, GPIO_BTN_START, OUTPUT, HIGH},
+                            {GamePad::Button::UP, GPIO_BTN_UP, OUTPUT, HIGH},
+                            {GamePad::Button::DOWN, GPIO_BTN_DOWN, OUTPUT, HIGH},
+                            {GamePad::Button::LEFT, GPIO_BTN_LEFT, OUTPUT, HIGH},
+                            {GamePad::Button::RIGHT, GPIO_BTN_RIGHT, OUTPUT, HIGH},
                     }
             },
             {
                     .name = "Nes",
                     .mode = GamePad::Mode::Nes,
                     .mappings = {
-                            {GamePad::Button::B2,     NES_LATCH, -1,     -1},   // use interrupts
-                            {GamePad::Button::B1,     NES_CLOCK, -1,     -1},   // use interrupts
-                            {GamePad::Button::SELECT, NES_DATA,  OUTPUT, HIGH},
-                            {GamePad::Button::START,  UINT8_MAX, -1,     -1},
-                            {GamePad::Button::UP,     UINT8_MAX, -1,     -1},
-                            {GamePad::Button::DOWN,   UINT8_MAX, -1,     -1},
-                            {GamePad::Button::LEFT,   UINT8_MAX, -1,     -1},
-                            {GamePad::Button::RIGHT,  UINT8_MAX, -1,     -1},
+                            {GamePad::Button::B2,     GPIO_NES_LATCH, -1,     -1},   // use interrupts
+                            {GamePad::Button::B1,     GPIO_NES_CLOCK, -1,     -1},   // use interrupts
+                            {GamePad::Button::SELECT, GPIO_NES_DATA,  OUTPUT, HIGH},
+                            {GamePad::Button::START,  UINT8_MAX,      -1,     -1},
+                            {GamePad::Button::UP,     UINT8_MAX,      -1,     -1},
+                            {GamePad::Button::DOWN,   UINT8_MAX,      -1,     -1},
+                            {GamePad::Button::LEFT,   UINT8_MAX,      -1,     -1},
+                            {GamePad::Button::RIGHT,  UINT8_MAX,      -1,     -1},
                     }
             },
             {
                     .name = "Snes",
                     .mode = GamePad::Mode::Snes,
                     .mappings = {
-                            {GamePad::Button::B2,     NES_LATCH, -1,     -1},   // use interrupts
-                            {GamePad::Button::B1,     NES_CLOCK, -1,     -1},   // use interrupts
-                            {GamePad::Button::SELECT, NES_DATA,  OUTPUT, HIGH},
-                            {GamePad::Button::START,  UINT8_MAX, -1,     -1},
-                            {GamePad::Button::UP,     UINT8_MAX, -1,     -1},
-                            {GamePad::Button::DOWN,   UINT8_MAX, -1,     -1},
-                            {GamePad::Button::LEFT,   UINT8_MAX, -1,     -1},
-                            {GamePad::Button::RIGHT,  UINT8_MAX, -1,     -1},
+                            {GamePad::Button::B2,     GPIO_NES_LATCH, -1,     -1},   // use interrupts
+                            {GamePad::Button::B1,     GPIO_NES_CLOCK, -1,     -1},   // use interrupts
+                            {GamePad::Button::SELECT, GPIO_NES_DATA,  OUTPUT, HIGH},
+                            {GamePad::Button::START,  UINT8_MAX,      -1,     -1},
+                            {GamePad::Button::UP,     UINT8_MAX,      -1,     -1},
+                            {GamePad::Button::DOWN,   UINT8_MAX,      -1,     -1},
+                            {GamePad::Button::LEFT,   UINT8_MAX,      -1,     -1},
+                            {GamePad::Button::RIGHT,  UINT8_MAX,      -1,     -1},
                     }
             },
             {
@@ -91,13 +90,13 @@ PicoGamePad::PicoGamePad() : GamePad() {
 
 void PicoGamePad::onLatchRising() {
     Output *out = s_picoGamePad->getOutputMode();
-    digitalWrite(NES_DATA, s_picoGamePad->getButtons() & out->mappings[m_clock_count].button ? LOW : HIGH);
+    digitalWrite(GPIO_NES_DATA, s_picoGamePad->getButtons() & out->mappings[m_clock_count].button ? LOW : HIGH);
     m_clock_count = 1;
 }
 
 void PicoGamePad::onClockFalling() {
     Output *out = s_picoGamePad->getOutputMode();
-    digitalWrite(NES_DATA, s_picoGamePad->getButtons() & out->mappings[m_clock_count].button ? LOW : HIGH);
+    digitalWrite(GPIO_NES_DATA, s_picoGamePad->getButtons() & out->mappings[m_clock_count].button ? LOW : HIGH);
     m_clock_count++;
 }
 
@@ -108,11 +107,11 @@ void PicoGamePad::setOutputMode(const GamePad::Mode &mode) {
         printf("PicoGamePad::setOutputMode: %s\r\n", out->name.c_str());
         // setup output pins
         if (out->mode == Mode::Nes || out->mode == Mode::Snes) {
-            attachInterrupt(digitalPinToInterrupt(NES_LATCH), onLatchRising, RISING);
-            attachInterrupt(digitalPinToInterrupt(NES_CLOCK), onClockFalling, FALLING);
+            attachInterrupt(digitalPinToInterrupt(GPIO_NES_LATCH), onLatchRising, RISING);
+            attachInterrupt(digitalPinToInterrupt(GPIO_NES_CLOCK), onClockFalling, FALLING);
         } else {
-            detachInterrupt(digitalPinToInterrupt(NES_LATCH));
-            detachInterrupt(digitalPinToInterrupt(NES_CLOCK));
+            detachInterrupt(digitalPinToInterrupt(GPIO_NES_LATCH));
+            detachInterrupt(digitalPinToInterrupt(GPIO_NES_CLOCK));
         }
 
         for (auto &mapping: out->mappings) {
@@ -176,7 +175,10 @@ void PicoGamePad::loop() {
     // handle hardware buttons
     if (!digitalRead(GPIO_BUTTON_UP)) m_buttons |= GamePad::Button::UP;
     if (!digitalRead(GPIO_BUTTON_DOWN)) m_buttons |= GamePad::Button::DOWN;
-    if (!digitalRead(GPIO_BUTTON_ENTER)) m_buttons |= GamePad::Button::START;
+    if (!digitalRead(GPIO_BUTTON_ENTER)) {
+        m_buttons |= GamePad::Button::START;
+        m_buttons |= GamePad::Button::MENU;
+    }
 
     // handle gamepad states
     auto ui = getPlatform()->getUi();
@@ -193,7 +195,7 @@ void PicoGamePad::loop() {
             if (m_buttons_diff) {
                 // generate pin output
                 for (const auto &mapping: output->mappings) {
-                    if (m_buttons_diff & mapping.button) {
+                    if (mapping.pin != UINT8_MAX && m_buttons_diff & mapping.button) {
                         digitalWrite(mapping.pin, buttons & mapping.button ? LOW : HIGH);
                     }
                 }

@@ -5,11 +5,6 @@
 #ifndef U_GAMEPAD_PICO_GAMEPAD_H
 #define U_GAMEPAD_PICO_GAMEPAD_H
 
-// nes pins
-#define NES_LATCH   D2
-#define NES_CLOCK   D3
-#define NES_DATA    D4
-
 namespace uGamePad {
     class PicoGamePad : public GamePad {
     public:

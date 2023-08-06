@@ -78,7 +78,9 @@ void Ui::loop() {
     // check for menu combo keys
     if (!p_screen->isVisible()) {
         uint16_t buttons = getPlatform()->getPad()->getButtons();
-        if (buttons & GamePad::Button::START && buttons & GamePad::Button::SELECT) {
+        if (buttons & GamePad::Button::MENU) {
+            show(MenuWidget::MainMenu);
+        } else if (buttons & GamePad::Button::START && buttons & GamePad::Button::SELECT) {
             if (m_triggerMenuClock.getElapsedTime().asSeconds() > 1) {
                 show(MenuWidget::MainMenu);
             }

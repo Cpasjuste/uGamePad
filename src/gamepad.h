@@ -32,7 +32,8 @@ namespace uGamePad {
             RIGHT = BIT(9),
             UP = BIT(10),
             DOWN = BIT(11),
-            DELAY = BIT(12)
+            MENU = BIT(12),
+            DELAY = BIT(13)
         };
 
         enum Mode {

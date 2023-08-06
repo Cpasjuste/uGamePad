@@ -5,7 +5,6 @@
 #include <Arduino.h>
 #include "tusb.h"
 #include "main.h"
-#include "utility/clock.h"
 #include "pico_platform.h"
 
 using namespace uGamePad;
@@ -13,10 +12,16 @@ using namespace uGamePad;
 PicoPlatform::PicoPlatform() = default;
 
 void PicoPlatform::setup() {
+    // if debugging on retail board, add a delay for serial init
+#if defined(UGP_DEBUG) && !defined(UGP_DEV_BOARD)
+    delay(2000);
+#endif
+#if defined(UGP_DEBUG)
     // setup serial debug
-    Debug.setTX(PIN_TX);
-    Debug.setRX(PIN_RX);
+    Debug.setTX(GPIO_TX);
+    Debug.setRX(GPIO_RX);
     Debug.begin();
+#endif
 
     // init filesystem
     p_fs = new PicoFs();

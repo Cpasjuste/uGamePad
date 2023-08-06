@@ -1,5 +1,10 @@
 # uGamePad
 
+## uGamePad v1.1 (USB-A)
+Soldering order:
+* 1 - 
+
+
 ## Nintendo Nes
 
 Resources :

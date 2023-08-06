@@ -24,7 +24,7 @@ Menu::Menu() : Rectangle({0, 0}, getPlatform()->getGfx()->getSize()) {
         Menu::add(line);
     }
 
-    // build options
+    // add option items
     std::vector<std::string> modes;
     for (const auto &out: getPlatform()->getPad()->getOutputModes()) {
         modes.push_back(out.name);
@@ -97,6 +97,9 @@ void Menu::loop(const Utility::Vec2i &pos) {
             getPlatform()->getUi()->show(Ui::MenuWidget::GamePadTest);
         } else if (m_options[option_index].name == "EXIT") {
             getPlatform()->getUi()->show(Ui::MenuWidget::Splash);
+        } else {
+            m_options[option_index].next();
+            update();
         }
     }
 
