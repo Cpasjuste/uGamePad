@@ -12,6 +12,8 @@
 #include "utility/utility.h"
 #include "utility/clock.h"
 
+#define TODO_NES_SNES_CABLES
+
 #define MAX_BUTTONS 12
 #define MAX_AXIS 4
 #define DEAD_ZONE 4000
@@ -52,7 +54,7 @@ namespace uGamePad {
 
         struct Output {
             std::string name;
-            Mode mode = Mode::Nes;
+            Mode mode = Mode::Jamma;
             std::vector<PinMapping> mappings;
         };
 

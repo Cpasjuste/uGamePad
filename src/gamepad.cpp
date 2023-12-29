@@ -6,7 +6,6 @@
 #include "main.h"
 #include "gamepad.h"
 
-
 using namespace uGamePad;
 
 GamePad::GamePad() {
@@ -92,8 +91,8 @@ uint16_t GamePad::getButtonsFromAxis(int x, int y, uint8_t type) {
 }
 
 void GamePad::lerp(Utility::Vec2i *dest, Utility::Vec2i *first, Utility::Vec2i *second, float t) {
-    dest->x = (int16_t) ((float) first->x + ((float) second->x - (float) first->x) * t);
-    dest->y = (int16_t) ((float) first->y + ((float) second->y - (float) first->y) * t);
+    dest->x = (int16_t)((float) first->x + ((float) second->x - (float) first->x) * t);
+    dest->y = (int16_t)((float) first->y + ((float) second->y - (float) first->y) * t);
 }
 
 int GamePad::bezierY(float t) {

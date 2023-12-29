@@ -9,7 +9,9 @@ using namespace uGamePad;
 
 LinuxGamePad::LinuxGamePad() : GamePad() {
     // for linux ui debug/testing
+#ifndef TODO_NES_SNES_CABLES
     for (int i = 0; i < 4; i++) {
+#endif
         m_outputModes.push_back(
                 {
                         .name = "Jamma",
@@ -30,6 +32,7 @@ LinuxGamePad::LinuxGamePad() : GamePad() {
                         }
                 }
         );
+#ifndef TODO_NES_SNES_CABLES
     }
 
     m_outputModes[1].name = "Nes";
@@ -38,6 +41,7 @@ LinuxGamePad::LinuxGamePad() : GamePad() {
     m_outputModes[2].mode = Mode::Snes;
     m_outputModes[3].name = "MD";
     m_outputModes[3].mode = Mode::Md;
+#endif
 
     LinuxGamePad::setOutputMode(m_outputMode);
 }

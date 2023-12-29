@@ -44,6 +44,7 @@ PicoGamePad::PicoGamePad() : GamePad() {
                             {GamePad::Button::RIGHT, GPIO_BTN_RIGHT, OUTPUT, HIGH},
                     }
             },
+#ifndef TODO_NES_SNES_CABLES
             {
                     .name = "Nes",
                     .mode = GamePad::Mode::Nes,
@@ -79,6 +80,7 @@ PicoGamePad::PicoGamePad() : GamePad() {
                             // TODO
                     }
             }
+#endif
     };
 
     // setup output pins

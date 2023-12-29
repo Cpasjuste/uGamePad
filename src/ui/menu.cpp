@@ -17,21 +17,29 @@ Menu::Menu() : Rectangle({0, 0}, getPlatform()->getGfx()->getSize()) {
 
     // lines
     for (uint8_t i = 0; i < max_lines; i++) {
-        auto y = (int16_t) ((line_height * i) + 2);
-        auto w = (int16_t) (Menu::getSize().x - 2);
+        auto y = (int16_t)((line_height * i) + 2);
+        auto w = (int16_t)(Menu::getSize().x - 2);
         auto line = new MenuLine({1, y, w, line_height});
         p_lines.push_back(line);
         Menu::add(line);
     }
 
     // add option items
-    std::vector<std::string> modes;
+    std::vector <std::string> modes;
     for (const auto &out: getPlatform()->getPad()->getOutputModes()) {
         modes.push_back(out.name);
     }
     m_options.push_back({"OUTPUT MODE", modes});
-    m_options.push_back({"BUTTONS REMAP", {"GO"}});
+#ifdef WIP_DISABLE_OPTION_REMAP
+    m_options.push_back({"BUTTONS REMAP", {"TODO"}});
+#else
+    m_options.push_back({"BUTTONS REMAP", {"TODO"}});
+#endif
+#ifdef WIP_DISABLE_OPTION_AUTO_FIRE
+    m_options.push_back({"AUTO FIRE", {"TODO"}});
+#else
     m_options.push_back({"AUTO FIRE", {"OFF", "ON"}});
+#endif
     m_options.push_back({"GAMEPAD TEST", {"GO"}});
     m_options.push_back({"EXIT", {"GO"}});
 

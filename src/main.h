@@ -5,6 +5,9 @@
 #ifndef U_GAMEPAD_MAIN_H
 #define U_GAMEPAD_MAIN_H
 
+#define WIP_DISABLE_OPTION_REMAP
+#define WIP_DISABLE_OPTION_AUTO_FIRE
+
 #include "gamepad.h"
 #include "fs.h"
 #include "config.h"
