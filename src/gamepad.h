@@ -88,7 +88,7 @@ namespace uGamePad {
         uint16_t m_buttons{0};
         uint16_t m_buttons_prev{0};
         Clock m_repeatClock;
-        uint16_t m_repeatDelayMs = 500;
+        uint16_t m_repeatDelayMs = 1000;
         std::vector<GamePad::Output> m_outputModes;
         Mode m_outputMode = Mode::Jamma;
 

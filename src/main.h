@@ -5,6 +5,8 @@
 #ifndef U_GAMEPAD_MAIN_H
 #define U_GAMEPAD_MAIN_H
 
+#define VERSION "1.1.0"
+
 #define WIP_DISABLE_OPTION_REMAP
 #define WIP_DISABLE_OPTION_AUTO_FIRE
 
