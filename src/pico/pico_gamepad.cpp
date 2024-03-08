@@ -140,13 +140,13 @@ bool PicoGamePad::report(const uint8_t *report, uint16_t len) {
     if (len < p_device->data->min_report_size) return true;
 
     // reset buttons state
-    m_buttons = 0;
+    uint16_t buttons = 0;
 
     // process buttons
     for (int i = 0; i < MAX_BUTTONS; i++) {
         if (p_device->data->buttons[i].byte >= len) continue;
-        m_buttons |= report[p_device->data->buttons[i].byte] &
-                     BIT(p_device->data->buttons[i].bit) ? (1 << i) : 0;
+        buttons |= report[p_device->data->buttons[i].byte] &
+                   BIT(p_device->data->buttons[i].bit) ? (1 << i) : 0;
     }
 
     // process axis
@@ -155,32 +155,29 @@ bool PicoGamePad::report(const uint8_t *report, uint16_t len) {
         if (p_device->data->axis[i].type & ReportData::AxisType::AXIS_I16) {
             int16_t x = (int16_t &) report[p_device->data->axis[i].byte];
             int16_t y = (int16_t &) report[p_device->data->axis[i + 1].byte];
-            m_buttons |= GamePad::getButtonsFromAxis(x, y, p_device->data->axis[i].type);
+            buttons |= GamePad::getButtonsFromAxis(x, y, p_device->data->axis[i].type);
         } else if (p_device->data->axis[i].type & ReportData::AxisType::AXIS_UI8) {
             uint8_t x = (uint8_t &) report[p_device->data->axis[i].byte];
             uint8_t y = (uint8_t &) report[p_device->data->axis[i + 1].byte];
-            m_buttons |= GamePad::getButtonsFromAxis(x, y, p_device->data->axis[i].type);
+            buttons |= GamePad::getButtonsFromAxis(x, y, p_device->data->axis[i].type);
         }
     }
 
     // process hat
     if (p_device->data->hat.byte < len) {
-        m_buttons |= GamePad::getButtonsFromHat(report[p_device->data->hat.byte]);
+        buttons |= GamePad::getButtonsFromHat(report[p_device->data->hat.byte]);
     }
 
-    if (m_buttons != 0) printf("%s: %s\r\n", p_device->name, Utility::toString(m_buttons).c_str());
-
-    return true;
-}
-
-void PicoGamePad::loop() {
     // handle hardware buttons
-    if (!digitalRead(GPIO_BUTTON_UP)) m_buttons |= GamePad::Button::UP;
-    if (!digitalRead(GPIO_BUTTON_DOWN)) m_buttons |= GamePad::Button::DOWN;
+    if (!digitalRead(GPIO_BUTTON_UP)) buttons |= GamePad::Button::UP;
+    if (!digitalRead(GPIO_BUTTON_DOWN)) buttons |= GamePad::Button::DOWN;
     if (!digitalRead(GPIO_BUTTON_ENTER)) {
-        m_buttons |= GamePad::Button::START;
-        m_buttons |= GamePad::Button::MENU;
+        buttons |= GamePad::Button::START;
+        buttons |= GamePad::Button::MENU;
     }
+
+    //
+    m_buttons = buttons;
 
     // handle gamepad states
     auto ui = getPlatform()->getUi();
@@ -189,9 +186,7 @@ void PicoGamePad::loop() {
         GamePad::Output *output = getOutputMode();
         // handle jamma mode
         if (output->mode == GamePad::Mode::Jamma) {
-            // get gamepad sate
-            uint16_t buttons = getButtons();
-            // only send buttons changed states
+            // set gpio sates, only send buttons changed states
             m_buttons_diff = m_buttons_old ^ buttons;
             m_buttons_old = buttons;
             if (m_buttons_diff) {
@@ -199,11 +194,15 @@ void PicoGamePad::loop() {
                 for (const auto &mapping: output->mappings) {
                     if (mapping.pin != UINT8_MAX && m_buttons_diff & mapping.button) {
                         digitalWrite(mapping.pin, buttons & mapping.button ? LOW : HIGH);
+#ifndef NDEBUG
+                        printf("%s: %s (%i)\r\n", p_device->name,
+                               Utility::toString(mapping.button).c_str(), buttons & mapping.button ? 1 : 0);
+#endif
                     }
                 }
             }
         }
     }
 
-    GamePad::loop();
+    return true;
 }

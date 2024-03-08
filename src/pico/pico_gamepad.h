@@ -14,8 +14,6 @@ namespace uGamePad {
 
         void setOutputMode(const Mode &mode) override;
 
-        void loop() override;
-
     private:
         static void onLatchRising();
 
