@@ -23,11 +23,11 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t idx, uint8_t const *report_desc,
     //printf("mount_cb: vid: %x, pid: %x, addr: %i, instance: %i, len: %i\r\n",
     //       vid, pid, dev_addr, idx, desc_len);
 
-    // try to find the gamepad device from devices table
-    auto device = get_device(vid, pid);
+    // first try to find gamepad device configuration from (user) flash filesystem
+    const Device *device = getPlatform()->getConfig()->loadDevice(vid, pid);
     if (!device) {
-        // gamepad not found from devices table, try from (user) flash filesystem
-        device = getPlatform()->getConfig()->loadDevice(vid, pid);
+        // now try to find the gamepad device from devices table
+        device = get_device(vid, pid);
     }
 
     // a know controller was plugged in (see devices.c)

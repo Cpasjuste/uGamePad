@@ -2,7 +2,6 @@
 // Created by cpasjuste on 24/03/23.
 //
 
-#include <complex>
 #include "main.h"
 #include "gamepad.h"
 
