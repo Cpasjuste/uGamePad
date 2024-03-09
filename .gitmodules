@@ -7,3 +7,9 @@
 [submodule "lib/SdFat"]
 	path = lib/SdFat
 	url = https://github.com/adafruit/SdFat
+[submodule "libpico2d"]
+	path = libpico2d
+	url = git@github.com:Cpasjuste/libpico2d.git
+[submodule "external/tinyusb"]
+	path = external/tinyusb
+	url = git@github.com:Cpasjuste/tinyusb.git
