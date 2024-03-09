@@ -5,7 +5,7 @@
 #ifndef U_GAMEPAD_PLATFORM_H
 #define U_GAMEPAD_PLATFORM_H
 
-//#include "fs.h"
+#include "fs.h"
 //#include "config.h"
 #include "gamepad.h"
 #include "gfx.h"
@@ -26,7 +26,7 @@ namespace uGamePad {
 
         virtual Ui *getUi() { return p_ui; };
 
-        //virtual Fs *getFs() { return p_fs; };
+        virtual Fs *getFs() { return p_fs; };
 
         //virtual Config *getConfig() { return p_config; };
 
@@ -36,7 +36,7 @@ namespace uGamePad {
         Gfx *p_gfx = nullptr;
         GamePad *p_pad = nullptr;
         Ui *p_ui = nullptr;
-        //Fs *p_fs = nullptr;
+        Fs *p_fs = nullptr;
         //Config *p_config = nullptr;
     };
 }

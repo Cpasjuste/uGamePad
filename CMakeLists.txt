@@ -29,6 +29,7 @@ endif ()
 # set source files
 file(GLOB SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/fatfs/*.c*
         ${CMAKE_CURRENT_SOURCE_DIR}/src/ui/*.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/ui/widgets/*.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/utility/*.cpp
@@ -37,6 +38,7 @@ file(GLOB SOURCES
 )
 set(INCLUDES
         ${CMAKE_CURRENT_SOURCE_DIR}/src
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/fatfs
         ${CMAKE_CURRENT_SOURCE_DIR}/src/ui
         ${CMAKE_CURRENT_SOURCE_DIR}/src/ui/widgets
         ${CMAKE_CURRENT_SOURCE_DIR}/src/utility

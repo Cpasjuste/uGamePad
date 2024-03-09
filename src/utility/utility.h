@@ -98,7 +98,11 @@ namespace uGamePad {
 
         static void reboot(bool bootloader = false);
 
+        static std::string baseName(const std::string &path);
+
         static std::string toString(uint32_t button);
+
+        static std::string parseSize(uint64_t size);
     };
 }
 

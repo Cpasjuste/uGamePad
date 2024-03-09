@@ -16,9 +16,10 @@
 #include "linux_platform.h"
 #include "linux_gamepad.h"
 #include "linux_gfx.h"
-#include "linux_fs.h"
 #else
 #include "pico_platform.h"
+#include "pico_gamepad.h"
+#include "pico_gfx.h"
 #endif
 
 extern uGamePad::Platform *getPlatform();
