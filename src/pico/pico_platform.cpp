@@ -3,7 +3,7 @@
 //
 
 #include <pico/stdio.h>
-#include <bsp/board.h>
+#include <bsp/board_api.h>
 #include "tusb.h"
 #include "main.h"
 #include "pico_platform.h"
@@ -34,7 +34,7 @@ void PicoPlatform::setup() {
     //p_config = new Config(p_fs);
 
     // init gfx
-    //p_gfx = new PicoGfx();
+    p_gfx = new PicoGfx();
 
     // init gamepad
     p_pad = new PicoGamePad();

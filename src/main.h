@@ -10,14 +10,7 @@
 #define WIP_DISABLE_OPTION_REMAP
 #define WIP_DISABLE_OPTION_AUTO_FIRE
 
-#include "gamepad.h"
 #include "platform.h"
-/*
-#include "fs.h"
-#include "config.h"
-#include "gfx.h"
-#include "ui.h"
-*/
 
 #if LINUX
 #include "linux_platform.h"
@@ -26,9 +19,6 @@
 #include "linux_fs.h"
 #else
 #include "pico_platform.h"
-#include "pico_gamepad.h"
-//#include "pico_gfx.h"
-//#include "pico_fs.h"
 #endif
 
 extern uGamePad::Platform *getPlatform();

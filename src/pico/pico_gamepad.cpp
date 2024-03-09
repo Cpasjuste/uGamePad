@@ -197,7 +197,6 @@ bool PicoGamePad::report(const uint8_t *report, uint16_t len) {
     // for ui
     m_buttons = buttons;
 
-#if 0
     // handle gamepad states
     auto ui = getPlatform()->getUi();
     if (ui && !ui->isVisible()) {
@@ -224,6 +223,6 @@ bool PicoGamePad::report(const uint8_t *report, uint16_t len) {
             }
         }
     }
-#endif
+
     return true;
 }

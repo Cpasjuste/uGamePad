@@ -7,7 +7,7 @@
 using namespace uGamePad;
 
 void Platform::setup() {
-    //p_ui = new Ui();
+    p_ui = new Ui();
 
     // motd
     printf("        _____                      _____          _ \r\n"
@@ -28,5 +28,5 @@ void Platform::setup() {
 
 void uGamePad::Platform::loop() {
     p_pad->loop();
-    //p_ui->loop();
+    p_ui->loop();
 }

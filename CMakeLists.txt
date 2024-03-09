@@ -1,7 +1,11 @@
 cmake_minimum_required(VERSION 3.5)
 #set(CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "ON")
 
+# linux
 option(PLATFORM_LINUX "Linux target platform" OFF)
+# pico options
+option(PICO_DEBUG_UART "Pico uart debug" OFF)
+option(PICO_DEBUG_USB "Pico usb debug" OFF)
 
 if (NOT PLATFORM_LINUX)
     set(ENV{PICO_SDK_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/external/pico-sdk)
@@ -15,16 +19,9 @@ if (NOT PLATFORM_LINUX)
     include(${CMAKE_CURRENT_SOURCE_DIR}/external/pico-sdk/external/pico_sdk_import.cmake)
 endif ()
 
-# pico options
-option(PICO_DEBUG_UART "Pico uart debug" OFF)
-option(PICO_DEBUG_USB "Pico usb debug" OFF)
-
 project(uGamePad)
 
-if (PLATFORM_LINUX)
-    # i want all executable located at root of build directory
-    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR} CACHE STRING "" FORCE)
-else ()
+if (NOT PLATFORM_LINUX)
     # initialize the Raspberry Pi Pico SDK
     pico_sdk_init()
 endif ()
@@ -32,17 +29,26 @@ endif ()
 # set source files
 file(GLOB SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/ui/*.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/ui/widgets/*.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/utility/*.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/compat/*.c*
+        ${CMAKE_CURRENT_SOURCE_DIR}/external/Adafruit-GFX-Library/Adafruit_GFX.cpp
 )
 set(INCLUDES
         ${CMAKE_CURRENT_SOURCE_DIR}/src
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/ui
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/ui/widgets
         ${CMAKE_CURRENT_SOURCE_DIR}/src/utility
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/compat
+        ${CMAKE_CURRENT_SOURCE_DIR}/external/Adafruit-GFX-Library
 )
+set(FLAGS -DARDUINO=123)
 set(LIBS)
-set(FLAGS)
 
 if (PLATFORM_LINUX)
-
+    # i want all executable located at root of build directory
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR} CACHE STRING "" FORCE)
 else ()
     file(GLOB TEMP
             ${CMAKE_CURRENT_SOURCE_DIR}/src/pico/*.cpp
@@ -53,7 +59,9 @@ else ()
             ${CMAKE_CURRENT_SOURCE_DIR}/src/pico
             ${CMAKE_CURRENT_SOURCE_DIR}/src/pico/hid
     )
-    list(APPEND LIBS pico_stdlib tinyusb_host tinyusb_board)
+    list(APPEND LIBS
+            hardware_i2c
+            pico_stdlib tinyusb_host tinyusb_board)
 endif ()
 
 ####################

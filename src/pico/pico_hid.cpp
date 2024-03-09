@@ -411,25 +411,20 @@ extern "C" {
 
 void tuh_mount_cb(uint8_t dev_addr) {
     // application set-up
-    printf("tuh_mount_cb: new device discovered, address: %i\r\n", dev_addr);
-    //tuh_descriptor_get_device(dev_addr, &desc_device, 18, print_device_descriptor, 0);
+    printf("tuh_mount_cb: new device discovered, address: %d\r\n", dev_addr);
 
 }
 
 void tuh_umount_cb(uint8_t dev_addr) {
     // application tear-down
-    printf("A device with address %d is unmounted \r\n", dev_addr);
-    //free_hid_buf(dev_addr);
+    printf("tuh_umount_cb: device unmounted, address: %d\r\n", dev_addr);
 }
 }
 
-// Each HID instance can have multiple reports
 static struct {
     uint8_t report_count;
     tuh_hid_report_info_t report_info[MAX_REPORT];
 } hid_info[CFG_TUH_HID];
-
-static void process_generic_report(uint8_t dev_addr, uint8_t instance, uint8_t const *report, uint16_t len);
 
 void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *desc_report, uint16_t desc_len) {
     uint16_t vid, pid;
@@ -476,89 +471,79 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *desc_re
     }
 }
 
-// Invoked when device with hid interface is un-mounted
 void tuh_hid_umount_cb(uint8_t dev_addr, uint8_t instance) {
-    printf("HID device address = %d, instance = %d is unmounted\r\n", dev_addr, instance);
+    printf("umount_cb: device unmounted (address: %d, instance: %d)\r\n", dev_addr, instance);
 }
 
-// Invoked when received report from device via interrupt endpoint
 void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *report, uint16_t len) {
-    uint8_t const itf_protocol = tuh_hid_interface_protocol(dev_addr, instance);
-
-    printf("tuh_hid_report_received_cb\r\n");
-
-    switch (itf_protocol) {
-        case HID_ITF_PROTOCOL_KEYBOARD:
-            TU_LOG2("HID receive boot keyboard report\r\n");
-            break;
-        case HID_ITF_PROTOCOL_MOUSE:
-            TU_LOG2("HID receive boot mouse report\r\n");
-            break;
-        default:
-            // Generic report requires matching ReportID and contents with previous parsed report info
-            process_generic_report(dev_addr, instance, report, len);
-            break;
-    }
-
-    // continue to request to receive report
-    if (!tuh_hid_receive_report(dev_addr, instance)) {
-        printf("Error: cannot request to receive report\r\n");
-    }
-}
-
-//--------------------------------------------------------------------+
-// Generic Report
-//--------------------------------------------------------------------+
-static void process_generic_report(uint8_t dev_addr, uint8_t instance, uint8_t const *report, uint16_t len) {
-    (void) dev_addr;
-
     uint8_t const rpt_count = hid_info[instance].report_count;
     tuh_hid_report_info_t *rpt_info_arr = hid_info[instance].report_info;
     tuh_hid_report_info_t *rpt_info = nullptr;
+    uint16_t vid, pid;
 
-    if (rpt_count == 1 && rpt_info_arr[0].report_id == 0) {
-        // Simple report without report ID as 1st byte
-        rpt_info = &rpt_info_arr[0];
-    } else {
-        // Composite report, 1st byte is report ID, data starts from 2nd byte
-        uint8_t const rpt_id = report[0];
+    auto pad = (PicoGamePad *) getPlatform()->getPad();
+    if (!pad || pad->isUnknown()) return;
 
-        // Find report id in the array
-        for (uint8_t i = 0; i < rpt_count; i++) {
-            if (rpt_id == rpt_info_arr[i].report_id) {
-                rpt_info = &rpt_info_arr[i];
-                break;
-            }
-        }
-
-        report++;
-        len--;
-    }
-
-    if (!rpt_info) {
-        printf("Couldn't find the report info for this report !\r\n");
+    tuh_vid_pid_get(dev_addr, &vid, &pid);
+    if (pad->getDevice()->product != pid || pad->getDevice()->vendor != vid) {
+        printf("tuh_hid_report_received_cb: skipping data, wrong vid or pid for %s...\r\n", pad->getDevice()->name);
+        tuh_hid_receive_report(dev_addr, instance);
         return;
     }
 
-    // For complete list of Usage Page & Usage checkout src/class/hid/hid.h. For examples:
-    // - Keyboard                     : Desktop, Keyboard
-    // - Mouse                        : Desktop, Mouse
-    // - Gamepad                      : Desktop, Gamepad
-    // - Consumer Control (Media Key) : Consumer, Consumer Control
-    // - System Control (Power key)   : Desktop, System Control
-    // - Generic (vendor)             : 0xFFxx, xx
-    if (rpt_info->usage_page == HID_USAGE_PAGE_DESKTOP) {
-        switch (rpt_info->usage) {
-            case HID_USAGE_DESKTOP_KEYBOARD:
-                TU_LOG1("HID receive keyboard report\r\n");
-                break;
-
-            case HID_USAGE_DESKTOP_MOUSE:
-                TU_LOG1("HID receive mouse report\r\n");
-                break;
-            default:
-                printf("HID receive unknown report\r\n");
-                break;
+    //printf("tuh_hid_report_received_cb: addr: %i, instance: %i, len: %i\r\n", dev_addr, instance, len);
+    if (!pad->report(report, len)) {
+        // try to handle generic pads
+        if (rpt_count == 1 && rpt_info_arr[0].report_id == 0) {
+            // simple data without data ID as 1st byte
+            rpt_info = &rpt_info_arr[0];
+        } else {
+            // composite data, 1st byte is data ID, data starts from 2nd byte
+            uint8_t const rpt_id = report[0];
+            // find data id in the arrray
+            for (uint8_t i = 0; i < rpt_count; i++) {
+                if (rpt_id == rpt_info_arr[i].report_id) {
+                    rpt_info = &rpt_info_arr[i];
+                    break;
+                }
+            }
+            report++;
+            len--;
         }
+
+        if (!rpt_info) {
+            printf("tuh_hid_report_received_cb: couldn't find the data info for this data !\r\n");
+            return;
+        }
+
+        //printf("usage %d, %d\n", rpt_info->usage_page, rpt_info->usage);
+        if (rpt_info->usage_page == HID_USAGE_PAGE_DESKTOP) {
+            switch (rpt_info->usage) {
+                case HID_USAGE_DESKTOP_MOUSE:
+                case HID_USAGE_DESKTOP_KEYBOARD:
+                    //TU_LOG1("HID receive mouse/keyboard data\n");
+                    break;
+                case HID_USAGE_DESKTOP_JOYSTICK: {
+                    // TU_LOG1("HID receive joystick data\n");
+                    struct JoyStickReport {
+                        uint8_t axis[3];
+                        uint8_t buttons;
+                    };
+                    auto *rep = reinterpret_cast<const JoyStickReport *>(report);
+                    //printf("x %d y %d button %02x\r\n", rep->axis[0], rep->axis[1], rep->buttons);
+                }
+                    break;
+                case HID_USAGE_DESKTOP_GAMEPAD: {
+                    // TODO
+                }
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    if (!tuh_hid_receive_report(dev_addr, instance)) {
+        printf("tuh_hid_report_received_cb: cannot request to receive data\r\n");
     }
 }

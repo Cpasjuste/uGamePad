@@ -5,6 +5,10 @@
 #ifndef U_GAMEPAD_PICO_PLATFORM_H
 #define U_GAMEPAD_PICO_PLATFORM_H
 
+#include "pico_gamepad.h"
+#include "pico_gfx.h"
+//#include "pico_fs.h"
+
 #warning "TODO: remove static def"
 #define UGP_DEV_BOARD
 
