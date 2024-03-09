@@ -1,5 +1,12 @@
 # uGamePad
 
+## adding support for new gamepad
+```
+$ lsusb 
+Bus 001 Device 010: ID 0079:0011 DragonRise Inc. Gamepad
+sudo usbhid-dump -s 001:010 -f -e stream
+```
+
 ## uGamePad v1.1 (USB-A)
 Soldering order:
 * 1 - 

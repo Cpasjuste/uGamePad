@@ -133,8 +133,13 @@ bool PicoGamePad::report(const uint8_t *report, uint16_t len) {
         return false;
     }
 
-    TU_LOG2("uGamePad::loop: received data for '%s': type: %i, len: %i)\r\n",
-            p_device->name, p_device->type, len);
+    //printf("uGamePad::loop: received data for '%s', len: %i)\r\n", p_device->name, len);
+    /*
+    for (int i = 0; i < len; i++) {
+        printf("%08X", report[i]);
+    }
+    printf("\r\n");
+    */
 
     // do not process bytes if less than x bytes
     if (len < p_device->data->min_report_size) return true;
@@ -176,7 +181,7 @@ bool PicoGamePad::report(const uint8_t *report, uint16_t len) {
         buttons |= GamePad::Button::MENU;
     }
 
-    //
+    // for ui
     m_buttons = buttons;
 
     // handle gamepad states
@@ -186,15 +191,16 @@ bool PicoGamePad::report(const uint8_t *report, uint16_t len) {
         GamePad::Output *output = getOutputMode();
         // handle jamma mode
         if (output->mode == GamePad::Mode::Jamma) {
-            // set gpio sates, only send buttons changed states
+            // set gpio states, only send buttons changed states
             m_buttons_diff = m_buttons_old ^ buttons;
             m_buttons_old = buttons;
-            if (m_buttons_diff) {
+            if (1) {
                 // generate pin output
                 for (const auto &mapping: output->mappings) {
-                    if (mapping.pin != UINT8_MAX && m_buttons_diff & mapping.button) {
+                    if (mapping.pin != UINT8_MAX /*&& m_buttons_diff & mapping.button*/) {
                         digitalWrite(mapping.pin, buttons & mapping.button ? LOW : HIGH);
 #ifndef NDEBUG
+                        if(buttons & mapping.button )
                         printf("%s: %s (%i)\r\n", p_device->name,
                                Utility::toString(mapping.button).c_str(), buttons & mapping.button ? 1 : 0);
 #endif

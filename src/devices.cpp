@@ -5,7 +5,9 @@
 #ifdef NATIVE
 #define PROGMEM
 #else
+
 #include <avr/pgmspace.h>
+
 #endif
 
 #include "devices.h"
@@ -109,7 +111,7 @@ static constexpr ReportData ds5Report PROGMEM = {
 // Neo-Geo Mini (usb-c) data data
 static constexpr ReportData ngMiniReport PROGMEM = {
         .buttons = {
-                // byte, value, controller button, output button
+                // byte, bit, controller button, output button
                 0, 2,      // A        -> B1
                 0, 1,      // B        -> B2
                 0, 3,      // C        -> B3
@@ -131,8 +133,38 @@ static constexpr ReportData ngMiniReport PROGMEM = {
                 INDEX_NONE, ReportData::AXIS_NONE,  // AXIS
         },
         .hat = {
-                // byte, value
+                // byte, bit
                 2, 0,      // HAT      -> U/D/L/R
+        }
+};
+
+// cheap snes gamepad (DragonRise Inc. Gamepad)
+static constexpr ReportData cheapSnesReport PROGMEM = {
+        .buttons = {
+                // byte, bit, controller button, output button
+                5, 6,      // B        -> B1
+                5, 5,      // A        -> B2
+                5, 7,      // Y        -> B3
+                5, 4,      // X        -> B4
+                6, 0,      // L        -> B5
+                6, 1,      // R        -> B6
+                6, 5,      // START    -> START
+                6, 4,      // SELECT   -> SELECT
+                INDEX_NONE, BUTTON_NONE,      // LEFT     -> LEFT
+                3, 7,      // RIGHT    -> RIGHT
+                INDEX_NONE, BUTTON_NONE,      // UP        -> UP
+                4, 7,      // DOWN      -> DOWN
+        },
+        .axis = {
+                // byte, axis type
+                INDEX_NONE, ReportData::AXIS_NONE,  // AXIS
+                INDEX_NONE, ReportData::AXIS_NONE,  // AXIS
+                INDEX_NONE, ReportData::AXIS_NONE,  // AXIS
+                INDEX_NONE, ReportData::AXIS_NONE,  // AXIS
+        },
+        .hat = {
+                // byte, bit
+                INDEX_NONE, BUTTON_NONE,  // HAT      -> U/D/L/R
         }
 };
 
@@ -388,6 +420,8 @@ static constexpr Device devices[] PROGMEM = {
         {0x054c, 0x0ce6, "DualSense",                                            (ReportData *) &ds5Report},
         ///
         {0xe6f,  0x1112, "SNK Neo-Geo Mini",                                     (ReportData *) &ngMiniReport},
+        ///
+        {0x0079, 0x0011, "Cheap SNES USB (DragonRise Inc. Gamepad)",             (ReportData *) &cheapSnesReport},
         ///
         /// Unknown
         ///

@@ -17,15 +17,18 @@ GamePad::GamePad() {
 }
 
 void GamePad::setDevice(const Device *device, uint8_t dev_addr, uint8_t instance) {
-    printf("new gamepad configured: %s\r\n", device->name);
     p_device = device;
     m_addr = dev_addr;
     m_instance = instance;
+    printf("new gamepad discovered: %s (%04x:%04x)\r\n",
+           device->name, p_device->vendor, p_device->product);
 }
 
 uint16_t GamePad::getButtonsFromHat(int hat) {
+    if (hat != 0x0000007f) printf("hat: %08x\r\n", hat);
     uint16_t buttons = 0;
-    static constexpr int table[] = {
+
+    static constexpr uint16_t table[] = {
             Button::UP,
             Button::UP | Button::RIGHT,
             Button::RIGHT,
@@ -35,6 +38,7 @@ uint16_t GamePad::getButtonsFromHat(int hat) {
             Button::LEFT,
             Button::LEFT | Button::UP,
     };
+
     auto i = static_cast<int>(hat);
     if (i < 8) {
         buttons |= table[i];
@@ -90,8 +94,8 @@ uint16_t GamePad::getButtonsFromAxis(int x, int y, uint8_t type) {
 }
 
 void GamePad::lerp(Utility::Vec2i *dest, Utility::Vec2i *first, Utility::Vec2i *second, float t) {
-    dest->x = (int16_t)((float) first->x + ((float) second->x - (float) first->x) * t);
-    dest->y = (int16_t)((float) first->y + ((float) second->y - (float) first->y) * t);
+    dest->x = (int16_t) ((float) first->x + ((float) second->x - (float) first->x) * t);
+    dest->y = (int16_t) ((float) first->y + ((float) second->y - (float) first->y) * t);
 }
 
 int GamePad::bezierY(float t) {

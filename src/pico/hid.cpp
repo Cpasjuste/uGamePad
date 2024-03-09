@@ -42,7 +42,7 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t idx, uint8_t const *report_desc,
             }
         }
     } else {
-        printf("mount_cb: unknown device %x:%x\r\n", vid, pid);
+        printf("mount_cb: unknown gamepad (%04x:%04x)\r\n", vid, pid);
     }
 
     // Parse data descriptor with built-in parser
@@ -65,7 +65,7 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
     uint16_t vid, pid;
 
     auto pad = (PicoGamePad *) getPlatform()->getPad();
-    if (!pad) return;
+    if (!pad || pad->isUnknown()) return;
 
     tuh_vid_pid_get(dev_addr, &vid, &pid);
     if (pad->getDevice()->product != pid || pad->getDevice()->vendor != vid) {

@@ -76,6 +76,8 @@ namespace uGamePad {
 
         const Device *getDevice() { return p_device; };
 
+        bool isUnknown() { return !p_device || p_device->vendor == 0 && p_device->product == 0; }
+
         uint16_t getRepeatDelay() { return m_repeatDelayMs; };
 
         void setRepeatDelay(uint16_t ms) { m_repeatDelayMs = ms; };

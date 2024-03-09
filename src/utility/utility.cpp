@@ -31,12 +31,12 @@ void Utility::reboot(bool bootloader) {
 std::string Utility::toString(uint32_t buttons) {
     std::string ret;
 
-    if (buttons & GamePad::Button::B1) ret += "1 ";
-    if (buttons & GamePad::Button::B2) ret += "2 ";
-    if (buttons & GamePad::Button::B3) ret += "3 ";
-    if (buttons & GamePad::Button::B4) ret += "4 ";
-    if (buttons & GamePad::Button::B5) ret += "5 ";
-    if (buttons & GamePad::Button::B6) ret += "6 ";
+    if (buttons & GamePad::Button::B1) ret += "B1 ";
+    if (buttons & GamePad::Button::B2) ret += "B2 ";
+    if (buttons & GamePad::Button::B3) ret += "B3 ";
+    if (buttons & GamePad::Button::B4) ret += "B4 ";
+    if (buttons & GamePad::Button::B5) ret += "B5 ";
+    if (buttons & GamePad::Button::B6) ret += "B6 ";
     if (buttons & GamePad::Button::START) ret += "START ";
     if (buttons & GamePad::Button::SELECT) ret += "SELECT ";
     if (buttons & GamePad::Button::UP) ret += "UP ";
