@@ -101,6 +101,16 @@ bool Fs::directoryExists(const std::string &path) {
     return f_stat(path.c_str(), &info) == FR_OK && (info.fattrib & AM_DIR);
 }
 
+std::vector<Fs::File::Info> Fs::getDir(const std::string &path, std::function<bool(const File::Info &)> filter) {
+    std::vector<File::Info> ret;
+    FatFs::list_files(path, [&ret, &filter](File::Info &file) {
+        if (!filter || filter(file))
+            ret.push_back(file);
+    });
+
+    return ret;
+}
+
 bool Fs::File::open(const std::string &file, int mode) {
     close();
     p_fh = FatFs::open_file(file, mode);

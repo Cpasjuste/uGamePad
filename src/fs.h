@@ -24,34 +24,6 @@ namespace uGamePad {
             Msc
         };
 
-        Fs();
-
-        virtual bool format();
-
-        virtual bool isAvailable() { return m_available; };
-
-        virtual std::string getHomeDirectory() { return "flash:/"; };
-
-        virtual std::string getDeviceDirectory() { return getHomeDirectory() + "devices"; };
-
-        virtual void createDirectory(const std::string &path);
-
-        static bool fileExists(const std::string &path);
-
-        static bool directoryExists(const std::string &path);
-
-        //virtual bool writeFile(const std::string &path, const std::vector<uint8_t> &data) { return false; };
-
-        //virtual std::vector<uint8_t> readFile(const std::string &path) { return {}; };
-
-        virtual void sync() {};
-
-        virtual void setUsbMode(UsbMode mode) { m_usb_mode = mode; };
-
-        virtual UsbMode getUsbMode() { return m_usb_mode; };
-
-        virtual DeviceInfo getDeviceInfo() { return {0, 0}; };
-
         class File final {
         public:
             enum OpenMode {
@@ -119,6 +91,33 @@ namespace uGamePad {
             const uint8_t *buf = nullptr;
             uint32_t buf_len{};
         };
+
+        Fs();
+
+        virtual bool format();
+
+        virtual bool isAvailable() { return m_available; };
+
+        virtual std::string getRootDirectory() { return "flash:/"; };
+
+        virtual std::string getDeviceDirectory() { return getRootDirectory() + "devices"; };
+
+        virtual void createDirectory(const std::string &path);
+
+        static bool fileExists(const std::string &path);
+
+        static bool directoryExists(const std::string &path);
+
+        static std::vector<File::Info> getDir(
+                const std::string &path, std::function<bool(const File::Info &)> filter = nullptr);
+
+        virtual void sync() {};
+
+        virtual void setUsbMode(UsbMode mode) { m_usb_mode = mode; };
+
+        virtual UsbMode getUsbMode() { return m_usb_mode; };
+
+        virtual DeviceInfo getDeviceInfo() { return {0, 0}; };
 
     protected:
         bool m_available = false;
