@@ -28,11 +28,11 @@ endif ()
 
 # set source files
 file(GLOB SOURCES
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/*.c*
         ${CMAKE_CURRENT_SOURCE_DIR}/src/fatfs/*.c*
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/ui/*.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/ui/widgets/*.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/utility/*.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/ui/*.c*
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/ui/widgets/*.c*
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/utility/*.c*
         ${CMAKE_CURRENT_SOURCE_DIR}/src/compat/*.c*
         ${CMAKE_CURRENT_SOURCE_DIR}/external/Adafruit-GFX-Library/Adafruit_GFX.cpp
 )
@@ -53,8 +53,8 @@ if (PLATFORM_LINUX)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR} CACHE STRING "" FORCE)
 else ()
     file(GLOB TEMP
-            ${CMAKE_CURRENT_SOURCE_DIR}/src/pico/*.cpp
-            ${CMAKE_CURRENT_SOURCE_DIR}/src/pico/hid/*.c
+            ${CMAKE_CURRENT_SOURCE_DIR}/src/pico/*.c*
+            ${CMAKE_CURRENT_SOURCE_DIR}/src/pico/hid/*.c*
     )
     list(APPEND SOURCES ${TEMP})
     list(APPEND INCLUDES
@@ -63,7 +63,7 @@ else ()
     )
     list(APPEND LIBS
             hardware_i2c
-            pico_stdlib tinyusb_host tinyusb_board)
+            pico_stdlib tinyusb_device tinyusb_host tinyusb_board)
 endif ()
 
 ####################

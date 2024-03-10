@@ -207,11 +207,10 @@ bool PicoGamePad::report(const uint8_t *report, uint16_t len) {
             // set gpio states, only send buttons changed states
             m_buttons_diff = m_buttons_old ^ buttons;
             m_buttons_old = buttons;
-#warning "TODO: remove debug code"
-            if (1) {
+            if (m_buttons_diff) {
                 // generate pin output
                 for (const auto &mapping: output->mappings) {
-                    if (mapping.pin != UINT8_MAX /*&& m_buttons_diff & mapping.button*/) {
+                    if (mapping.pin != UINT8_MAX && m_buttons_diff & mapping.button) {
                         gpio_put(mapping.pin, buttons & mapping.button ? GPIO_LOW : GPIO_HIGH);
 #ifndef NDEBUG
                         if (buttons & mapping.button)

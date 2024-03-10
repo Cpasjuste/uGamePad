@@ -3,11 +3,13 @@
 //
 
 #include <pico/stdio.h>
-#include <bsp/board_api.h>
-#include "tusb.h"
+#include <device/usbd.h>
+#include <tusb.h>
+
 #include "main.h"
 #include "pico_platform.h"
 #include "pico_gamepad.h"
+#include "pico_fs.h"
 
 using namespace uGamePad;
 
@@ -20,15 +22,9 @@ void PicoPlatform::setup() {
 #if defined(UGP_DEBUG) && !defined(UGP_DEV_BOARD)
     delay(2000);
 #endif
-#if defined(UGP_DEBUG)
-    // setup serial debug
-    //Debug.setTX(GPIO_TX);
-    //Debug.setRX(GPIO_RX);
-    //Debug.begin();
-#endif
 
     // init filesystem
-    p_fs = new Fs();
+    p_fs = new PicoFs();
 
     // init config
     p_config = new Config(p_fs);
@@ -46,41 +42,35 @@ void PicoPlatform::setup() {
         return;
     }
 
-#warning "TODO: port msc code"
     // check for usb msc mode (hardware) button press
     if (p_pad->getButtons() & GamePad::Button::START) {
         printf("PicoPlatform::setup: usb msc mode called\r\n");
-        //p_fs->setUsbMode(Fs::UsbMode::Msc);
+        p_fs->setUsbMode(Fs::UsbMode::Msc);
     } else {
-        // init board
-        board_init();
-
-        // init usb stack
-        if (!tusb_init()) {
-            printf("tusb_init failed...\r\n");
-            while (true);
-        }
-
-        // init usb host stack
-        if (!tuh_init(BOARD_TUH_RHPORT)) {
-            printf("tuh_init failed...\r\n");
-            while (true);
-        }
+        p_fs->setUsbMode(Fs::UsbMode::Host);
     }
+
+    stdio_flush();
 
     // all done
     Platform::setup();
 }
 
 void PicoPlatform::loop() {
-    //if (p_fs->getUsbMode() == Fs::UsbMode::Host) {
-#warning "TODO: port msc code"
-    if (1) {
+    if (p_fs->getUsbMode() == Fs::UsbMode::Host) {
         // handle usb host updates
         if (tuh_inited()) {
             tuh_task();
         } else {
-            printf("error: tinyusb host service not inited...\r\n");
+            printf("error: tinyusb host service not started...\r\n");
+            while (true);
+        }
+    } else {
+        // handle usb device (msc) updates
+        if (tud_inited()) {
+            tud_task();
+        } else {
+            printf("error: tinyusb device service not started...\r\n");
             while (true);
         }
     }

@@ -408,16 +408,12 @@ static void print_utf16(uint16_t *temp_buf, size_t buf_len) {
 #endif
 
 extern "C" {
-
 void tuh_mount_cb(uint8_t dev_addr) {
-    // application set-up
-    printf("tuh_mount_cb: new device discovered, address: %d\r\n", dev_addr);
-
+    printf("tuh_mount_cb: new device connected, address: %d\r\n", dev_addr);
 }
 
 void tuh_umount_cb(uint8_t dev_addr) {
-    // application tear-down
-    printf("tuh_umount_cb: device unmounted, address: %d\r\n", dev_addr);
+    printf("tuh_umount_cb: device disconnected, address: %d\r\n", dev_addr);
 }
 }
 
