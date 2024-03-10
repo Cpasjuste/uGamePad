@@ -413,14 +413,14 @@ static constexpr Device devices[] = {
         ///
         {0xe6f,  0x1112, "SNK Neo-Geo Mini",                                     (ReportData *) &ngMiniReport},
         ///
-        {0x0079, 0x0011, "Cheap SNES USB (DragonRise Inc. Gamepad)",             (ReportData *) &cheapSnesReport},
+        {0x0079, 0x0011, "USB Gamepad (Cheap SNES USB)",                         (ReportData *) &cheapSnesReport},
         ///
         /// Unknown
         ///
         {0x0000, 0x0000, "Unknown device",                                       nullptr},
 };
 
-const Device *get_device(uint16_t vid, uint16_t pid) {
+Device *get_device(uint16_t vid, uint16_t pid) {
     // lookup for a known game controller
     int i = 0;
     int p = INT32_MAX;
@@ -428,7 +428,11 @@ const Device *get_device(uint16_t vid, uint16_t pid) {
     while (p > 0) {
         p = devices[i].product;
         if (p == pid && devices[i].vendor == vid) {
-            return &devices[i];
+            Device *device = (Device *) malloc(sizeof(Device));
+            memcpy(device, &devices[i], sizeof(Device));
+            device->data = (ReportData *) malloc(sizeof(ReportData));
+            memcpy(device->data, devices[i].data, sizeof(ReportData));
+            return device;
         }
         i++;
     }
@@ -436,6 +440,10 @@ const Device *get_device(uint16_t vid, uint16_t pid) {
     return nullptr;
 }
 
-const Device *get_device_at(uint16_t i) {
-    return &devices[i];
+Device *get_device_at(uint16_t i) {
+    Device *device = (Device *) malloc(sizeof(Device));
+    memcpy(device, &devices[i], sizeof(Device));
+    device->data = (ReportData *) malloc(sizeof(ReportData));
+    memcpy(device->data, devices[i].data, sizeof(ReportData));
+    return device;
 }
