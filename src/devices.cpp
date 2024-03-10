@@ -2,21 +2,12 @@
 // Created by cpasjuste on 22/03/23.
 //
 
-#ifdef NATIVE
-#define PROGMEM
-#else
-
-//#include <avr/pgmspace.h>
-#define PROGMEM
-
-#endif
-
 #include "devices.h"
 
 using namespace uGamePad;
 
 // xbox 360 data data
-static constexpr ReportData xboxReport PROGMEM = {
+static constexpr ReportData xboxReport = {
         .buttons = {
                 // byte, bit, controller button, output button
                 3, 4,      // A         -> B1
@@ -50,7 +41,7 @@ static constexpr ReportData xboxReport PROGMEM = {
 };
 
 // dual shock 4 data data
-static constexpr ReportData ds4Report PROGMEM = {
+static constexpr ReportData ds4Report = {
         .buttons = {
                 // byte, bit, controller button, output button
                 5, 5,      // CROSS        -> B1
@@ -80,7 +71,7 @@ static constexpr ReportData ds4Report PROGMEM = {
 };
 
 // dual shock 5 data data
-static constexpr ReportData ds5Report PROGMEM = {
+static constexpr ReportData ds5Report = {
         .buttons = {
                 // byte, bit, controller button, output button
                 8, 5,      // CROSS        -> B1
@@ -110,7 +101,7 @@ static constexpr ReportData ds5Report PROGMEM = {
 };
 
 // Neo-Geo Mini (usb-c) data data
-static constexpr ReportData ngMiniReport PROGMEM = {
+static constexpr ReportData ngMiniReport = {
         .buttons = {
                 // byte, bit, controller button, output button
                 0, 2,      // A        -> B1
@@ -140,7 +131,7 @@ static constexpr ReportData ngMiniReport PROGMEM = {
 };
 
 // cheap snes gamepad (DragonRise Inc. Gamepad)
-static constexpr ReportData cheapSnesReport PROGMEM = {
+static constexpr ReportData cheapSnesReport = {
         .buttons = {
                 // byte, bit, controller button, output button
                 5, 6,      // B        -> B1
@@ -169,7 +160,7 @@ static constexpr ReportData cheapSnesReport PROGMEM = {
         }
 };
 
-static constexpr Device devices[] PROGMEM = {
+static constexpr Device devices[] = {
         ///
         /// XBOX
         ///

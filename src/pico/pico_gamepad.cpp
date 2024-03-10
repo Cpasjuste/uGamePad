@@ -213,9 +213,8 @@ bool PicoGamePad::report(const uint8_t *report, uint16_t len) {
                     if (mapping.pin != UINT8_MAX && m_buttons_diff & mapping.button) {
                         gpio_put(mapping.pin, buttons & mapping.button ? GPIO_LOW : GPIO_HIGH);
 #ifndef NDEBUG
-                        if (buttons & mapping.button)
-                            printf("%s: %s (%i)\r\n", p_device->name,
-                                   Utility::toString(mapping.button).c_str(), buttons & mapping.button ? 1 : 0);
+                        printf("%s: %s (%i)\r\n", p_device->name,
+                               Utility::toString(mapping.button).c_str(), buttons & mapping.button ? 1 : 0);
 #endif
                     }
                 }
