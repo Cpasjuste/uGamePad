@@ -31,7 +31,7 @@ void PicoPlatform::setup() {
     p_fs = new Fs();
 
     // init config
-    //p_config = new Config(p_fs);
+    p_config = new Config(p_fs);
 
     // init gfx
     p_gfx = new PicoGfx();

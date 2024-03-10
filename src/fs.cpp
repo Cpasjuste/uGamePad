@@ -92,6 +92,15 @@ void Fs::createDirectory(const std::string &path) {
     sync();
 }
 
+bool Fs::fileExists(const std::string &path) {
+    return FatFs::file_exists(path);
+}
+
+bool Fs::directoryExists(const std::string &path) {
+    FILINFO info;
+    return f_stat(path.c_str(), &info) == FR_OK && (info.fattrib & AM_DIR);
+}
+
 bool Fs::File::open(const std::string &file, int mode) {
     close();
     p_fh = FatFs::open_file(file, mode);

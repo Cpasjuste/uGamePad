@@ -7,7 +7,6 @@
 
 #include "pico_gamepad.h"
 #include "pico_gfx.h"
-//#include "pico_fs.h"
 
 #warning "TODO: remove static def"
 #define UGP_DEV_BOARD

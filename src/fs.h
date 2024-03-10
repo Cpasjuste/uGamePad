@@ -36,6 +36,10 @@ namespace uGamePad {
 
         virtual void createDirectory(const std::string &path);
 
+        static bool fileExists(const std::string &path);
+
+        static bool directoryExists(const std::string &path);
+
         //virtual bool writeFile(const std::string &path, const std::vector<uint8_t> &data) { return false; };
 
         //virtual std::vector<uint8_t> readFile(const std::string &path) { return {}; };

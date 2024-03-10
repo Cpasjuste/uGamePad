@@ -15,9 +15,9 @@
 namespace uGamePad {
     class Json {
     public:
-        static std::vector<uint8_t> getDevice(Device *device);
+        static std::vector<uint8_t> serialize(Device *device);
 
-        static Device *getDevice(const std::vector<uint8_t> &buffer);
+        static Device *deserialize(const std::vector<uint8_t> &buffer);
     };
 
 } // uGamePad

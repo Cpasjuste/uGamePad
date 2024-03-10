@@ -9,9 +9,9 @@
 
 using namespace uGamePad;
 
-std::vector<uint8_t> Json::getDevice(Device *device) {
+std::vector<uint8_t> Json::serialize(Device *device) {
     if (!device) {
-        printf("Json::getDocument: device is null...\r\n");
+        printf("Json::getDevice: device is null...\r\n");
         return {};
     }
 
@@ -20,7 +20,7 @@ std::vector<uint8_t> Json::getDevice(Device *device) {
     doc["name"] = device->name;
     doc["vendor"] = device->getVendor();
     doc["product"] = device->getProduct();
-    // min data data size for a report to be valid
+    // min data size for a report to be valid
     doc["min_report_size"] = device->data->min_report_size;
 
     // buttons
@@ -60,7 +60,7 @@ std::vector<uint8_t> Json::getDevice(Device *device) {
     return buffer;
 }
 
-Device *Json::getDevice(const std::vector<uint8_t> &buffer) {
+Device *Json::deserialize(const std::vector<uint8_t> &buffer) {
     StaticJsonDocument<2048> doc;
     DeserializationError err = deserializeJson(doc, buffer.data(), buffer.size());
     if (err) {
