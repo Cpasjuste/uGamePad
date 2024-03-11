@@ -66,3 +66,5 @@ Controller pinout :
 8   gnd     blue
 9   tr      yellow
 ```
+
+I use [JetBrains CLion](https://www.jetbrains.com/clion/) IDE for all my open sources projects, thanks to the support !
