@@ -14,7 +14,7 @@ LinuxDisplay::LinuxDisplay() : Adafruit_GFX(128, 64) {
     }
 
     p_window = SDL_CreateWindow("uGamePad", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                                width(), height(), SDL_WINDOW_SHOWN);
+                                width() * 2, height() * 2, SDL_WINDOW_SHOWN);
     if (!p_window) {
         fprintf(stderr, "LinuxDisplay: SDL_CreateWindow error: %s", SDL_GetError());
         return;
@@ -25,6 +25,8 @@ LinuxDisplay::LinuxDisplay() : Adafruit_GFX(128, 64) {
         fprintf(stderr, "LinuxDisplay: SDL_CreateRenderer error: %s", SDL_GetError());
         return;
     }
+
+    SDL_RenderSetLogicalSize(p_renderer, width(), height());
 
     printf("LinuxDisplay: %i x %i\r\n", width(), height());
 }
