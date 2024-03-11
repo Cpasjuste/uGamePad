@@ -4,17 +4,18 @@
 
 #include "main.h"
 #include "menu_line.h"
+#include "line.h"
 
 using namespace uGamePad;
 
 MenuLine::MenuLine(const Utility::Vec4i &rect) : Rectangle(rect.x, rect.y, rect.w, rect.h, true) {
     MenuLine::setColor(Utility::Color::Black);
 
-    m_name = new Text(2, (int16_t) ((rect.h / 2) + 1), "NAME");
+    m_name = new Text(2, (int16_t) ((rect.h / 2)), "NAME");
     m_name->setOrigin(Origin::Left);
     MenuLine::add(m_name);
 
-    m_value = new Text(rect.w, (int16_t) ((rect.h / 2) + 1), "VALUE");
+    m_value = new Text((int16_t) (rect.w - 1), (int16_t) ((rect.h / 2)), "VALUE");
     m_value->setOrigin(Origin::Right);
     m_value->setDrawBackground(true);
     MenuLine::add(m_value);
