@@ -6,9 +6,7 @@
 #include <ctime>
 #include <sys/time.h>
 #else
-
 #include <pico/time.h>
-
 #endif
 
 #include "clock.h"
@@ -18,7 +16,7 @@ uGamePad::Clock::Clock() {
 }
 
 uGamePad::Time uGamePad::Clock::getCurrentTime() const {
-#ifdef NATIVE
+#ifdef LINUX
     timespec time = {};
     clock_gettime(CLOCK_MONOTONIC, &time);
     return microseconds((long) time.tv_sec * 1000000 + time.tv_nsec / 1000);

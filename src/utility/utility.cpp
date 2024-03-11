@@ -16,7 +16,7 @@
 using namespace uGamePad;
 
 void Utility::reboot(bool bootloader) {
-#ifndef NATIVE
+#ifndef LINUX
     if (bootloader) {
 #if PICO_BUILD
         reset_usb_boot(0, 0);

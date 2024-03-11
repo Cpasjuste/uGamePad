@@ -3,11 +3,16 @@
 //
 
 #include <cstring>
-#include <hardware/flash.h>
 #include "ff.h"
 #include "diskio.h"
 #include "fs.h"
+
+#ifdef PICO_BUILD
+#include <hardware/flash.h>
 #include "pico_flash.h"
+#else
+#include "linux_flash.h"
+#endif
 
 using namespace uGamePad;
 

@@ -8,9 +8,6 @@
 #include "pico_gamepad.h"
 #include "pico_gfx.h"
 
-#warning "TODO: remove static def"
-#define UGP_DEV_BOARD
-
 #if defined(PICO_BUILD)
 #if !defined(UGP_DEV_BOARD)
 // uGamePad retail board

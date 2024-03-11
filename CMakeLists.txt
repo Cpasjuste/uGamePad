@@ -4,16 +4,13 @@ cmake_minimum_required(VERSION 3.5)
 # linux
 option(PLATFORM_LINUX "Linux target platform" OFF)
 # pico options
+option(PICO_DEV_BOARD "Build for ugp dev board" ON)
 option(PICO_DEBUG_UART "Pico uart debug" OFF)
 option(PICO_DEBUG_USB "Pico usb debug" OFF)
 
 if (NOT PLATFORM_LINUX)
     set(ENV{PICO_SDK_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/external/pico-sdk)
     set(PICO_SDK_PATH ${CMAKE_CURRENT_SOURCE_DIR}/external/pico-sdk)
-    if (NOT PICO_BOARD)
-        #set(PICO_BOARD "adafruit_feather_rp2040" CACHE STRING "" FORCE) # v1.0 rev board
-        #set(PICO_BOARD "waveshare_rp2040_plus_16mb" CACHE STRING "" FORCE) # v1.1 rev board
-    endif ()
     # initialize the SDK based on PICO_SDK_PATH
     # note: this must happen before project()
     include(${CMAKE_CURRENT_SOURCE_DIR}/external/pico-sdk/external/pico_sdk_import.cmake)
@@ -51,6 +48,15 @@ set(LIBS)
 if (PLATFORM_LINUX)
     # i want all executable located at root of build directory
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR} CACHE STRING "" FORCE)
+    file(GLOB TEMP ${CMAKE_CURRENT_SOURCE_DIR}/src/linux/*.c*)
+    list(APPEND SOURCES ${TEMP})
+    list(APPEND INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/src/linux)
+    list(APPEND FLAGS -DLINUX)
+    # SDL2
+    include(FindPkgConfig)
+    pkg_search_module(SDL2 REQUIRED sdl2)
+    list(APPEND INCLUDES ${SDL2_INCLUDE_DIRS})
+    list(APPEND LIBS ${SDL2_LIBRARIES})
 else ()
     file(GLOB TEMP
             ${CMAKE_CURRENT_SOURCE_DIR}/src/pico/*.c*
@@ -63,7 +69,11 @@ else ()
     )
     list(APPEND LIBS
             hardware_i2c
-            pico_stdlib tinyusb_device tinyusb_host tinyusb_board)
+            pico_stdlib
+            tinyusb_device tinyusb_host tinyusb_board)
+    if (PICO_DEV_BOARD)
+        list(APPEND FLAGS -DUGP_DEV_BOARD)
+    endif ()
 endif ()
 
 ####################

@@ -13,7 +13,7 @@ Platform *getPlatform() {
 }
 
 int main() {
-#if NATIVE
+#if LINUX
     platform = new LinuxPlatform();
 #else
     platform = new PicoPlatform();

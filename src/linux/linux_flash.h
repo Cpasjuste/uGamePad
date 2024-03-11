@@ -2,12 +2,11 @@
 // Created by cpasjuste on 19/01/24.
 //
 
-#ifndef U_GAMEPAD_PICO_FLASH_H
-#define U_GAMEPAD_PICO_FLASH_H
+#ifndef U_GAMEPAD_LINUX_FLASH_H
+#define U_GAMEPAD_LINUX_FLASH_H
 
 #include <cstdio>
 #include <string>
-#include <hardware/flash.h>
 
 namespace uGamePad {
     bool io_flash_init();
@@ -29,6 +28,6 @@ namespace uGamePad {
     void io_flash_write_sector(uint32_t offset, const uint8_t *buffer);
 
     void io_flash_exit();
-}
 
-#endif //U_GAMEPAD_PICO_FLASH_H
+#endif //U_GAMEPAD_LINUX_FLASH_H
+}
