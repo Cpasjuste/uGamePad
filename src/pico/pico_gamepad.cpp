@@ -183,7 +183,15 @@ bool PicoGamePad::report(const uint8_t *report, uint16_t len) {
 
     // process hat
     if (p_device->data->hat.byte < len) {
-        buttons |= GamePad::getButtonsFromHat(report[p_device->data->hat.byte]);
+        uint16_t i = report[p_device->data->hat.byte];
+        if (p_device->data->hat.bit > 0) {
+            // TODO: fixme (use proper detection)
+            // cheap snes gamepad ("USB Gamepad" (descriptor) / "DragonRise Inc. Gamepad" (linux))
+            i = i << 8 | report[p_device->data->hat.bit];
+            buttons |= GamePad::getButtonsFromHatSpecial(i);
+        } else {
+            buttons |= GamePad::getButtonsFromHat(i);
+        }
     }
 
     // handle hardware buttons

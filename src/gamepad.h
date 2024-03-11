@@ -113,6 +113,8 @@ namespace uGamePad {
         uint16_t getButtonsFromAxis(int x, int y, uint8_t type = ReportData::AxisType::AXIS_I16);
 
         static uint16_t getButtonsFromHat(int hat);
+
+        static uint16_t getButtonsFromHatSpecial(uint16_t hat); //
     };
 }
 

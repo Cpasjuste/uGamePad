@@ -7,6 +7,7 @@
 using namespace uGamePad;
 
 // xbox 360 data data
+// https://www.partsnotincluded.com/understanding-the-xbox-360-wired-controllers-usb-data/
 static constexpr ReportData xboxReport = {
         .buttons = {
                 // byte, bit, controller button, output button
@@ -41,6 +42,7 @@ static constexpr ReportData xboxReport = {
 };
 
 // dual shock 4 data data
+// https://www.psdevwiki.com/ps4/DS4-USB
 static constexpr ReportData ds4Report = {
         .buttons = {
                 // byte, bit, controller button, output button
@@ -66,7 +68,7 @@ static constexpr ReportData ds4Report = {
         },
         .hat = {
                 // byte, bit
-                5, 15, // HAT      -> U/D/L/R
+                5, 0, // HAT      -> U/D/L/R
         }
 };
 
@@ -96,7 +98,7 @@ static constexpr ReportData ds5Report = {
         },
         .hat = {
                 // byte, bit
-                8, 15, // HAT      -> U/D/L/R
+                8, 0, // HAT      -> U/D/L/R
         }
 };
 
@@ -130,7 +132,7 @@ static constexpr ReportData ngMiniReport = {
         }
 };
 
-// cheap snes gamepad (DragonRise Inc. Gamepad)
+// cheap snes gamepad ("USB Gamepad" (descriptor) / "DragonRise Inc. Gamepad" (linux))
 static constexpr ReportData cheapSnesReport = {
         .buttons = {
                 // byte, bit, controller button, output button
@@ -142,10 +144,10 @@ static constexpr ReportData cheapSnesReport = {
                 6, 1,      // R        -> B6
                 6, 5,      // START    -> START
                 6, 4,      // SELECT   -> SELECT
-                INDEX_NONE, BUTTON_NONE,      // LEFT     -> LEFT
-                3, 7,      // RIGHT    -> RIGHT
-                INDEX_NONE, BUTTON_NONE,      // UP        -> UP
-                4, 7,      // DOWN      -> DOWN
+                INDEX_NONE, BUTTON_NONE,    // LEFT     -> LEFT
+                INDEX_NONE, BUTTON_NONE,    // RIGHT    -> RIGHT
+                INDEX_NONE, BUTTON_NONE,    // UP       -> UP
+                INDEX_NONE, BUTTON_NONE,    // DOWN     -> DOWN
         },
         .axis = {
                 // byte, axis type
@@ -155,8 +157,8 @@ static constexpr ReportData cheapSnesReport = {
                 INDEX_NONE, ReportData::AXIS_NONE,  // AXIS
         },
         .hat = {
-                // byte, bit
-                INDEX_NONE, BUTTON_NONE,  // HAT      -> U/D/L/R
+                // byte1, byte2 (special case...)
+                3, 4,  // HAT      -> U/D/L/R
         }
 };
 

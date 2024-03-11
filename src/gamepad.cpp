@@ -26,7 +26,6 @@ void GamePad::setDevice(const Device *device, uint8_t dev_addr, uint8_t instance
 }
 
 uint16_t GamePad::getButtonsFromHat(int hat) {
-    if (hat != 0x0000007f) printf("hat: %08x\r\n", hat);
     uint16_t buttons = 0;
 
     static constexpr uint16_t table[] = {
@@ -44,6 +43,17 @@ uint16_t GamePad::getButtonsFromHat(int hat) {
     if (i < 8) {
         buttons |= table[i];
     }
+
+    return buttons;
+}
+
+uint16_t GamePad::getButtonsFromHatSpecial(uint16_t hat) {
+    uint16_t buttons = 0;
+
+    if (hat >> 8 == 0x00) buttons |= Button::LEFT;
+    if (hat >> 8 == 0xff) buttons |= Button::RIGHT;
+    if ((uint8_t) hat == 0x00) buttons |= Button::UP;
+    if ((uint8_t) hat == 0xff) buttons |= Button::DOWN;
 
     return buttons;
 }

@@ -9,6 +9,8 @@ using namespace uGamePad;
 void Platform::setup() {
     p_ui = new Ui();
 
+    fflush(stdout);
+
     // motd
     printf("        _____                      _____          _ \r\n"
            "       / ____|                    |  __ \\        | |\r\n"
@@ -16,6 +18,7 @@ void Platform::setup() {
            "| | | | | |_ |/ _` | '_ ` _ \\ / _ \\  ___/ _` |/ _` |\r\n"
            "| |_| | |__| | (_| | | | | | |  __/ |  | (_| | (_| |\r\n"
            " \\__,_|\\_____|\\__,_|_| |_| |_|\\___|_|   \\__,_|\\__,_|\r\n\n");
+
     fflush(stdout);
 
 #if 0

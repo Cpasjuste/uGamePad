@@ -33,16 +33,12 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *desc_re
     if (!getPlatform()->getPad()) return;
 
     // first try to find gamepad device configuration from (user) flash filesystem
-#warning "TODO: port config"
-#if 0
-    const Device *device = getPlatform()->getConfig()->loadDevice(vid, pid);
+    auto device = getPlatform()->getConfig()->loadDevice(vid, pid);
     if (!device) {
         // now try to find the gamepad device from devices table
         device = get_device(vid, pid);
     }
-#else
-    auto device = get_device(vid, pid);
-#endif
+
     // a know controller was plugged in (see devices.c)
     if (device) {
         // get device "name" (product)
@@ -143,7 +139,7 @@ static void convert_utf16le_to_utf8(const uint16_t *utf16, size_t utf16_len, uin
 static char *convert_utf8_to_char(uint16_t *temp_buf, size_t buf_len) {
     if ((temp_buf[0] & 0xff) == 0) return nullptr;  // empty
     size_t utf16_len = ((temp_buf[0] & 0xff) - 2) / sizeof(uint16_t);
-    size_t utf8_len = (size_t) count_utf8_bytes(temp_buf + 1, utf16_len);
+    auto utf8_len = (size_t) count_utf8_bytes(temp_buf + 1, utf16_len);
     convert_utf16le_to_utf8(temp_buf + 1, utf16_len, (uint8_t *) temp_buf, sizeof(uint16_t) * buf_len);
     ((uint8_t *) temp_buf)[utf8_len] = '\0';
     return (char *) temp_buf;
@@ -151,10 +147,10 @@ static char *convert_utf8_to_char(uint16_t *temp_buf, size_t buf_len) {
 
 extern "C" {
 void tuh_mount_cb(uint8_t dev_addr) {
-    printf("tuh_mount_cb: new device connected, address: %d\r\n", dev_addr);
+    //printf("tuh_mount_cb: new device connected, address: %d\r\n", dev_addr);
 }
 
 void tuh_umount_cb(uint8_t dev_addr) {
-    printf("tuh_umount_cb: device disconnected, address: %d\r\n", dev_addr);
+    //printf("tuh_umount_cb: device disconnected, address: %d\r\n", dev_addr);
 }
 }
