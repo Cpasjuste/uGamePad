@@ -3,6 +3,8 @@
 //
 
 #include "main.h"
+#include "platform.h"
+
 
 using namespace uGamePad;
 
@@ -21,7 +23,7 @@ void Platform::setup() {
 
     fflush(stdout);
 
-#if 0
+#if 0 // TODO
     auto info = p_fs->getDeviceInfo();
     printf("Platform: filesystem size: %lu Bytes, used: %lu Bytes (available: %i)\r\n",
            info.totalBytes, info.usedBytes, p_fs->isAvailable() ? 1 : 0);
@@ -30,6 +32,15 @@ void Platform::setup() {
 }
 
 void uGamePad::Platform::loop() {
+    p_hid->loop();
     p_pad->loop();
     p_ui->loop();
+}
+
+Platform::~Platform() {
+    delete (p_gfx);
+    delete (p_hid);
+    delete (p_pad);
+    delete (p_config);
+    delete (p_fs);
 }

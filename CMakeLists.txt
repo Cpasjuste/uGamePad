@@ -48,15 +48,25 @@ set(LIBS)
 if (PLATFORM_LINUX)
     # i want all executable located at root of build directory
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR} CACHE STRING "" FORCE)
-    file(GLOB TEMP ${CMAKE_CURRENT_SOURCE_DIR}/src/linux/*.c*)
+    file(GLOB TEMP
+            ${CMAKE_CURRENT_SOURCE_DIR}/src/linux/*.c*
+            ${CMAKE_CURRENT_SOURCE_DIR}/src/linux/hid-api/*.c*
+    )
     list(APPEND SOURCES ${TEMP})
-    list(APPEND INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/src/linux)
+    list(APPEND INCLUDES
+            ${CMAKE_CURRENT_SOURCE_DIR}/src/linux
+            ${CMAKE_CURRENT_SOURCE_DIR}/src/linux/hid-api
+    )
     list(APPEND FLAGS -DLINUX)
     # SDL2
     include(FindPkgConfig)
     pkg_search_module(SDL2 REQUIRED sdl2)
     list(APPEND INCLUDES ${SDL2_INCLUDE_DIRS})
     list(APPEND LIBS ${SDL2_LIBRARIES})
+    # hidapi
+    pkg_search_module(LIBUSB1 REQUIRED libusb-1.0)
+    list(APPEND INCLUDES ${LIBUSB1_INCLUDE_DIRS})
+    list(APPEND LIBS ${LIBUSB1_LIBRARIES})
 else ()
     file(GLOB TEMP
             ${CMAKE_CURRENT_SOURCE_DIR}/src/pico/*.c*

@@ -53,9 +53,6 @@ void LinuxGamePad::loop() {
         if (ev.type == SDL_QUIT) exit(0);
     }
 
-    // reset buttons state
-    m_buttons = 0;
-
     // check for buttons (keyboard) press
     for (const auto &mapping: getOutputMode()->mappings) {
         m_buttons |= SDL_GetKeyboardState(nullptr)[mapping.pin] > 0 ? mapping.button : 0;

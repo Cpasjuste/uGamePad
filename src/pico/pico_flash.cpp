@@ -5,6 +5,7 @@
 #include <cstring>
 #include <pico/binary_info.h>
 #include <hardware/sync.h>
+#include "fs.h"
 #include "pico_flash.h"
 #include "utility.h"
 

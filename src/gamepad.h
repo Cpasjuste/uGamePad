@@ -74,7 +74,7 @@ namespace uGamePad {
 
         virtual uint16_t &getButtons() { return m_buttons; };
 
-        void setDevice(const Device *device, uint8_t dev_addr, uint8_t instance);
+        void setDevice(const Device *device);
 
         const Device *getDevice() { return p_device; };
 
@@ -84,9 +84,9 @@ namespace uGamePad {
 
         void setRepeatDelay(uint16_t ms) { m_repeatDelayMs = ms; };
 
+        bool onHidReport(const uint8_t *report, uint16_t len);
+
     protected:
-        uint8_t m_addr = 0;
-        uint8_t m_instance = 0;
         const Device p_device_unknown = {0x0000, 0x0000, "Unknown device", nullptr};
         const Device *p_device = &p_device_unknown;
         uint16_t m_buttons{0};

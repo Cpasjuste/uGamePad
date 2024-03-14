@@ -8,6 +8,7 @@
 #include "fs.h"
 #include "config.h"
 #include "gamepad.h"
+#include "hid.h"
 #include "gfx.h"
 #include "ui.h"
 
@@ -16,21 +17,25 @@ namespace uGamePad {
     public:
         Platform() = default;
 
+        ~Platform();
+
         virtual void setup();
 
         virtual void loop();
 
-        virtual Gfx *getGfx() { return p_gfx; };
+        virtual Fs *getFs() { return p_fs; }
 
-        virtual GamePad *getPad() { return p_pad; };
+        virtual Config *getConfig() { return p_config; }
 
-        virtual Ui *getUi() { return p_ui; };
+        virtual Hid *getHid() { return p_hid; }
 
-        virtual Fs *getFs() { return p_fs; };
+        virtual GamePad *getPad() { return p_pad; }
 
-        virtual Config *getConfig() { return p_config; };
+        virtual Gfx *getGfx() { return p_gfx; }
 
-        virtual int getFreeHeap() { return 0; };
+        virtual Ui *getUi() { return p_ui; }
+
+        virtual int getFreeHeap() { return 0; }
 
     protected:
         Gfx *p_gfx = nullptr;
@@ -38,6 +43,7 @@ namespace uGamePad {
         Ui *p_ui = nullptr;
         Fs *p_fs = nullptr;
         Config *p_config = nullptr;
+        Hid *p_hid = nullptr;
     };
 }
 

@@ -4,12 +4,12 @@
 
 #include <pico/stdio.h>
 #include <device/usbd.h>
-#include <tusb.h>
 
 #include "main.h"
 #include "pico_platform.h"
 #include "pico_gamepad.h"
 #include "pico_fs.h"
+#include "pico_hid.h"
 
 using namespace uGamePad;
 
@@ -29,11 +29,14 @@ void PicoPlatform::setup() {
     // init config
     p_config = new Config(p_fs);
 
-    // init gfx
-    p_gfx = new PicoGfx();
-
     // init gamepad
     p_pad = new PicoGamePad();
+
+    // linux hid api
+    p_hid = new PicoHid();
+
+    // init gfx
+    p_gfx = new PicoGfx();
 
     // check for bootloader mode (hardware) button press
     if (p_pad->getButtons() & GamePad::Button::UP) {
@@ -57,21 +60,13 @@ void PicoPlatform::setup() {
 }
 
 void PicoPlatform::loop() {
-    if (p_fs->getUsbMode() == Fs::UsbMode::Host) {
-        // handle usb host updates
-        if (tuh_inited()) {
-            tuh_task();
-        } else {
-            printf("error: tinyusb host service not started...\r\n");
-            while (true);
-        }
-    } else {
+    if (p_fs->getUsbMode() == Fs::UsbMode::Msc) {
         // handle usb device (msc) updates
         if (tud_inited()) {
             tud_task();
         } else {
             printf("error: tinyusb device service not started...\r\n");
-            while (true);
+            return;
         }
     }
 

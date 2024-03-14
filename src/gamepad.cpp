@@ -17,10 +17,8 @@ GamePad::GamePad() {
     }
 }
 
-void GamePad::setDevice(const Device *device, uint8_t dev_addr, uint8_t instance) {
+void GamePad::setDevice(const Device *device) {
     p_device = device;
-    m_addr = dev_addr;
-    m_instance = instance;
     printf("new gamepad discovered: %s (%04x:%04x)\r\n",
            device->name, p_device->vendor, p_device->product);
 }
@@ -148,6 +146,66 @@ void GamePad::setOutputMode(const std::string &modeName) {
             break;
         }
     }
+}
+
+bool GamePad::onHidReport(const uint8_t *report, uint16_t len) {
+    if (!p_device || !p_device->data) {
+        printf("uGamePad::onHidReport: error: device not set\r\n");
+        return false;
+    }
+
+    //printf("uGamePad::loop: received data for '%s', len: %i)\r\n", p_device->name, len);
+
+    // do not process bytes if less than x bytes
+    if (len < p_device->data->min_report_size) return true;
+
+    // reset buttons state
+    m_buttons = 0;
+
+    // process buttons
+    for (int i = 0; i < MAX_BUTTONS; i++) {
+        if (p_device->data->buttons[i].byte >= len) continue;
+        m_buttons |= report[p_device->data->buttons[i].byte] &
+                     BIT(p_device->data->buttons[i].bit) ? (1 << i) : 0;
+    }
+
+    // process axis
+    for (int i = 0; i < 3; i += 2) {
+        if (p_device->data->axis[i].byte >= len) continue;
+        if (p_device->data->axis[i].type & ReportData::AxisType::AXIS_I16) {
+            int16_t x = (int16_t &) report[p_device->data->axis[i].byte];
+            int16_t y = (int16_t &) report[p_device->data->axis[i + 1].byte];
+            m_buttons |= GamePad::getButtonsFromAxis(x, y, p_device->data->axis[i].type);
+        } else if (p_device->data->axis[i].type & ReportData::AxisType::AXIS_UI8) {
+            uint8_t x = (uint8_t &) report[p_device->data->axis[i].byte];
+            uint8_t y = (uint8_t &) report[p_device->data->axis[i + 1].byte];
+            m_buttons |= GamePad::getButtonsFromAxis(x, y, p_device->data->axis[i].type);
+        }
+    }
+
+    // process hat
+    if (p_device->data->hat.byte < len) {
+        uint16_t i = report[p_device->data->hat.byte];
+        if (p_device->data->hat.bit > 0) {
+            // TODO: fixme (use proper detection)
+            // cheap snes gamepad ("USB Gamepad" (descriptor) / "DragonRise Inc. Gamepad" (linux))
+            i = i << 8 | report[p_device->data->hat.bit];
+            m_buttons |= GamePad::getButtonsFromHatSpecial(i);
+        } else {
+            m_buttons |= GamePad::getButtonsFromHat(i);
+        }
+    }
+
+#if 1
+    for (const auto &mapping: getOutputMode()->mappings) {
+        if (m_buttons & mapping.button) {
+            //gpio_put(mapping.pin, m_buttons & mapping.button ? GPIO_LOW : GPIO_HIGH);
+            printf("%s: %s\r\n", p_device->name, Utility::toString(mapping.button).c_str());
+        }
+    }
+#endif
+
+    return true;
 }
 
 void GamePad::loop() {

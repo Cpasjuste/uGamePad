@@ -141,6 +141,7 @@ void PicoGamePad::setOutputMode(const GamePad::Mode &mode) {
 }
 
 bool PicoGamePad::report(const uint8_t *report, uint16_t len) {
+#if 0
     if (!p_device || !p_device->data) {
         TU_LOG1("uGamePad::loop: error: device not set\r\n");
         return false;
@@ -193,17 +194,20 @@ bool PicoGamePad::report(const uint8_t *report, uint16_t len) {
             buttons |= GamePad::getButtonsFromHat(i);
         }
     }
+#endif
+
+    //uint16_t buttons = m_buttons;
 
     // handle hardware buttons
-    if (!gpio_get(GPIO_BUTTON_UP)) buttons |= GamePad::Button::UP;
-    if (!gpio_get(GPIO_BUTTON_DOWN)) buttons |= GamePad::Button::DOWN;
+    if (!gpio_get(GPIO_BUTTON_UP)) m_buttons |= GamePad::Button::UP;
+    if (!gpio_get(GPIO_BUTTON_DOWN)) m_buttons |= GamePad::Button::DOWN;
     if (!gpio_get(GPIO_BUTTON_ENTER)) {
-        buttons |= GamePad::Button::START;
-        buttons |= GamePad::Button::MENU;
+        m_buttons |= GamePad::Button::START;
+        m_buttons |= GamePad::Button::MENU;
     }
 
     // for ui
-    m_buttons = buttons;
+    //m_buttons = buttons;
 
     // handle gamepad states
     auto ui = getPlatform()->getUi();
@@ -213,16 +217,16 @@ bool PicoGamePad::report(const uint8_t *report, uint16_t len) {
         // handle jamma mode
         if (output->mode == GamePad::Mode::Jamma) {
             // set gpio states, only send buttons changed states
-            m_buttons_diff = m_buttons_old ^ buttons;
-            m_buttons_old = buttons;
+            m_buttons_diff = m_buttons_old ^ m_buttons;
+            m_buttons_old = m_buttons;
             if (m_buttons_diff) {
                 // generate pin output
                 for (const auto &mapping: output->mappings) {
                     if (mapping.pin != UINT8_MAX && m_buttons_diff & mapping.button) {
-                        gpio_put(mapping.pin, buttons & mapping.button ? GPIO_LOW : GPIO_HIGH);
+                        gpio_put(mapping.pin, m_buttons & mapping.button ? GPIO_LOW : GPIO_HIGH);
 #ifndef NDEBUG
                         printf("%s: %s (%i)\r\n", p_device->name,
-                               Utility::toString(mapping.button).c_str(), buttons & mapping.button ? 1 : 0);
+                               Utility::toString(mapping.button).c_str(), m_buttons & mapping.button ? 1 : 0);
 #endif
                     }
                 }

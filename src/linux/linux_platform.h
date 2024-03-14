@@ -6,6 +6,7 @@
 #define U_GAMEPAD_LINUX_PLATFORM_H
 
 #include <unistd.h>
+#include "linux_hid.h"
 
 #define delay(x) usleep(x * 1000)
 
