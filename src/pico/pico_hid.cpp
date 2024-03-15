@@ -98,14 +98,21 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *desc_re
 
 void tuh_hid_umount_cb(uint8_t dev_addr, uint8_t instance) {
     printf("PicoHid: device unmounted (address: %d, instance: %d)\r\n", dev_addr, instance);
-    // TODO: free device
+    uint16_t vid, pid;
+    tuh_vid_pid_get(dev_addr, &vid, &pid);
+
+    if (!device || vid != device->vid || pid != device->pid) return;
+
+    getPlatform()->getHid()->onDeviceDisconnected(device);
+    free(device->report);
+    delete (device);
 }
 
 void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *report, uint16_t len) {
     uint16_t vid, pid;
     tuh_vid_pid_get(dev_addr, &vid, &pid);
 
-    if (device->vid != vid || device->pid != pid) {
+    if (!device || device->vid != vid || device->pid != pid) {
         printf("PicoHid: skipping data, wrong vid or pid for %s...\r\n", device->name);
         return;
     }

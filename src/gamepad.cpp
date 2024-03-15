@@ -158,6 +158,7 @@ bool GamePad::onHidReport(const uint8_t *report, uint16_t len) {
     // TODO: fix
     // process axis
     if (data->is_xbox) {
+        // "xinput" gamepad
         for (int i = 0; i < MAX_AXIS; i += 2) {
             if (data->joystick.axis[i].offset >= len * 8) continue;
             if (data->joystick.axis[i].size > 8) {
@@ -171,6 +172,7 @@ bool GamePad::onHidReport(const uint8_t *report, uint16_t len) {
             }
         }
     } else {
+        // "hid" gamepad
         int16_t a[MAX_AXIS];
         for (int i = 0; i < MAX_AXIS; i++) {
             bool is_signed = data->joystick.axis[i].logical.min > data->joystick.axis[i].logical.max;

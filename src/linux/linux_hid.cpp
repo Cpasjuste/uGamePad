@@ -146,13 +146,15 @@ void LinuxHid::loop() {
             if (device->user_data) hid_close((hid_device *) device->user_data);
             devices_list.erase(devices_list.begin() + (int) i);
             onDeviceDisconnected(device);
+            free(device->report);
+            delete (device);
         }
     }
 
     // release hid devices
     hid_free_enumeration(devices);
 
-    // handle reports
+    // handle reports (only one joystick supported...)
     if (!devices_list.empty()) {
         auto device = devices_list[0];
         if (device->user_data) {

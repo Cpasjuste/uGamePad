@@ -37,7 +37,5 @@ void Hid::onDeviceInputReport(Device *device, const uint8_t *report, uint16_t le
 
 void Hid::onDeviceDisconnected(Device *device) {
     printf("Hid::onDeviceDisconnected: %s (%04x:%04x)\r\n", device->name, device->vid, device->pid);
-    delete (device->report);
-    delete (device);
     getPlatform()->getPad()->setDevice(nullptr);
 }
