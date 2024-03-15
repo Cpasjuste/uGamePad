@@ -6,6 +6,9 @@
 #include "main.h"
 #include "gamepad.h"
 
+#define JOYSTICK_AXIS_TRIGGER_MIN 64
+#define JOYSTICK_AXIS_TRIGGER_MAX 192
+
 using namespace uGamePad;
 
 GamePad::GamePad() {
@@ -15,12 +18,6 @@ GamePad::GamePad() {
         m_analog_map[i + 128] = bezierY(t);
         m_analog_map[127 - i] = -1 * m_analog_map[i + 128];
     }
-}
-
-void GamePad::setDevice(const Device *device) {
-    p_device = device;
-    printf("new gamepad discovered: %s (%04x:%04x)\r\n",
-           device->name, p_device->vendor, p_device->product);
 }
 
 uint16_t GamePad::getButtonsFromHat(int hat) {
@@ -45,28 +42,17 @@ uint16_t GamePad::getButtonsFromHat(int hat) {
     return buttons;
 }
 
-uint16_t GamePad::getButtonsFromHatSpecial(uint16_t hat) {
-    uint16_t buttons = 0;
-
-    if (hat >> 8 == 0x00) buttons |= Button::LEFT;
-    if (hat >> 8 == 0xff) buttons |= Button::RIGHT;
-    if ((uint8_t) hat == 0x00) buttons |= Button::UP;
-    if ((uint8_t) hat == 0xff) buttons |= Button::DOWN;
-
-    return buttons;
-}
-
 uint16_t GamePad::getButtonsFromAxis(int x, int y, uint8_t type) {
     uint16_t buttons = 0;
     float slope = 0.414214f; // tangent of 22.5 degrees for size of angular zones
     auto analogX = (float) x, analogY = (float) y;
 
-    if (type & ReportData::AxisType::AXIS_UI8) {
+    if (type & AXIS_TYPE_U8) {
         analogX = (float) m_analog_map[x];
         analogY = (float) m_analog_map[y];
     }
 
-    if (type & ReportData::AxisType::AXIS_FLIP_Y) {
+    if (type & AXIS_TYPE_FLIP_Y) {
         analogY = -analogY;
     }
 
@@ -112,9 +98,9 @@ int GamePad::bezierY(float t) {
     lerp(&ab, &m_pa, &m_pb, t);     /* point between a and b */
     lerp(&bc, &m_pb, &m_pc, t);     /* point between b and c */
     lerp(&cd, &m_pc, &m_pd, t);     /* point between c and d */
-    lerp(&ab_bc, &ab, &bc, t);       /* point between ab and bc */
-    lerp(&bc_cd, &bc, &cd, t);       /* point between bc and cd */
-    lerp(&dest, &ab_bc, &bc_cd, t);   /* point on the bezier-curve */
+    lerp(&ab_bc, &ab, &bc, t);      /* point between ab and bc */
+    lerp(&bc_cd, &bc, &cd, t);      /* point between bc and cd */
+    lerp(&dest, &ab_bc, &bc_cd, t); /* point on the bezier-curve */
     return dest.y;
 }
 
@@ -149,57 +135,86 @@ void GamePad::setOutputMode(const std::string &modeName) {
 }
 
 bool GamePad::onHidReport(const uint8_t *report, uint16_t len) {
-    if (!p_device || !p_device->data) {
+    if (!p_device || !p_device->report) {
         printf("uGamePad::onHidReport: error: device not set\r\n");
         return false;
     }
 
     //printf("uGamePad::loop: received data for '%s', len: %i)\r\n", p_device->name, len);
-
-    // do not process bytes if less than x bytes
-    if (len < p_device->data->min_report_size) return true;
+    ReportData *data = p_device->report;
 
     // reset buttons state
     m_buttons = 0;
 
     // process buttons
     for (int i = 0; i < MAX_BUTTONS; i++) {
-        if (p_device->data->buttons[i].byte >= len) continue;
-        m_buttons |= report[p_device->data->buttons[i].byte] &
-                     BIT(p_device->data->buttons[i].bit) ? (1 << i) : 0;
+        if (data->joystick.buttons[i].byte_offset >= len) continue;
+        m_buttons |= report[data->joystick.buttons[i].byte_offset] & data->joystick.buttons[i].bitmask ? (1 << i) : 0;
     }
 
+    // TODO: hat
+
+
+    // TODO: fix
     // process axis
-    for (int i = 0; i < 3; i += 2) {
-        if (p_device->data->axis[i].byte >= len) continue;
-        if (p_device->data->axis[i].type & ReportData::AxisType::AXIS_I16) {
-            int16_t x = (int16_t &) report[p_device->data->axis[i].byte];
-            int16_t y = (int16_t &) report[p_device->data->axis[i + 1].byte];
-            m_buttons |= GamePad::getButtonsFromAxis(x, y, p_device->data->axis[i].type);
-        } else if (p_device->data->axis[i].type & ReportData::AxisType::AXIS_UI8) {
-            uint8_t x = (uint8_t &) report[p_device->data->axis[i].byte];
-            uint8_t y = (uint8_t &) report[p_device->data->axis[i + 1].byte];
-            m_buttons |= GamePad::getButtonsFromAxis(x, y, p_device->data->axis[i].type);
+    if (data->is_xbox) {
+        for (int i = 0; i < MAX_AXIS; i += 2) {
+            if (data->joystick.axis[i].offset >= len * 8) continue;
+            if (data->joystick.axis[i].size > 8) {
+                int16_t x = (int16_t &) report[data->joystick.axis[i].offset / 8];
+                int16_t y = (int16_t &) report[data->joystick.axis[i + 1].offset / 8];
+                m_buttons |= GamePad::getButtonsFromAxis(x, y, AXIS_TYPE_S16);
+            } else {
+                uint8_t x = (uint8_t &) report[data->joystick.axis[i].offset / 8];
+                uint8_t y = (uint8_t &) report[data->joystick.axis[i + 1].offset / 8];
+                m_buttons |= GamePad::getButtonsFromAxis(x, y, AXIS_TYPE_U8);
+            }
         }
-    }
+    } else {
+        int16_t a[MAX_AXIS];
+        for (int i = 0; i < MAX_AXIS; i++) {
+            bool is_signed = data->joystick.axis[i].logical.min > data->joystick.axis[i].logical.max;
+            if (data->joystick.axis[i].size == 0) {
+                a[i] = 127;
+            } else {
+                a[i] = parse_joystick_bits(report, data->joystick.axis[i].offset,
+                                           data->joystick.axis[i].size, is_signed);
+                uint16_t min = data->joystick.axis[i].logical.min;
+                uint16_t max = data->joystick.axis[i].logical.max;
+                if (min > max) {
+                    // signed -> unsigned
+                    // FIXME: do proper sign extension based on bSize of min and max in the report
+                    if (min > 255 || max > 255) {
+                        // assume 16 bit values
+                        min += 32768;
+                        max += 32768;
+                        a[i] += 32767;
+                    } else {
+                        // assume 8 bit values
+                        min = (min + 128) & 0xff;
+                        max = (max + 128) & 0xff;
+                        a[i] = (int16_t) (((a[i] & 0xff) + 128) & 0xff);
+                    }
+                }
 
-    // process hat
-    if (p_device->data->hat.byte < len) {
-        uint16_t i = report[p_device->data->hat.byte];
-        if (p_device->data->hat.bit > 0) {
-            // TODO: fixme (use proper detection)
-            // cheap snes gamepad ("USB Gamepad" (descriptor) / "DragonRise Inc. Gamepad" (linux))
-            i = i << 8 | report[p_device->data->hat.bit];
-            m_buttons |= GamePad::getButtonsFromHatSpecial(i);
-        } else {
-            m_buttons |= GamePad::getButtonsFromHat(i);
+                int h_range = (max - min);
+                // scale to 0-255
+                if (a[i] <= min) a[i] = (int16_t) min; else if (a[i] >= max) a[i] = (int16_t) max;
+                if (!h_range) a[i] = 127; else a[i] = (int16_t) (((a[i] - min) * 255) / h_range);
+                // apply dead range
+                //if (a[i] > (127 - mist_cfg.joystick_dead_range) && a[i] < (127 + mist_cfg.joystick_dead_range)) a[i] = 127;
+            }
+        }
+
+        for (int i = 0; i < MAX_AXIS; i += 2) {
+            if (data->joystick.axis[i].size == 0) continue;
+            m_buttons |= GamePad::getButtonsFromAxis(a[i], a[i + 1], AXIS_TYPE_U8 | AXIS_TYPE_FLIP_Y);
         }
     }
 
 #if 1
     for (const auto &mapping: getOutputMode()->mappings) {
         if (m_buttons & mapping.button) {
-            //gpio_put(mapping.pin, m_buttons & mapping.button ? GPIO_LOW : GPIO_HIGH);
             printf("%s: %s\r\n", p_device->name, Utility::toString(mapping.button).c_str());
         }
     }

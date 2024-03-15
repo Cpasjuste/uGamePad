@@ -14,8 +14,6 @@
 
 #define TODO_NES_SNES_MD_CABLES
 
-#define MAX_BUTTONS 12
-#define MAX_AXIS 4
 #define DEAD_ZONE 4000
 #define GPIO_LOW 0
 #define GPIO_HIGH 1
@@ -72,23 +70,20 @@ namespace uGamePad {
 
         virtual void setOutputMode(const std::string &modeName);
 
-        virtual uint16_t &getButtons() { return m_buttons; };
+        virtual uint16_t &getButtons() { return m_buttons; }
 
-        void setDevice(const Device *device);
+        void setDevice(Device *device) { p_device = device; }
 
-        const Device *getDevice() { return p_device; };
+        Device *getDevice() { return p_device; }
 
-        bool isUnknown() { return !p_device || p_device->vendor == 0 && p_device->product == 0; }
+        uint16_t getRepeatDelay() { return m_repeatDelayMs; }
 
-        uint16_t getRepeatDelay() { return m_repeatDelayMs; };
-
-        void setRepeatDelay(uint16_t ms) { m_repeatDelayMs = ms; };
+        void setRepeatDelay(uint16_t ms) { m_repeatDelayMs = ms; }
 
         bool onHidReport(const uint8_t *report, uint16_t len);
 
     protected:
-        const Device p_device_unknown = {0x0000, 0x0000, "Unknown device", nullptr};
-        const Device *p_device = &p_device_unknown;
+        Device *p_device = nullptr;
         uint16_t m_buttons{0};
         uint16_t m_buttons_prev{0};
         Clock m_repeatClock;
@@ -110,11 +105,9 @@ namespace uGamePad {
 
         int bezierY(float t);
 
-        uint16_t getButtonsFromAxis(int x, int y, uint8_t type = ReportData::AxisType::AXIS_I16);
+        uint16_t getButtonsFromAxis(int x, int y, uint8_t type = 0/*ReportData::AxisType::AXIS_I16*/);
 
         static uint16_t getButtonsFromHat(int hat);
-
-        static uint16_t getButtonsFromHatSpecial(uint16_t hat); //
     };
 }
 

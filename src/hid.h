@@ -6,26 +6,18 @@
 #define U_GAMEPAD_HID_H
 
 #include <cstdint>
-#include "hidparser.h"
+#include "hid_utility.h"
 
 namespace uGamePad {
     class Hid {
     public:
-        struct HidDevice {
-            uint16_t vid = 0;
-            uint16_t pid = 0;
-            char name[64]{};
-            void *data = nullptr;
-            hid_report_t report{};
-        };
-
         virtual void loop() {}
 
-        void onDeviceConnected(const HidDevice &hidDevice);
+        void onDeviceConnected(Device *device);
 
-        void onDeviceDisconnected(const HidDevice &hidDevice);
+        void onDeviceDisconnected(Device *device);
 
-        void onDeviceInputReport(const HidDevice &hidDevice, uint8_t const *report, uint16_t len);
+        void onDeviceInputReport(Device *device, uint8_t const *report, uint16_t len);
     };
 }
 

@@ -12,7 +12,7 @@ using namespace uGamePad;
 #define MAX_REPORT  4
 #define LANGUAGE_ID 0x0409 // english
 
-static Hid::HidDevice hidDevice;
+static Device *device;
 
 static int count_utf8_bytes(const uint16_t *buf, size_t len);
 
@@ -42,70 +42,58 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *desc_re
            vid, pid, dev_addr, instance, desc_len);
 
     // return if pad is not initialized yet (should not happen...)
-    if (!getPlatform()->getHid() || !getPlatform()->getPad()) return;
+    if (!getPlatform()->getPad()) return;
 
-    hidDevice = {vid, pid};
+    device = new Device{vid, pid};
 
     // get device "name" (product)
     uint16_t buf[128];
     if (tuh_descriptor_get_product_string_sync(
             dev_addr, LANGUAGE_ID, buf, sizeof(buf)) == XFER_RESULT_SUCCESS) {
         auto p = convert_utf8_to_char(buf, TU_ARRAY_SIZE(buf));
-        strncpy(hidDevice.name, p, 63);
+        strncpy(device->name, p, 63);
     }
 
-    // parse report descriptor
-    if (!parse_report_descriptor((uint8_t *) desc_report, desc_len, &hidDevice.report)) {
-        printf("PicoHid: could not get report descriptor for %04x:%04x, looking for built-in descriptor...\r\n",
-               hidDevice.vid, hidDevice.pid);
+    // check if device exists in user fs or device database
+    auto userDevice = getPlatform()->getConfig()->loadDevice(device->vid, device->pid);
+    if (userDevice) {
+        delete (device);
+        device = userDevice;
+    } else {
+        userDevice = get_device(device->vid, device->pid);
+        if (userDevice) {
+            delete (device);
+            device = userDevice;
+        }
+    }
 
+    // get and parse report descriptor if not set from "userDevice"
+    if (!device->report) {
+        device->report = (ReportData *) malloc(sizeof(ReportData));
+        // parse report descriptor
+        if (!parse_report_descriptor((uint8_t *) desc_report, desc_len, device)) {
+            printf("PicoHid: could not parse report descriptor for %04x:%04x\r\n", device->vid, device->pid);
+            free(device->report);
+            delete (device);
+            return;
+        }
+    }
+
+    // only handle joystick devices
+    if (device->report->type != REPORT_TYPE_JOYSTICK) {
+        printf("PicoHid: device %04x:%04x is not a joystick, skipping...\r\n", device->vid, device->pid);
+        free(device->report);
+        delete (device);
         return;
     }
 
     // notify
-    getPlatform()->getHid()->onDeviceConnected(hidDevice);
+    getPlatform()->getHid()->onDeviceConnected(device);
 
     // ask for next report
     if (!tuh_hid_receive_report(dev_addr, instance)) {
         printf("PicoHid: tuh_hid_receive_report failed\r\n");
     }
-
-    /*
-    // first try to find gamepad device configuration from (user) flash filesystem
-    auto device = getPlatform()->getConfig()->loadDevice(vid, pid);
-    if (!device) {
-        // now try to find the gamepad device from devices table
-        device = get_device(vid, pid);
-    }
-
-    // a know controller was plugged in (see devices.c)
-    if (device) {
-        // get device "name" (product)
-        uint16_t buf[128];
-        if (tuh_descriptor_get_product_string_sync(
-                dev_addr, LANGUAGE_ID, buf, sizeof(buf)) == XFER_RESULT_SUCCESS) {
-            auto p = convert_utf8_to_char(buf, TU_ARRAY_SIZE(buf));
-            strncpy(device->name, p, 63);
-        }
-
-        getPlatform()->getPad()->setDevice(device);
-        // send init message if provided
-        if (device->data->init.size > 0) {
-            tuh_hid_set_report(dev_addr, instance, 5, HID_REPORT_TYPE_OUTPUT,
-                               &device->data->init.msg, device->data->init.size);
-        }
-    } else {
-        printf("tuh_hid_mount_cb: unknown gamepad (%04x:%04x)\r\n", vid, pid);
-    }
-
-    // Parse data descriptor with built-in parser
-    hid_info[instance].report_count = tuh_hid_parse_report_descriptor(
-            hid_info[instance].report_info, MAX_REPORT, desc_report, desc_len);
-
-    if (!tuh_hid_receive_report(dev_addr, instance)) {
-        printf("tuh_hid_mount_cb: tuh_hid_receive_report failed\r\n");
-    }
-    */
 }
 
 void tuh_hid_umount_cb(uint8_t dev_addr, uint8_t instance) {
@@ -117,37 +105,18 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
     uint16_t vid, pid;
     tuh_vid_pid_get(dev_addr, &vid, &pid);
 
-    if (hidDevice.vid != vid || hidDevice.pid != pid) {
-        printf("PicoHid: skipping data, wrong vid or pid for %s...\r\n", hidDevice.name);
+    if (device->vid != vid || device->pid != pid) {
+        printf("PicoHid: skipping data, wrong vid or pid for %s...\r\n", device->name);
         return;
     }
 
     // send report
-    getPlatform()->getHid()->onDeviceInputReport(hidDevice, report, len);
+    getPlatform()->getHid()->onDeviceInputReport(device, report, len);
 
     // ask for next report
     if (!tuh_hid_receive_report(dev_addr, instance)) {
         printf("PicoHid: tuh_hid_receive_report failed\r\n");
     }
-
-    /*
-    auto pad = (PicoGamePad *) getPlatform()->getPad();
-    if (!pad || pad->isUnknown()) return;
-
-    tuh_vid_pid_get(dev_addr, &vid, &pid);
-    if (pad->getDevice()->product != pid || pad->getDevice()->vendor != vid) {
-        printf("tuh_hid_report_received_cb: skipping data, wrong vid or pid for %s...\r\n", pad->getDevice()->name);
-        tuh_hid_receive_report(dev_addr, instance);
-        return;
-    }
-
-    //printf("tuh_hid_report_received_cb: addr: %i, instance: %i, len: %i\r\n", dev_addr, instance, len);
-    pad->report(report, len);
-
-    if (!tuh_hid_receive_report(dev_addr, instance)) {
-        printf("tuh_hid_report_received_cb: cannot request to receive data\r\n");
-    }
-    */
 }
 
 static int count_utf8_bytes(const uint16_t *buf, size_t len) {

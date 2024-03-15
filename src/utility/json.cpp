@@ -10,6 +10,8 @@
 using namespace uGamePad;
 
 std::vector<uint8_t> Json::serialize(Device *device) {
+    return {};
+#if 0
     if (!device) {
         printf("Json::getDevice: device is null...\r\n");
         return {};
@@ -58,9 +60,12 @@ std::vector<uint8_t> Json::serialize(Device *device) {
 
     buffer.resize(len);
     return buffer;
+#endif
 }
 
 Device *Json::deserialize(const std::vector<uint8_t> &buffer) {
+    return nullptr;
+#if 0
     StaticJsonDocument<2048> doc;
     DeserializationError err = deserializeJson(doc, buffer.data(), buffer.size());
     if (err) {
@@ -101,4 +106,5 @@ Device *Json::deserialize(const std::vector<uint8_t> &buffer) {
     // TODO: init message
 
     return device;
+#endif
 }

@@ -1,17 +1,18 @@
 // http://www.frank-zhao.com/cache/hid_tutorial_1.php
 
-#include <cinttypes>
-#include <cstdio>
 #include <cstring>
-
-#include "hidparser.h"
-//#include "debug.h"
+#include "hid_utility.h"
 
 typedef struct {
     uint8_t bSize: 2;
     uint8_t bType: 2;
     uint8_t bTag: 4;
 } __attribute__((packed)) item_t;
+
+#ifdef NDEBUG
+#define printf
+#endif
+#define printf
 
 // flags for joystick components required
 #define JOY_MOUSE_REQ_AXIS_X  0x01
@@ -52,24 +53,27 @@ typedef struct {
 #define USAGE_WHEEL   56
 #define USAGE_HAT     57
 
-// check if the current report 
-bool report_is_usable(uint16_t bit_count, uint8_t report_complete, hid_report_t *conf) {
-    printf("  - total bit count: %d (%d bytes, %d bits)",
-           bit_count, bit_count / 8, bit_count % 8);
+using namespace uGamePad;
 
-    conf->report_size = bit_count / 8;
+// check if the current report 
+bool report_is_usable(uint16_t bit_count, uint8_t report_complete, Device *device) {
+    printf("  - total bit count: %d (%d bytes, %d bits)\r\n",
+            bit_count, bit_count / 8, bit_count % 8);
+
+    device->report->report_size = bit_count / 8;
 
     // check if something useful was detected
-    if (((conf->type == REPORT_TYPE_JOYSTICK) && ((report_complete & JOYSTICK_COMPLETE) == JOYSTICK_COMPLETE))) {
-        printf("  - report %d is usable", conf->report_id);
+    if (((device->report->type == REPORT_TYPE_JOYSTICK) &&
+         ((report_complete & JOYSTICK_COMPLETE) == JOYSTICK_COMPLETE))) {
+        printf("  - report %d is usable\r\n", device->report->report_id);
         return true;
     }
 
-    printf("  - unusable report %d", conf->report_id);
+    printf("  - unusable report %d\r\n", device->report->report_id);
     return false;
 }
 
-bool parse_report_descriptor(uint8_t *rep, uint16_t rep_size, hid_report_t *conf) {
+bool parse_report_descriptor(uint8_t *rep, uint16_t rep_size, Device *device) {
     int8_t app_collection = 0;
     int8_t phys_log_collection = 0;
     uint8_t skip_collection = 0;
@@ -83,20 +87,20 @@ bool parse_report_descriptor(uint8_t *rep, uint16_t rep_size, hid_report_t *conf
     uint16_t bit_count = 0, usage_count = 0;
     uint16_t logical_minimum = 0, logical_maximum = 0;
     uint16_t physical_minimum = 0, physical_maximum = 0;
-    memset(conf, 0, sizeof(hid_report_t));
+    memset(device->report, 0, sizeof(ReportData));
 
     // mask used to check of all required components have been found, so
     // that e.g. both axes and the button of a joystick are ready to be used
     uint8_t report_complete = 0;
 
     // joystick/mouse components
-    int8_t axis[MAX_AXES];
+    int8_t axis[MAX_AXIS];
     uint8_t btns = 0;
     int8_t hat = -1;
 
-    for (i = 0; i < MAX_AXES; i++) axis[i] = -1;
+    for (i = 0; i < MAX_AXIS; i++) axis[i] = -1;
 
-    conf->type = REPORT_TYPE_NONE;
+    device->report->type = REPORT_TYPE_NONE;
 
     while (rep_size) {
         // extract short item
@@ -156,21 +160,21 @@ bool parse_report_descriptor(uint8_t *rep, uint16_t rep_size, hid_report_t *conf
                         case 8:
                             // handle found buttons
                             if (btns) {
-                                if ((conf->type == REPORT_TYPE_JOYSTICK) ||
-                                    (conf->type == REPORT_TYPE_MOUSE)) {
+                                if ((device->report->type == REPORT_TYPE_JOYSTICK) ||
+                                    (device->report->type == REPORT_TYPE_MOUSE)) {
                                     // scan for up to four buttons
                                     char b;
                                     for (b = 0; b < 12; b++) {
                                         if (report_count > b) {
                                             uint16_t this_bit = bit_count + b;
 
-                                            printf("BUTTON%d @ %d (byte %d, mask %d)", b,
-                                                   this_bit, this_bit / 8, 1 << (this_bit % 8));
+                                            printf("BUTTON%d @ %d (byte %d, mask %d)\r\n", b,
+                                                    this_bit, this_bit / 8, 1 << (this_bit % 8));
 
-                                            conf->joystick.button[b].byte_offset = this_bit / 8;
-                                            conf->joystick.button[b].bitmask = 1 << (this_bit % 8);
+                                            device->report->joystick.buttons[b].byte_offset = this_bit / 8;
+                                            device->report->joystick.buttons[b].bitmask = 1 << (this_bit % 8);
                                         }
-                                        conf->joystick.button_count = report_count * report_size;
+                                        device->report->joystick.button_count = report_count * report_size;
                                     }
 
                                     // we found at least one button which is all we want to accept this as a valid
@@ -182,20 +186,23 @@ bool parse_report_descriptor(uint8_t *rep, uint16_t rep_size, hid_report_t *conf
 
                             // handle found axes
                             char c;
-                            for (c = 0; c < MAX_AXES; c++) {
+                            for (c = 0; c < MAX_AXIS; c++) {
                                 if (axis[c] >= 0) {
                                     uint16_t cnt = bit_count + report_size * axis[c];
-                                    printf("  (%c-AXIS @ %d (byte %d, bit %d))", 'X' + c,
-                                           cnt, cnt / 8, cnt & 7);
+                                    //printf("  (%c-AXIS @ %d (byte %d, bit %d))", 'X' + c,
+                                    //       cnt, cnt / 8, cnt & 7);
 
-                                    if ((conf->type == REPORT_TYPE_JOYSTICK) || (conf->type == REPORT_TYPE_MOUSE)) {
+                                    if ((device->report->type == REPORT_TYPE_JOYSTICK) ||
+                                        (device->report->type == REPORT_TYPE_MOUSE)) {
                                         // save in joystick report
-                                        conf->joystick.axis[c].offset = cnt;
-                                        conf->joystick.axis[c].size = report_size;
-                                        conf->joystick.axis[c].logical.min = logical_minimum;
-                                        conf->joystick.axis[c].logical.max = logical_maximum;
+                                        device->report->joystick.axis[c].offset = cnt;
+                                        device->report->joystick.axis[c].size = report_size;
+                                        device->report->joystick.axis[c].logical.min = logical_minimum;
+                                        device->report->joystick.axis[c].logical.max = logical_maximum;
                                         if (c == 0) report_complete |= JOY_MOUSE_REQ_AXIS_X;
                                         if (c == 1) report_complete |= JOY_MOUSE_REQ_AXIS_Y;
+                                        printf("\r\nAXIS: {%i, %i, {%i, %i}\r\n",
+                                                cnt, report_size, logical_minimum, logical_maximum);
                                     }
                                 }
                             }
@@ -203,34 +210,34 @@ bool parse_report_descriptor(uint8_t *rep, uint16_t rep_size, hid_report_t *conf
                             // handle found hat
                             if (hat >= 0) {
                                 uint16_t cnt = bit_count + report_size * hat;
-                                printf("  (HAT @ %d (byte %d, bit %d), size %d)",
-                                       cnt, cnt / 8, cnt & 7, report_size);
-                                if (conf->type == REPORT_TYPE_JOYSTICK) {
-                                    conf->joystick.hat.offset = cnt;
-                                    conf->joystick.hat.size = report_size;
-                                    conf->joystick.hat.logical.min = logical_minimum;
-                                    conf->joystick.hat.logical.max = logical_maximum;
-                                    conf->joystick.hat.physical.min = physical_minimum;
-                                    conf->joystick.hat.physical.max = physical_maximum;
+                                printf("  (HAT @ %d (byte %d, bit %d), size %d)\r\n",
+                                        cnt, cnt / 8, cnt & 7, report_size);
+                                if (device->report->type == REPORT_TYPE_JOYSTICK) {
+                                    device->report->joystick.hat.offset = cnt;
+                                    device->report->joystick.hat.size = report_size;
+                                    device->report->joystick.hat.logical.min = logical_minimum;
+                                    device->report->joystick.hat.logical.max = logical_maximum;
+                                    device->report->joystick.hat.physical.min = physical_minimum;
+                                    device->report->joystick.hat.physical.max = physical_maximum;
                                 }
                             }
 
-                            printf("INPUT(%d)", value);
+                            printf("INPUT(%d)\r\n", value);
 
                             // reset for next inputs
                             bit_count += report_count * report_size;
                             usage_count = 0;
                             btns = 0;
-                            for (i = 0; i < MAX_AXES; i++) axis[i] = -1;
+                            for (i = 0; i < MAX_AXIS; i++) axis[i] = -1;
                             hat = -1;
                             break;
 
                         case 9:
-                            printf("OUTPUT(%d)", value);
+                            printf("OUTPUT(%d)\r\n", value);
                             break;
 
                         case 11:
-                            printf("FEATURE(%d)", value);
+                            printf("FEATURE(%d)\r\n", value);
                             break;
 
                         case 10:
@@ -239,22 +246,22 @@ bool parse_report_descriptor(uint8_t *rep, uint16_t rep_size, hid_report_t *conf
                             usage_count = 0;
 
                             if (value == 1) {   // app collection
-                                printf("  -> application");
+                                printf("  -> application\r\n");
                                 app_collection++;
                             } else if (value == 0) {  // physical collection
-                                printf("  -> physical");
+                                printf("  -> physical\r\n");
                                 phys_log_collection++;
                             } else if (value == 2) {  // logical collection
-                                printf("  -> logical");
+                                printf("  -> logical\r\n");
                                 phys_log_collection++;
                             } else {
-                                printf("skipping unsupported collection");
+                                printf("skipping unsupported collection\r\n");
                                 skip_collection++;
                             }
                             break;
 
                         case 12:
-                            printf("END_COLLECTION(%d)", value);
+                            printf("END_COLLECTION(%d)\r\n", value);
                             collection_depth--;
 
                             // leaving the depth the generic desktop was valid for
@@ -262,14 +269,14 @@ bool parse_report_descriptor(uint8_t *rep, uint16_t rep_size, hid_report_t *conf
                                 generic_desktop = -1;
 
                             if (phys_log_collection) {
-                                printf("  -> phys/log end");
+                                printf("  -> phys/log end\r\n");
                                 phys_log_collection--;
                             } else if (app_collection) {
-                                printf("  -> app end");
+                                printf("  -> app end\r\n");
                                 app_collection--;
 
                                 // check if report is usable and stop parsing if it is
-                                if (report_is_usable(bit_count, report_complete, conf))
+                                if (report_is_usable(bit_count, report_complete, device))
                                     return true;
                                 else {
                                     // retry with next report
@@ -278,13 +285,13 @@ bool parse_report_descriptor(uint8_t *rep, uint16_t rep_size, hid_report_t *conf
                                 }
 
                             } else {
-                                printf(" -> unexpected");
+                                printf(" -> unexpected\r\n");
                                 return false;
                             }
                             break;
 
                         default:
-                            printf("unexpected main item %d", tag);
+                            printf("unexpected main item %d\r\n", tag);
                             return false;
                             break;
                     }
@@ -297,62 +304,62 @@ bool parse_report_descriptor(uint8_t *rep, uint16_t rep_size, hid_report_t *conf
                             printf("USAGE_PAGE(%d/0x%x)", value, value);
 
                             if (value == USAGE_PAGE_KEYBOARD) {
-                                printf(" -> Keyboard");
+                                printf(" -> Keyboard\r\n");
                             } else if (value == USAGE_PAGE_GAMING) {
-                                printf(" -> Game device");
+                                printf(" -> Game device\r\n");
                             } else if (value == USAGE_PAGE_LEDS) {
-                                printf(" -> LEDs");
+                                printf(" -> LEDs\r\n");
                             } else if (value == USAGE_PAGE_CONSUMER) {
-                                printf(" -> Consumer");
+                                printf(" -> Consumer\r\n");
                             } else if (value == USAGE_PAGE_BUTTON) {
-                                printf(" -> Buttons");
+                                printf(" -> Buttons\r\n");
                                 btns = 1;
                             } else if (value == USAGE_PAGE_GENERIC_DESKTOP) {
-                                printf(" -> Generic Desktop");
+                                printf(" -> Generic Desktop\r\n");
 
                                 if (generic_desktop < 0)
                                     generic_desktop = collection_depth;
                             } else
-                                printf(" -> UNSUPPORTED USAGE_PAGE");
+                                    printf(" -> UNSUPPORTED USAGE_PAGE\r\n");
 
                             break;
 
                         case 1:
-                            printf("LOGICAL_MINIMUM(%d/%d)", value, (int16_t) value);
+                            printf("LOGICAL_MINIMUM(%d/%d)\r\n", value, (int16_t) value);
                             logical_minimum = value;
                             break;
 
                         case 2:
-                            printf("LOGICAL_MAXIMUM(%d)", value);
+                            printf("LOGICAL_MAXIMUM(%d)\r\n", value);
                             logical_maximum = value;
                             break;
 
                         case 3:
-                            printf("PHYSICAL_MINIMUM(%d/%d)", value, (int16_t) value);
+                            printf("PHYSICAL_MINIMUM(%d/%d)\r\n", value, (int16_t) value);
                             physical_minimum = value;
                             break;
 
                         case 4:
-                            printf("PHYSICAL_MAXIMUM(%d)", value);
+                            printf("PHYSICAL_MAXIMUM(%d)\r\n", value);
                             physical_maximum = value;
                             break;
 
                         case 5:
-                            printf("UNIT_EXPONENT(%d)", value);
+                            printf("UNIT_EXPONENT(%d)\r\n", value);
                             break;
 
                         case 6:
-                            printf("UNIT(%d)", value);
+                            printf("UNIT(%d)\r\n", value);
                             break;
 
                         case 7:
-                            printf("REPORT_SIZE(%d)", value);
+                            printf("REPORT_SIZE(%d)\r\n", value);
                             report_size = value;
                             break;
 
                         case 8:
-                            printf("REPORT_ID(%d)", value);
-                            conf->report_id = value;
+                            printf("REPORT_ID(%d)\r\n", value);
+                            device->report->report_id = value;
                             break;
 
                         case 9:
@@ -361,7 +368,7 @@ bool parse_report_descriptor(uint8_t *rep, uint16_t rep_size, hid_report_t *conf
                             break;
 
                         default:
-                            printf("unexpected global item %d", tag);
+                            printf("unexpected global item %d\r\n", tag);
                             return false;
                             break;
                     }
@@ -376,62 +383,63 @@ bool parse_report_descriptor(uint8_t *rep, uint16_t rep_size, hid_report_t *conf
 
                             if (!collection_depth && (value == USAGE_KEYBOARD)) {
                                 // usage(keyboard) is always allowed
-                                printf(" -> Keyboard");
-                                conf->type = REPORT_TYPE_KEYBOARD;
+                                printf(" -> Keyboard\r\n");
+                                device->report->type = REPORT_TYPE_KEYBOARD;
                             } else if (!collection_depth && (value == USAGE_MOUSE)) {
                                 // usage(mouse) is always allowed
-                                printf(" -> Mouse");
-                                conf->type = REPORT_TYPE_MOUSE;
+                                printf(" -> Mouse\r\n");
+                                device->report->type = REPORT_TYPE_MOUSE;
                             } else if (!collection_depth &&
                                        ((value == USAGE_GAMEPAD) || (value == USAGE_JOYSTICK))) {
-                                printf(" -> Gamepad/Joystick");
-                                printf("Gamepad/Joystick usage found");
-                                conf->type = REPORT_TYPE_JOYSTICK;
+                                printf(" -> Gamepad/Joystick\r\n");
+                                printf("Gamepad/Joystick usage found\r\n");
+                                device->report->type = REPORT_TYPE_JOYSTICK;
                             } else if (value == USAGE_POINTER && app_collection) {
                                 // usage(pointer) is allowed within the application collection
 
-                                printf(" -> Pointer");
+                                printf(" -> Pointer\r\n");
 
                             } else if (((value >= USAGE_X && value <= USAGE_RZ) || value == USAGE_WHEEL) &&
                                        app_collection) {
                                 // usage(x) and usage(y) are allowed within the app collection
-                                printf(" -> axis usage");
+                                printf(" -> axis usage\r\n");
 
                                 // we support x and y axis on mice and joysticks (+wheel on mice)
-                                if ((conf->type == REPORT_TYPE_JOYSTICK) || (conf->type == REPORT_TYPE_MOUSE)) {
+                                if ((device->report->type == REPORT_TYPE_JOYSTICK) ||
+                                    (device->report->type == REPORT_TYPE_MOUSE)) {
                                     if (value == USAGE_X) {
-                                        printf("JOYSTICK/MOUSE: found x axis @ %d", usage_count);
-                                        axis[0] = usage_count;
+                                        printf("JOYSTICK/MOUSE: found x axis @ %d\r\n", usage_count);
+                                        axis[0] = (int8_t) usage_count;
                                     }
                                     if (value == USAGE_Y) {
-                                        printf("JOYSTICK/MOUSE: found y axis @ %d", usage_count);
-                                        axis[1] = usage_count;
+                                        printf("JOYSTICK/MOUSE: found y axis @ %d\r\n", usage_count);
+                                        axis[1] = (int8_t) usage_count;
                                     }
                                     if (value == USAGE_Z) {
-                                        printf("JOYSTICK/MOUSE: found z axis @ %d", usage_count);
-                                        if (axis[2] == -1) axis[2] = usage_count; // don't override wheel
+                                        printf("JOYSTICK/MOUSE: found z axis @ %d\r\n", usage_count);
+                                        if (axis[2] == -1) axis[2] = (int8_t) usage_count; // don't override wheel
                                     }
                                     if (value == USAGE_RX || value == USAGE_RY || value == USAGE_RZ) {
-                                        printf("JOYSTICK/MOUSE: found R%c axis @ %d",
-                                               'X' + (value - USAGE_RX), usage_count);
-                                        if (axis[3] == -1) axis[3] = usage_count;
+                                        printf("JOYSTICK/MOUSE: found R%c axis @ %d\r\n",
+                                                'X' + (value - USAGE_RX), usage_count);
+                                        if (axis[3] == -1) axis[3] = (int8_t) usage_count;
                                     }
                                     if (value == USAGE_WHEEL) {
-                                        printf("MOUSE: found wheel @ %d", usage_count);
-                                        axis[2] = usage_count;
+                                        printf("MOUSE: found wheel @ %d\r\n", usage_count);
+                                        axis[2] = (int8_t) usage_count;
                                     }
                                 }
                             } else if ((value == USAGE_HAT) && app_collection) {
                                 // usage(hat) is allowed within the app collection
-                                printf(" -> hat usage");
+                                printf(" -> hat usage\r\n");
 
                                 // we support hat on joysticks only
-                                if (conf->type == REPORT_TYPE_JOYSTICK) {
-                                    printf("JOYSTICK: found hat @ %d", usage_count);
-                                    hat = usage_count;
+                                if (device->report->type == REPORT_TYPE_JOYSTICK) {
+                                    printf("JOYSTICK: found hat @ %d\r\n", usage_count);
+                                    hat = (int8_t) usage_count;
                                 }
                             } else {
-                                printf(" -> UNSUPPORTED USAGE");
+                                printf(" -> UNSUPPORTED USAGE\r\n");
                                 //    return false;
                             }
 
@@ -439,17 +447,17 @@ bool parse_report_descriptor(uint8_t *rep, uint16_t rep_size, hid_report_t *conf
                             break;
 
                         case 1:
-                            printf("USAGE_MINIMUM(%d)", value);
+                            printf("USAGE_MINIMUM(%d)\r\n", value);
                             usage_count -= (value - 1);
                             break;
 
                         case 2:
-                            printf("USAGE_MAXIMUM(%d)", value);
+                            printf("USAGE_MAXIMUM(%d)\r\n", value);
                             usage_count += value;
                             break;
 
                         default:
-                            printf("unexpected local item %d", tag);
+                            printf("unexpected local item %d\r\n", tag);
                             //  return false;
                             break;
                     }
@@ -457,7 +465,7 @@ bool parse_report_descriptor(uint8_t *rep, uint16_t rep_size, hid_report_t *conf
 
                 default:
                     // reserved
-                    printf("unexpected reserved item %d", tag);
+                    printf("unexpected reserved item %d\r\n", tag);
                     // return false;
                     break;
             }
@@ -466,4 +474,45 @@ bool parse_report_descriptor(uint8_t *rep, uint16_t rep_size, hid_report_t *conf
 
     // if we get here then no usable setup was found
     return false;
+}
+
+// collect bits from byte stream and assemble them into a signed word
+int16_t parse_joystick_bits(const uint8_t *p, uint16_t offset, uint8_t size, bool is_signed) {
+    // mask unused bits of first byte
+    uint8_t mask = 0xff << (offset & 7);
+    uint8_t byte = offset / 8;
+    uint8_t bits = size;
+    uint8_t shift = offset & 7;
+
+    uint16_t r_val = (p[byte++] & mask) >> shift;
+    mask = 0xff;
+    shift = 8 - shift;
+    bits -= shift;
+
+    // first byte already contained more bits than we need
+    if (shift > size) {
+        // mask unused bits
+        r_val &= (1 << size) - 1;
+    } else {
+        // further bytes if required
+        while (bits) {
+            mask = (bits < 8) ? (0xff >> (8 - bits)) : 0xff;
+            r_val += (p[byte++] & mask) << shift;
+            shift += 8;
+            bits -= (bits > 8) ? 8 : bits;
+        }
+    }
+
+    if (is_signed) {
+        // do sign expansion
+        uint16_t sign_bit = 1 << (size - 1);
+        if (r_val & sign_bit) {
+            while (sign_bit) {
+                r_val |= sign_bit;
+                sign_bit <<= 1;
+            }
+        }
+    }
+
+    return (int16_t) r_val;
 }
