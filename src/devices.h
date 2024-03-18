@@ -65,7 +65,7 @@ namespace uGamePad {
                 } hat;
 
                 struct {
-                    uint8_t msg[4];
+                    uint8_t bytes[32];
                     uint8_t size;
                 } init;
 

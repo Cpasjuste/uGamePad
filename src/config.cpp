@@ -3,9 +3,7 @@
 //
 
 #include <vector>
-#include "main.h"
 #include "config.h"
-#include "utility/json.h"
 
 using namespace uGamePad;
 
@@ -60,7 +58,7 @@ Device *Config::loadDevice(const std::string &path) {
             return nullptr;
         }
 
-        return Json::deserialize(buffer);
+        return Utility::deserialize(&buffer);
     }
 
     return nullptr;
@@ -72,8 +70,9 @@ bool Config::saveDevice(Device *device) {
         return false;
     }
 
-    std::vector<uint8_t> buffer = Json::serialize(device);
-    if (buffer.empty()) {
+    std::vector<uint8_t> buffer(4096);
+    bool ret = Utility::serialize(device, &buffer);
+    if (!ret || buffer.empty()) {
         printf("Config::saveDevice: failed to serialize device...\r\n");
         return false;
     }

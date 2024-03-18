@@ -8,6 +8,8 @@
 #include <cstdint>
 #include <cmath>
 #include <string>
+#include <vector>
+#include "devices.h"
 
 namespace uGamePad {
     class Utility {
@@ -103,6 +105,11 @@ namespace uGamePad {
         static std::string toString(uint32_t button);
 
         static std::string parseSize(uint64_t size);
+
+        // json stuff
+        static bool serialize(Device *device, std::vector<uint8_t> *buffer);
+
+        static Device *deserialize(const std::vector<uint8_t> *buffer);
     };
 }
 
