@@ -215,7 +215,7 @@ bool GamePad::onHidReport(const uint8_t *report, uint16_t len) {
         }
     }
 
-#if 0
+#if LINUX
     for (const auto &mapping: getOutputMode()->mappings) {
         if (m_buttons & mapping.button) {
             printf("%s: %s\r\n", p_device->name, Utility::toString(mapping.button).c_str());
