@@ -140,63 +140,9 @@ void PicoGamePad::setOutputMode(const GamePad::Mode &mode) {
     }
 }
 
-bool PicoGamePad::report(const uint8_t *report, uint16_t len) {
-#if 0
-    if (!p_device || !p_device->data) {
-        TU_LOG1("uGamePad::loop: error: device not set\r\n");
-        return false;
-    }
-
-    //printf("uGamePad::loop: received data for '%s', len: %i)\r\n", p_device->name, len);
-    /*
-    for (int i = 0; i < len; i++) {
-        printf("%08X", report[i]);
-    }
-    printf("\r\n");
-    */
-
-    // do not process bytes if less than x bytes
-    if (len < p_device->data->min_report_size) return true;
-
-    // reset buttons state
-    uint16_t buttons = 0;
-
-    // process buttons
-    for (int i = 0; i < MAX_BUTTONS; i++) {
-        if (p_device->data->buttons[i].byte >= len) continue;
-        buttons |= report[p_device->data->buttons[i].byte] &
-                   BIT(p_device->data->buttons[i].bit) ? (1 << i) : 0;
-    }
-
-    // process axis
-    for (int i = 0; i < 3; i += 2) {
-        if (p_device->data->axis[i].byte >= len) continue;
-        if (p_device->data->axis[i].type & ReportData::AxisType::AXIS_I16) {
-            int16_t x = (int16_t &) report[p_device->data->axis[i].byte];
-            int16_t y = (int16_t &) report[p_device->data->axis[i + 1].byte];
-            buttons |= GamePad::getButtonsFromAxis(x, y, p_device->data->axis[i].type);
-        } else if (p_device->data->axis[i].type & ReportData::AxisType::AXIS_UI8) {
-            uint8_t x = (uint8_t &) report[p_device->data->axis[i].byte];
-            uint8_t y = (uint8_t &) report[p_device->data->axis[i + 1].byte];
-            buttons |= GamePad::getButtonsFromAxis(x, y, p_device->data->axis[i].type);
-        }
-    }
-
-    // process hat
-    if (p_device->data->hat.byte < len) {
-        uint16_t i = report[p_device->data->hat.byte];
-        if (p_device->data->hat.bit > 0) {
-            // TODO: fixme (use proper detection)
-            // cheap snes gamepad ("USB Gamepad" (descriptor) / "DragonRise Inc. Gamepad" (linux))
-            i = i << 8 | report[p_device->data->hat.bit];
-            buttons |= GamePad::getButtonsFromHatSpecial(i);
-        } else {
-            buttons |= GamePad::getButtonsFromHat(i);
-        }
-    }
-#endif
-
-    //uint16_t buttons = m_buttons;
+bool PicoGamePad::onHidReport(const uint8_t *report, uint16_t len) {
+    // process report in base class
+    GamePad::onHidReport(report, len);
 
     // handle hardware buttons
     if (!gpio_get(GPIO_BUTTON_UP)) m_buttons |= GamePad::Button::UP;
@@ -205,9 +151,6 @@ bool PicoGamePad::report(const uint8_t *report, uint16_t len) {
         m_buttons |= GamePad::Button::START;
         m_buttons |= GamePad::Button::MENU;
     }
-
-    // for ui
-    //m_buttons = buttons;
 
     // handle gamepad states
     auto ui = getPlatform()->getUi();

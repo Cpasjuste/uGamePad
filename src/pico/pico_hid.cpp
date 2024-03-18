@@ -87,6 +87,12 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *desc_re
         return;
     }
 
+    // send init message if provided (x360 init seq)
+    if (device->report->joystick.init.size > 0) {
+        tuh_hid_set_report(dev_addr, instance, device->report->report_id, HID_REPORT_TYPE_OUTPUT,
+                           &device->report->joystick.init.bytes, device->report->joystick.init.size);
+    }
+
     // notify
     getPlatform()->getHid()->onDeviceConnected(device);
 

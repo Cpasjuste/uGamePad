@@ -149,7 +149,8 @@ bool GamePad::onHidReport(const uint8_t *report, uint16_t len) {
     // process buttons
     for (int i = 0; i < MAX_BUTTONS; i++) {
         if (data->joystick.buttons[i].byte_offset >= len) continue;
-        m_buttons |= report[data->joystick.buttons[i].byte_offset] & data->joystick.buttons[i].bitmask ? (1 << i) : 0;
+        m_buttons |= report[data->joystick.buttons[i].byte_offset]
+                     & data->joystick.buttons[i].bitmask ? (1 << i) : 0;
     }
 
     // TODO: hat
@@ -214,7 +215,7 @@ bool GamePad::onHidReport(const uint8_t *report, uint16_t len) {
         }
     }
 
-#if 1
+#if 0
     for (const auto &mapping: getOutputMode()->mappings) {
         if (m_buttons & mapping.button) {
             printf("%s: %s\r\n", p_device->name, Utility::toString(mapping.button).c_str());

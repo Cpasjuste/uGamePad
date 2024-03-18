@@ -13,14 +13,6 @@ void Hid::onDeviceConnected(Device *device) {
 
     // set gamepad device
     getPlatform()->getPad()->setDevice(device);
-
-    // TODO (x360 init seq)
-    /*
-    // send init message if provided
-    if (device->data->init.size > 0) {
-        //tuh_hid_set_report(dev_addr, instance, 5, HID_REPORT_TYPE_OUTPUT, &device->data->init.msg, device->data->init.size);
-    }
-    */
 }
 
 void Hid::onDeviceInputReport(Device *device, const uint8_t *report, uint16_t len) {

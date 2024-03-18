@@ -11,7 +11,7 @@
 #include <functional>
 #include "utility.h"
 
-#ifndef FLASH_SECTOR_SIZE
+#ifdef LINUX
 #define FLASH_SECTOR_SIZE 4096
 #endif
 #define FLASH_TARGET_OFFSET_CACHE ((1024 * 1024) * 0)   // 1MB flash cache (raw)
