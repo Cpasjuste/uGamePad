@@ -39,14 +39,15 @@ void PicoPlatform::setup() {
     p_gfx = new PicoGfx();
 
     // check for bootloader mode (hardware) button press
-    if (p_pad->getButtons() & GamePad::Button::UP) {
+    uint16_t hardwareButtons = PicoGamePad::getHardwareButtons();
+    if (hardwareButtons & GamePad::Button::UP) {
         printf("PicoPlatform::setup: bootloader mode called\r\n");
         Utility::reboot(true);
         return;
     }
 
     // check for usb msc mode (hardware) button press
-    if (p_pad->getButtons() & GamePad::Button::START) {
+    if (hardwareButtons & GamePad::Button::DOWN) {
         printf("PicoPlatform::setup: usb msc mode called\r\n");
         p_fs->setUsbMode(Fs::UsbMode::Msc);
     } else {

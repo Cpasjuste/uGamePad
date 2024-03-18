@@ -14,6 +14,8 @@ namespace uGamePad {
 
         void setOutputMode(const Mode &mode) override;
 
+        static uint16_t getHardwareButtons();
+
     private:
 #ifndef TODO_NES_SNES_MD_CABLES
         static void onLatchRising();
