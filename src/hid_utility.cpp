@@ -11,9 +11,9 @@ typedef struct {
 } __attribute__((packed)) item_t;
 
 #ifdef NDEBUG
-#define printf
+#define printf(fmt, ...) (0)
 #endif
-//#define printf
+#define printf(fmt, ...) (0)
 
 // flags for joystick components required
 #define JOY_MOUSE_REQ_AXIS_X  0x01
@@ -100,7 +100,7 @@ int16_t parse_joystick_bits(const uint8_t *p, uint16_t offset, uint8_t size, boo
 // check if the current report 
 bool report_is_usable(uint16_t bit_count, uint8_t report_complete, Device *device) {
     printf("  - total bit count: %d (%d bytes, %d bits)\r\n",
-            bit_count, bit_count / 8, bit_count % 8);
+           bit_count, bit_count / 8, bit_count % 8);
 
     device->report->report_size = bit_count / 8;
 
@@ -211,7 +211,7 @@ bool parse_report_descriptor(uint8_t *rep, uint16_t rep_size, Device *device) {
                                             uint16_t this_bit = bit_count + b;
 
                                             printf("BUTTON%d @ %d (byte %d, mask %d)\r\n", b,
-                                                    this_bit, this_bit / 8, 1 << (this_bit % 8));
+                                                   this_bit, this_bit / 8, 1 << (this_bit % 8));
 
                                             device->report->joystick.buttons[b].byte_offset = this_bit / 8;
                                             device->report->joystick.buttons[b].bitmask = 1 << (this_bit % 8);
@@ -244,7 +244,7 @@ bool parse_report_descriptor(uint8_t *rep, uint16_t rep_size, Device *device) {
                                         if (c == 0) report_complete |= JOY_MOUSE_REQ_AXIS_X;
                                         if (c == 1) report_complete |= JOY_MOUSE_REQ_AXIS_Y;
                                         printf("\r\nAXIS: {%i, %i, {%i, %i}\r\n",
-                                                cnt, report_size, logical_minimum, logical_maximum);
+                                               cnt, report_size, logical_minimum, logical_maximum);
                                     }
                                 }
                             }
@@ -253,7 +253,7 @@ bool parse_report_descriptor(uint8_t *rep, uint16_t rep_size, Device *device) {
                             if (hat >= 0) {
                                 uint16_t cnt = bit_count + report_size * hat;
                                 printf("  (HAT @ %d (byte %d, bit %d), size %d)\r\n",
-                                        cnt, cnt / 8, cnt & 7, report_size);
+                                       cnt, cnt / 8, cnt & 7, report_size);
                                 if (device->report->type == REPORT_TYPE_JOYSTICK) {
                                     device->report->joystick.hat.offset = cnt;
                                     device->report->joystick.hat.size = report_size;
@@ -454,7 +454,7 @@ bool parse_report_descriptor(uint8_t *rep, uint16_t rep_size, Device *device) {
                                     }
                                     if (value == USAGE_RX || value == USAGE_RY || value == USAGE_RZ) {
                                         printf("JOYSTICK/MOUSE: found R%c axis @ %d\r\n",
-                                                'X' + (value - USAGE_RX), usage_count);
+                                               'X' + (value - USAGE_RX), usage_count);
                                         if (axis[3] == -1) axis[3] = (int8_t) usage_count;
                                     }
                                     if (value == USAGE_WHEEL) {

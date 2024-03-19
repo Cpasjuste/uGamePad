@@ -6,10 +6,6 @@
 #include "main.h"
 #include "gamepad.h"
 
-#define JOYSTICK_AXIS_TRIGGER_MIN   64
-#define JOYSTICK_AXIS_TRIGGER_MAX   192
-#define JOYSTICK_AXIS_MID           127
-
 using namespace uGamePad;
 
 GamePad::GamePad() {
@@ -25,14 +21,14 @@ uint16_t GamePad::getButtonsFromHat(int hat) {
     uint16_t buttons = 0;
 
     static constexpr uint16_t table[] = {
-            Button::UP,
-            Button::UP | Button::RIGHT,
-            Button::RIGHT,
-            Button::DOWN | Button::RIGHT,
-            Button::DOWN,
-            Button::LEFT | Button::DOWN,
-            Button::LEFT,
-            Button::LEFT | Button::UP,
+            Button::DPAD_UP,
+            Button::DPAD_UP | Button::DPAD_RIGHT,
+            Button::DPAD_RIGHT,
+            Button::DPAD_DOWN | Button::DPAD_RIGHT,
+            Button::DPAD_DOWN,
+            Button::DPAD_LEFT | Button::DPAD_DOWN,
+            Button::DPAD_LEFT,
+            Button::DPAD_LEFT | Button::DPAD_UP,
     };
 
     auto i = static_cast<int>(hat);
@@ -62,27 +58,27 @@ uint16_t GamePad::getButtonsFromAxis(int x, int y, uint8_t type) {
         if (analogY > 0 && analogX > 0) {
             // upper right quadrant
             if (analogY > slope * analogX)
-                buttons |= Button::UP;
+                buttons |= Button::AXIS_UP;
             if (analogX > slope * analogY)
-                buttons |= Button::RIGHT;
+                buttons |= Button::AXIS_RIGHT;
         } else if (analogY > 0 && analogX <= 0) {
             // upper left quadrant
             if (analogY > slope * (-analogX))
-                buttons |= Button::UP;
+                buttons |= Button::AXIS_UP;
             if ((-analogX) > slope * analogY)
-                buttons |= Button::LEFT;
+                buttons |= Button::AXIS_LEFT;
         } else if (analogY <= 0 && analogX > 0) {
             // lower right quadrant
             if ((-analogY) > slope * analogX)
-                buttons |= Button::DOWN;
+                buttons |= Button::AXIS_DOWN;
             if (analogX > slope * (-analogY))
-                buttons |= Button::RIGHT;
+                buttons |= Button::AXIS_RIGHT;
         } else if (analogY <= 0 && analogX <= 0) {
             // lower left quadrant
             if ((-analogY) > slope * (-analogX))
-                buttons |= Button::DOWN;
+                buttons |= Button::AXIS_DOWN;
             if ((-analogX) > slope * (-analogY))
-                buttons |= Button::LEFT;
+                buttons |= Button::AXIS_LEFT;
         }
     }
 
@@ -164,8 +160,7 @@ bool GamePad::onHidReport(const uint8_t *report, uint16_t len) {
             }
         }
     } else {
-        // "hid" gamepad
-        // axis
+        // generic hid gamepad
         int16_t axis[MAX_AXIS];
         for (int i = 0; i < MAX_AXIS; i++) {
             bool is_signed = data->joystick.axis[i].logical.min > data->joystick.axis[i].logical.max;
@@ -227,7 +222,7 @@ bool GamePad::onHidReport(const uint8_t *report, uint16_t len) {
 }
 
 void GamePad::loop() {
-    // handle auto-repeat
+    // handle auto-repeat for ui stuff
     if (m_repeatClock.getElapsedTime().asMilliseconds() >= m_repeatDelayMs) {
         m_repeatClock.restart();
         m_buttons_prev = m_buttons;

@@ -31,12 +31,21 @@ namespace uGamePad {
             B6 = BIT(5),
             START = BIT(6),
             SELECT = BIT(7),
-            LEFT = BIT(8),
-            RIGHT = BIT(9),
-            UP = BIT(10),
-            DOWN = BIT(11),
-            MENU = BIT(12),
-            DELAY = BIT(13)
+            DPAD_LEFT = BIT(8),
+            DPAD_RIGHT = BIT(9),
+            DPAD_UP = BIT(10),
+            DPAD_DOWN = BIT(11),
+            AXIS_LEFT = BIT(12),
+            AXIS_RIGHT = BIT(13),
+            AXIS_UP = BIT(14),
+            AXIS_DOWN = BIT(15),
+            MENU = BIT(16),
+            DELAY = BIT(17),
+            // Generic catch-all directions
+            LEFT = DPAD_LEFT | AXIS_LEFT,
+            RIGHT = DPAD_RIGHT | AXIS_RIGHT,
+            UP = DPAD_UP | AXIS_UP,
+            DOWN = DPAD_DOWN | AXIS_DOWN,
         };
 
         enum Mode {
@@ -81,10 +90,7 @@ namespace uGamePad {
 
         uint16_t getRepeatDelay() { return m_repeatDelayMs; }
 
-        void setRepeatDelay(uint16_t ms) {
-            printf("setRepeatDelay: %i\r\n", ms);
-            m_repeatDelayMs = ms;
-        }
+        void setRepeatDelay(uint16_t ms) { m_repeatDelayMs = ms; }
 
     protected:
         Device *p_device = nullptr;

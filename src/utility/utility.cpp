@@ -44,10 +44,14 @@ std::string Utility::toString(uint32_t buttons) {
     if (buttons & GamePad::Button::B6) ret += "B6 ";
     if (buttons & GamePad::Button::START) ret += "START ";
     if (buttons & GamePad::Button::SELECT) ret += "SELECT ";
-    if (buttons & GamePad::Button::UP) ret += "UP ";
-    if (buttons & GamePad::Button::DOWN) ret += "DOWN ";
-    if (buttons & GamePad::Button::LEFT) ret += "LEFT ";
-    if (buttons & GamePad::Button::RIGHT) ret += "RIGHT ";
+    if (buttons & GamePad::Button::DPAD_UP) ret += "DPAD_UP ";
+    if (buttons & GamePad::Button::DPAD_DOWN) ret += "DPAD_DOWN ";
+    if (buttons & GamePad::Button::DPAD_LEFT) ret += "DPAD_LEFT ";
+    if (buttons & GamePad::Button::DPAD_RIGHT) ret += "DPAD_RIGHT ";
+    if (buttons & GamePad::Button::AXIS_UP) ret += "AXIS_UP ";
+    if (buttons & GamePad::Button::AXIS_DOWN) ret += "AXIS_DOWN ";
+    if (buttons & GamePad::Button::AXIS_LEFT) ret += "AXIS_LEFT ";
+    if (buttons & GamePad::Button::AXIS_RIGHT) ret += "AXIS_RIGHT ";
 
     return ret;
 }
