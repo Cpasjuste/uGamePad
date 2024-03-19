@@ -95,19 +95,19 @@ bool Utility::serialize(Device *device, std::vector<uint8_t> *buffer) {
     doc["pid"] = device->getProduct();
     doc["name"] = device->name;
 
-    // descriptor
-    JsonObject item = doc["descriptor"].to<JsonObject>();
+    // input report
+    JsonObject item = doc["input_descriptor"].to<JsonObject>();
     //item["type"] = device->report->type; // not needed for user
     //item["report_id"] = device->report->report_id;  // not needed for user
     item["report_size"] = device->report->report_size;
     item["is_xbox"] = device->report->is_xbox;
 
     // joystick
-    item = doc["descriptor"]["joystick"].to<JsonObject>();
+    item = doc["input_descriptor"]["joystick"].to<JsonObject>();
     item["button_count"] = device->report->joystick.button_count;
 
     // axis
-    JsonArray array = doc["descriptor"]["joystick"]["axis"].to<JsonArray>();
+    JsonArray array = doc["input_descriptor"]["joystick"]["axis"].to<JsonArray>();
     for (auto &axis: device->report->joystick.axis) {
         item = array.add<JsonObject>();
         item["offset"] = axis.offset;
@@ -117,7 +117,7 @@ bool Utility::serialize(Device *device, std::vector<uint8_t> *buffer) {
     }
 
     // buttons
-    array = doc["descriptor"]["joystick"]["buttons"].to<JsonArray>();
+    array = doc["input_descriptor"]["joystick"]["buttons"].to<JsonArray>();
     for (int i = 0; i < device->report->joystick.button_count; i++) {
         item = array.add<JsonObject>();
         item["byte_offset"] = device->report->joystick.buttons[i].byte_offset;
@@ -125,7 +125,7 @@ bool Utility::serialize(Device *device, std::vector<uint8_t> *buffer) {
     }
 
     // hat
-    item = doc["descriptor"]["joystick"]["hat"].to<JsonObject>();
+    item = doc["input_descriptor"]["joystick"]["hat"].to<JsonObject>();
     item["offset"] = device->report->joystick.hat.offset;
     item["size"] = device->report->joystick.hat.size;
     item["logical"][0] = device->report->joystick.hat.logical.min;
@@ -134,7 +134,7 @@ bool Utility::serialize(Device *device, std::vector<uint8_t> *buffer) {
     item["physical"][1] = device->report->joystick.hat.physical.max;
 
     // init
-    item = doc["descriptor"]["joystick"]["init"].to<JsonObject>();
+    item = doc["input_descriptor"]["joystick"]["init"].to<JsonObject>();
     item["size"] = device->report->joystick.init.size;
     for (int i = 0; i < device->report->joystick.init.size; i++) {
         item["bytes"][i] = device->report->joystick.init.bytes[i];
@@ -160,24 +160,24 @@ Device *Utility::deserialize(const std::vector<uint8_t> *buffer) {
 
     // create new device
     auto device = new Device();
-    device->report = new ReportData();
+    device->report = new InputReportDescriptor();
 
     // device info
     sscanf(doc["vid"], "%4hx", &device->vid);
     sscanf(doc["pid"], "%4hx", &device->pid);
     strncpy(device->name, doc["name"], sizeof(device->name));
 
-    //device->report->type = doc["descriptor"]["type"];  // not needed for user
-    //device->report->report_id = doc["descriptor"]["report_id"];  // not needed for user
+    //device->report->type = doc["input_descriptor"]["type"];  // not needed for user
+    //device->report->report_id = doc["input_descriptor"]["report_id"];  // not needed for user
     device->report->type = REPORT_TYPE_JOYSTICK;
-    device->report->report_size = doc["descriptor"]["report_size"];
-    device->report->is_xbox = doc["descriptor"]["is_xbox"];
+    device->report->report_size = doc["input_descriptor"]["report_size"];
+    device->report->is_xbox = doc["input_descriptor"]["is_xbox"];
 
     // joystick
-    device->report->joystick.button_count = doc["descriptor"]["joystick"]["button_count"];
+    device->report->joystick.button_count = doc["input_descriptor"]["joystick"]["button_count"];
 
     // axis
-    JsonArray axis = doc["descriptor"]["joystick"]["axis"];
+    JsonArray axis = doc["input_descriptor"]["joystick"]["axis"];
     for (int i = 0; i < MAX_AXIS; i++) {
         device->report->joystick.axis[i].offset = axis[i]["offset"];
         device->report->joystick.axis[i].size = axis[i]["size"];
@@ -186,23 +186,23 @@ Device *Utility::deserialize(const std::vector<uint8_t> *buffer) {
     }
 
     // buttons
-    JsonArray buttons = doc["descriptor"]["joystick"]["buttons"];
+    JsonArray buttons = doc["input_descriptor"]["joystick"]["buttons"];
     for (int i = 0; i < device->report->joystick.button_count; i++) {
         device->report->joystick.buttons[i].byte_offset = buttons[i]["byte_offset"];
         device->report->joystick.buttons[i].bitmask = buttons[i]["bitmask"];
     }
 
     // hat
-    device->report->joystick.hat.offset = doc["descriptor"]["joystick"]["hat"]["offset"];
-    device->report->joystick.hat.size = doc["descriptor"]["joystick"]["hat"]["size"];
-    device->report->joystick.hat.logical.min = doc["descriptor"]["joystick"]["hat"]["logical"][0];
-    device->report->joystick.hat.logical.max = doc["descriptor"]["joystick"]["hat"]["logical"][1];
-    device->report->joystick.hat.physical.min = doc["descriptor"]["joystick"]["hat"]["physical"][0];
-    device->report->joystick.hat.physical.max = doc["descriptor"]["joystick"]["hat"]["physical"][1];
+    device->report->joystick.hat.offset = doc["input_descriptor"]["joystick"]["hat"]["offset"];
+    device->report->joystick.hat.size = doc["input_descriptor"]["joystick"]["hat"]["size"];
+    device->report->joystick.hat.logical.min = doc["input_descriptor"]["joystick"]["hat"]["logical"][0];
+    device->report->joystick.hat.logical.max = doc["input_descriptor"]["joystick"]["hat"]["logical"][1];
+    device->report->joystick.hat.physical.min = doc["input_descriptor"]["joystick"]["hat"]["physical"][0];
+    device->report->joystick.hat.physical.max = doc["input_descriptor"]["joystick"]["hat"]["physical"][1];
 
     // init
-    device->report->joystick.init.size = doc["descriptor"]["joystick"]["init"]["size"];
-    JsonArray bytes = doc["descriptor"]["joystick"]["init"]["bytes"];
+    device->report->joystick.init.size = doc["input_descriptor"]["joystick"]["init"]["size"];
+    JsonArray bytes = doc["input_descriptor"]["joystick"]["init"]["bytes"];
     for (int i = 0; i < bytes.size(); i++) {
         device->report->joystick.init.bytes[i] = bytes[i];
     }

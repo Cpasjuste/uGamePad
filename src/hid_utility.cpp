@@ -1,4 +1,5 @@
 // http://www.frank-zhao.com/cache/hid_tutorial_1.php
+// https://github.com/mist-devel/mist-firmware/blob/master/usb/hid.c
 
 #include <cstring>
 #include "hid_utility.h"
@@ -12,7 +13,7 @@ typedef struct {
 #ifdef NDEBUG
 #define printf
 #endif
-#define printf
+//#define printf
 
 // flags for joystick components required
 #define JOY_MOUSE_REQ_AXIS_X  0x01
@@ -55,6 +56,47 @@ typedef struct {
 
 using namespace uGamePad;
 
+// collect bits from byte stream and assemble them into a signed word
+int16_t parse_joystick_bits(const uint8_t *p, uint16_t offset, uint8_t size, bool is_signed) {
+    // mask unused bits of first byte
+    uint8_t mask = 0xff << (offset & 7);
+    uint8_t byte = offset / 8;
+    uint8_t bits = size;
+    uint8_t shift = offset & 7;
+
+    uint16_t r_val = (p[byte++] & mask) >> shift;
+    mask = 0xff;
+    shift = 8 - shift;
+    bits -= shift;
+
+    // first byte already contained more bits than we need
+    if (shift > size) {
+        // mask unused bits
+        r_val &= (1 << size) - 1;
+    } else {
+        // further bytes if required
+        while (bits) {
+            mask = (bits < 8) ? (0xff >> (8 - bits)) : 0xff;
+            r_val += (p[byte++] & mask) << shift;
+            shift += 8;
+            bits -= (bits > 8) ? 8 : bits;
+        }
+    }
+
+    if (is_signed) {
+        // do sign expansion
+        uint16_t sign_bit = 1 << (size - 1);
+        if (r_val & sign_bit) {
+            while (sign_bit) {
+                r_val |= sign_bit;
+                sign_bit <<= 1;
+            }
+        }
+    }
+
+    return (int16_t) r_val;
+}
+
 // check if the current report 
 bool report_is_usable(uint16_t bit_count, uint8_t report_complete, Device *device) {
     printf("  - total bit count: %d (%d bytes, %d bits)\r\n",
@@ -87,7 +129,7 @@ bool parse_report_descriptor(uint8_t *rep, uint16_t rep_size, Device *device) {
     uint16_t bit_count = 0, usage_count = 0;
     uint16_t logical_minimum = 0, logical_maximum = 0;
     uint16_t physical_minimum = 0, physical_maximum = 0;
-    memset(device->report, 0, sizeof(ReportData));
+    memset(device->report, 0, sizeof(InputReportDescriptor));
 
     // mask used to check of all required components have been found, so
     // that e.g. both axes and the button of a joystick are ready to be used
@@ -95,7 +137,7 @@ bool parse_report_descriptor(uint8_t *rep, uint16_t rep_size, Device *device) {
 
     // joystick/mouse components
     int8_t axis[MAX_AXIS];
-    uint8_t btns = 0;
+    uint8_t buttons = 0;
     int8_t hat = -1;
 
     for (i = 0; i < MAX_AXIS; i++) axis[i] = -1;
@@ -159,7 +201,7 @@ bool parse_report_descriptor(uint8_t *rep, uint16_t rep_size, Device *device) {
                     switch (tag) {
                         case 8:
                             // handle found buttons
-                            if (btns) {
+                            if (buttons) {
                                 if ((device->report->type == REPORT_TYPE_JOYSTICK) ||
                                     (device->report->type == REPORT_TYPE_MOUSE)) {
                                     // scan for up to four buttons
@@ -227,7 +269,7 @@ bool parse_report_descriptor(uint8_t *rep, uint16_t rep_size, Device *device) {
                             // reset for next inputs
                             bit_count += report_count * report_size;
                             usage_count = 0;
-                            btns = 0;
+                            buttons = 0;
                             for (i = 0; i < MAX_AXIS; i++) axis[i] = -1;
                             hat = -1;
                             break;
@@ -302,7 +344,6 @@ bool parse_report_descriptor(uint8_t *rep, uint16_t rep_size, Device *device) {
                     switch (tag) {
                         case 0:
                             printf("USAGE_PAGE(%d/0x%x)", value, value);
-
                             if (value == USAGE_PAGE_KEYBOARD) {
                                 printf(" -> Keyboard\r\n");
                             } else if (value == USAGE_PAGE_GAMING) {
@@ -313,15 +354,13 @@ bool parse_report_descriptor(uint8_t *rep, uint16_t rep_size, Device *device) {
                                 printf(" -> Consumer\r\n");
                             } else if (value == USAGE_PAGE_BUTTON) {
                                 printf(" -> Buttons\r\n");
-                                btns = 1;
+                                buttons = 1;
                             } else if (value == USAGE_PAGE_GENERIC_DESKTOP) {
                                 printf(" -> Generic Desktop\r\n");
-
-                                if (generic_desktop < 0)
-                                    generic_desktop = collection_depth;
-                            } else
-                                    printf(" -> UNSUPPORTED USAGE_PAGE\r\n");
-
+                                if (generic_desktop < 0) generic_desktop = collection_depth;
+                            } else {
+                                printf(" -> UNSUPPORTED USAGE_PAGE\r\n");
+                            }
                             break;
 
                         case 1:
@@ -363,14 +402,13 @@ bool parse_report_descriptor(uint8_t *rep, uint16_t rep_size, Device *device) {
                             break;
 
                         case 9:
-                            printf("REPORT_COUNT(%d)", value);
+                            printf("REPORT_COUNT(%d)\r\n", value);
                             report_count = value;
                             break;
 
                         default:
                             printf("unexpected global item %d\r\n", tag);
                             return false;
-                            break;
                     }
                     break;
 
@@ -380,7 +418,6 @@ bool parse_report_descriptor(uint8_t *rep, uint16_t rep_size, Device *device) {
                         case 0:
                             // we only support mice, keyboards and joysticks
                             printf("USAGE(%d/0x%x)", value, value);
-
                             if (!collection_depth && (value == USAGE_KEYBOARD)) {
                                 // usage(keyboard) is always allowed
                                 printf(" -> Keyboard\r\n");
@@ -389,21 +426,17 @@ bool parse_report_descriptor(uint8_t *rep, uint16_t rep_size, Device *device) {
                                 // usage(mouse) is always allowed
                                 printf(" -> Mouse\r\n");
                                 device->report->type = REPORT_TYPE_MOUSE;
-                            } else if (!collection_depth &&
-                                       ((value == USAGE_GAMEPAD) || (value == USAGE_JOYSTICK))) {
+                            } else if (!collection_depth && ((value == USAGE_GAMEPAD) || (value == USAGE_JOYSTICK))) {
                                 printf(" -> Gamepad/Joystick\r\n");
                                 printf("Gamepad/Joystick usage found\r\n");
                                 device->report->type = REPORT_TYPE_JOYSTICK;
                             } else if (value == USAGE_POINTER && app_collection) {
                                 // usage(pointer) is allowed within the application collection
-
                                 printf(" -> Pointer\r\n");
-
-                            } else if (((value >= USAGE_X && value <= USAGE_RZ) || value == USAGE_WHEEL) &&
-                                       app_collection) {
+                            } else if (((value >= USAGE_X && value <= USAGE_RZ) || value == USAGE_WHEEL)
+                                       && app_collection) {
                                 // usage(x) and usage(y) are allowed within the app collection
                                 printf(" -> axis usage\r\n");
-
                                 // we support x and y axis on mice and joysticks (+wheel on mice)
                                 if ((device->report->type == REPORT_TYPE_JOYSTICK) ||
                                     (device->report->type == REPORT_TYPE_MOUSE)) {
@@ -432,7 +465,6 @@ bool parse_report_descriptor(uint8_t *rep, uint16_t rep_size, Device *device) {
                             } else if ((value == USAGE_HAT) && app_collection) {
                                 // usage(hat) is allowed within the app collection
                                 printf(" -> hat usage\r\n");
-
                                 // we support hat on joysticks only
                                 if (device->report->type == REPORT_TYPE_JOYSTICK) {
                                     printf("JOYSTICK: found hat @ %d\r\n", usage_count);
@@ -474,45 +506,4 @@ bool parse_report_descriptor(uint8_t *rep, uint16_t rep_size, Device *device) {
 
     // if we get here then no usable setup was found
     return false;
-}
-
-// collect bits from byte stream and assemble them into a signed word
-int16_t parse_joystick_bits(const uint8_t *p, uint16_t offset, uint8_t size, bool is_signed) {
-    // mask unused bits of first byte
-    uint8_t mask = 0xff << (offset & 7);
-    uint8_t byte = offset / 8;
-    uint8_t bits = size;
-    uint8_t shift = offset & 7;
-
-    uint16_t r_val = (p[byte++] & mask) >> shift;
-    mask = 0xff;
-    shift = 8 - shift;
-    bits -= shift;
-
-    // first byte already contained more bits than we need
-    if (shift > size) {
-        // mask unused bits
-        r_val &= (1 << size) - 1;
-    } else {
-        // further bytes if required
-        while (bits) {
-            mask = (bits < 8) ? (0xff >> (8 - bits)) : 0xff;
-            r_val += (p[byte++] & mask) << shift;
-            shift += 8;
-            bits -= (bits > 8) ? 8 : bits;
-        }
-    }
-
-    if (is_signed) {
-        // do sign expansion
-        uint16_t sign_bit = 1 << (size - 1);
-        if (r_val & sign_bit) {
-            while (sign_bit) {
-                r_val |= sign_bit;
-                sign_bit <<= 1;
-            }
-        }
-    }
-
-    return (int16_t) r_val;
 }

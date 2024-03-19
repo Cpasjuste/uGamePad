@@ -4,7 +4,8 @@ cmake_minimum_required(VERSION 3.5)
 # linux
 option(PLATFORM_LINUX "Linux target platform" OFF)
 # pico options
-option(PICO_DEV_BOARD "Build for ugp dev board" ON)
+option(PICO_DEV_BOARD "Build for ugp dev board" OFF)
+option(PICO_RETROPICO_BOARD "Build for retropico board (debug)" OFF)
 option(PICO_DEBUG_UART "Pico uart debug" OFF)
 option(PICO_DEBUG_USB "Pico usb debug" OFF)
 
@@ -80,9 +81,19 @@ else ()
     list(APPEND LIBS
             hardware_i2c
             pico_stdlib
-            tinyusb_device tinyusb_host tinyusb_board)
+            tinyusb_device
+            tinyusb_host
+            tinyusb_board
+    )
     if (PICO_DEV_BOARD)
         list(APPEND FLAGS -DUGP_DEV_BOARD)
+    endif ()
+    if (PICO_RETROPICO_BOARD)
+        list(APPEND FLAGS
+                -DRETROPICO_BOARD
+                -DPICO_DEFAULT_UART_TX_PIN=16
+                -DPICO_DEFAULT_UART_RX_PIN=17
+        )
     endif ()
 endif ()
 

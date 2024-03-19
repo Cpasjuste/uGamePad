@@ -131,13 +131,26 @@ void PicoGamePad::setOutputMode(const GamePad::Mode &mode) {
                 //pinMode(mapping.pin, mapping.pinMode);
                 gpio_set_function(mapping.pin, GPIO_FUNC_SIO);
                 gpio_set_dir(mapping.pin, mapping.direction);
-                gpio_pull_up(GPIO_BUTTON_UP);
+                gpio_pull_up(mapping.pin);
                 if (mapping.defaultState != -1) {
                     gpio_put(mapping.pin, mapping.defaultState);
                 }
             }
         }
     }
+}
+
+uint16_t PicoGamePad::getHardwareButtons() {
+    // handle hardware buttons
+    uint16_t buttons = 0;
+    if (!gpio_get(GPIO_BUTTON_UP)) buttons |= GamePad::Button::UP;
+    if (!gpio_get(GPIO_BUTTON_DOWN)) buttons |= GamePad::Button::DOWN;
+    if (!gpio_get(GPIO_BUTTON_ENTER)) {
+        buttons |= GamePad::Button::START;
+        buttons |= GamePad::Button::MENU;
+    }
+
+    return buttons;
 }
 
 bool PicoGamePad::onHidReport(const uint8_t *report, uint16_t len) {
@@ -173,17 +186,4 @@ bool PicoGamePad::onHidReport(const uint8_t *report, uint16_t len) {
     }
 
     return true;
-}
-
-uint16_t PicoGamePad::getHardwareButtons() {
-    // handle hardware buttons
-    uint16_t buttons = 0;
-    if (!gpio_get(GPIO_BUTTON_UP)) buttons |= GamePad::Button::UP;
-    if (!gpio_get(GPIO_BUTTON_DOWN)) buttons |= GamePad::Button::DOWN;
-    if (!gpio_get(GPIO_BUTTON_ENTER)) {
-        buttons |= GamePad::Button::START;
-        buttons |= GamePad::Button::MENU;
-    }
-
-    return buttons;
 }

@@ -17,6 +17,7 @@
 #define DEAD_ZONE 4000
 #define GPIO_LOW 0
 #define GPIO_HIGH 1
+#define REPEAT_DELAY_DEFAULT 500
 
 namespace uGamePad {
     class GamePad {
@@ -80,14 +81,17 @@ namespace uGamePad {
 
         uint16_t getRepeatDelay() { return m_repeatDelayMs; }
 
-        void setRepeatDelay(uint16_t ms) { m_repeatDelayMs = ms; }
+        void setRepeatDelay(uint16_t ms) {
+            printf("setRepeatDelay: %i\r\n", ms);
+            m_repeatDelayMs = ms;
+        }
 
     protected:
         Device *p_device = nullptr;
         uint16_t m_buttons{0};
         uint16_t m_buttons_prev{0};
         Clock m_repeatClock;
-        uint16_t m_repeatDelayMs = 1000;
+        uint16_t m_repeatDelayMs = REPEAT_DELAY_DEFAULT;
         std::vector<GamePad::Output> m_outputModes;
         Mode m_outputMode = Mode::Jamma;
 

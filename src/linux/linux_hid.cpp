@@ -92,7 +92,7 @@ void LinuxHid::loop() {
 
         // get and parse report descriptor if not set from "userDevice"
         if (!device->report) {
-            device->report = (ReportData *) malloc(sizeof(ReportData));
+            device->report = (InputReportDescriptor *) malloc(sizeof(InputReportDescriptor));
             auto reportSize = hid_get_report_descriptor(handle, report_buffer, HID_API_MAX_REPORT_DESCRIPTOR_SIZE);
             if (!device->report || reportSize < 32) {
                 printf("LinuxHid: could not get report descriptor for %04x:%04x\r\n", device->vid, device->pid);

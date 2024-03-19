@@ -27,6 +27,11 @@ Ui::Ui() {
     p_gamePadInfo->setVisibility(Widget::Visibility::Hidden);
     p_screen->add(p_gamePadInfo);
 
+    // remap menu
+    p_remapWidget = new UiRemap({0, 0}, p_screen->getSize());
+    p_remapWidget->setVisibility(Widget::Visibility::Hidden);
+    p_screen->add(p_remapWidget);
+
     // splash
     p_splash = new Bitmap({64, 28}, {64, 43}, bmp_gamepad_64x43);
     p_splash->setOrigin(Widget::Origin::Center);
@@ -44,24 +49,38 @@ void Ui::show(Ui::MenuWidget menuWidget) {
         p_screen->setVisibility(Widget::Visibility::Visible);
         p_menu->setVisibility(Widget::Visibility::Hidden);
         p_gamePadInfo->setVisibility(Widget::Visibility::Hidden);
+        p_remapWidget->setVisibility(Widget::Visibility::Hidden);
         p_splash->setVisibility(Widget::Visibility::Visible);
         p_splashText->setVisibility(Widget::Visibility::Visible);
         // draw
         flip();
         // disable screen updates when not needed (not in menu)
         p_screen->setVisibility(Widget::Visibility::Hidden);
+        getPlatform()->getPad()->setRepeatDelay(0);
     } else if (menuWidget == MenuWidget::MainMenu) {
         p_screen->setVisibility(Widget::Visibility::Visible);
         p_menu->setVisibility(Widget::Visibility::Visible);
         p_gamePadInfo->setVisibility(Widget::Visibility::Hidden);
+        p_remapWidget->setVisibility(Widget::Visibility::Hidden);
         p_splash->setVisibility(Widget::Visibility::Hidden);
         p_splashText->setVisibility(Widget::Visibility::Hidden);
+        getPlatform()->getPad()->setRepeatDelay(REPEAT_DELAY_DEFAULT);
     } else if (menuWidget == MenuWidget::GamePadTest) {
         p_screen->setVisibility(Widget::Visibility::Visible);
         p_menu->setVisibility(Widget::Visibility::Hidden);
         p_gamePadInfo->setVisibility(Widget::Visibility::Visible);
+        p_remapWidget->setVisibility(Widget::Visibility::Hidden);
         p_splash->setVisibility(Widget::Visibility::Hidden);
         p_splashText->setVisibility(Widget::Visibility::Hidden);
+        getPlatform()->getPad()->setRepeatDelay(REPEAT_DELAY_DEFAULT);
+    } else if (menuWidget == MenuWidget::Remap) {
+        p_screen->setVisibility(Widget::Visibility::Visible);
+        p_remapWidget->setVisibility(Widget::Visibility::Visible);
+        p_menu->setVisibility(Widget::Visibility::Hidden);
+        p_gamePadInfo->setVisibility(Widget::Visibility::Hidden);
+        p_splash->setVisibility(Widget::Visibility::Hidden);
+        p_splashText->setVisibility(Widget::Visibility::Hidden);
+        getPlatform()->getPad()->setRepeatDelay(UINT16_MAX);
     }
 }
 

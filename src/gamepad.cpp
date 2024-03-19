@@ -6,8 +6,9 @@
 #include "main.h"
 #include "gamepad.h"
 
-#define JOYSTICK_AXIS_TRIGGER_MIN 64
-#define JOYSTICK_AXIS_TRIGGER_MAX 192
+#define JOYSTICK_AXIS_TRIGGER_MIN   64
+#define JOYSTICK_AXIS_TRIGGER_MAX   192
+#define JOYSTICK_AXIS_MID           127
 
 using namespace uGamePad;
 
@@ -141,20 +142,10 @@ bool GamePad::onHidReport(const uint8_t *report, uint16_t len) {
     }
 
     //printf("uGamePad::loop: received data for '%s', len: %i)\r\n", p_device->name, len);
-    ReportData *data = p_device->report;
+    auto *data = p_device->report;
 
     // reset buttons state
     m_buttons = 0;
-
-    // process buttons
-    for (int i = 0; i < MAX_BUTTONS; i++) {
-        if (data->joystick.buttons[i].byte_offset >= len) continue;
-        m_buttons |= report[data->joystick.buttons[i].byte_offset]
-                     & data->joystick.buttons[i].bitmask ? (1 << i) : 0;
-    }
-
-    // TODO: hat
-
 
     // TODO: fix
     // process axis
@@ -174,14 +165,15 @@ bool GamePad::onHidReport(const uint8_t *report, uint16_t len) {
         }
     } else {
         // "hid" gamepad
-        int16_t a[MAX_AXIS];
+        // axis
+        int16_t axis[MAX_AXIS];
         for (int i = 0; i < MAX_AXIS; i++) {
             bool is_signed = data->joystick.axis[i].logical.min > data->joystick.axis[i].logical.max;
             if (data->joystick.axis[i].size == 0) {
-                a[i] = 127;
+                axis[i] = 127;
             } else {
-                a[i] = parse_joystick_bits(report, data->joystick.axis[i].offset,
-                                           data->joystick.axis[i].size, is_signed);
+                axis[i] = parse_joystick_bits(report, data->joystick.axis[i].offset,
+                                              data->joystick.axis[i].size, is_signed);
                 uint16_t min = data->joystick.axis[i].logical.min;
                 uint16_t max = data->joystick.axis[i].logical.max;
                 if (min > max) {
@@ -191,35 +183,43 @@ bool GamePad::onHidReport(const uint8_t *report, uint16_t len) {
                         // assume 16 bit values
                         min += 32768;
                         max += 32768;
-                        a[i] += 32767;
+                        axis[i] += 32767;
                     } else {
                         // assume 8 bit values
                         min = (min + 128) & 0xff;
                         max = (max + 128) & 0xff;
-                        a[i] = (int16_t) (((a[i] & 0xff) + 128) & 0xff);
+                        axis[i] = (int16_t) (((axis[i] & 0xff) + 128) & 0xff);
                     }
                 }
 
                 int h_range = (max - min);
                 // scale to 0-255
-                if (a[i] <= min) a[i] = (int16_t) min; else if (a[i] >= max) a[i] = (int16_t) max;
-                if (!h_range) a[i] = 127; else a[i] = (int16_t) (((a[i] - min) * 255) / h_range);
-                // apply dead range
-                //if (a[i] > (127 - mist_cfg.joystick_dead_range) && a[i] < (127 + mist_cfg.joystick_dead_range)) a[i] = 127;
+                if (axis[i] <= min) axis[i] = (int16_t) min; else if (axis[i] >= max) axis[i] = (int16_t) max;
+                if (!h_range) axis[i] = 127; else axis[i] = (int16_t) (((axis[i] - min) * 255) / h_range);
             }
         }
 
         for (int i = 0; i < MAX_AXIS; i += 2) {
             if (data->joystick.axis[i].size == 0) continue;
-            m_buttons |= GamePad::getButtonsFromAxis(a[i], a[i + 1], AXIS_TYPE_U8 | AXIS_TYPE_FLIP_Y);
+            m_buttons |= GamePad::getButtonsFromAxis(axis[i], axis[i + 1], AXIS_TYPE_U8 | AXIS_TYPE_FLIP_Y);
+        }
+
+        // hat
+        if (data->joystick.hat.size) {
+            m_buttons |= getButtonsFromHat(report[data->joystick.hat.offset / 8]);
         }
     }
 
-#if LINUX
-    for (const auto &mapping: getOutputMode()->mappings) {
-        if (m_buttons & mapping.button) {
-            printf("%s: %s\r\n", p_device->name, Utility::toString(mapping.button).c_str());
-        }
+    // process buttons
+    for (int i = 0; i < data->joystick.button_count; i++) {
+        if (data->joystick.buttons[i].byte_offset == INPUT_DUMMY) continue;
+        m_buttons |= report[data->joystick.buttons[i].byte_offset]
+                     & data->joystick.buttons[i].bitmask ? (1 << i) : 0;
+    }
+
+#ifndef NDEBUG
+    if (m_buttons) {
+        printf("%s: %s\r\n", p_device->name, Utility::toString(m_buttons).c_str());
     }
 #endif
 

@@ -37,11 +37,6 @@ GamePadInfo::GamePadInfo(const Utility::Vec2i &pos, const Utility::Vec2i &size, 
     GamePadInfo::add(text);
 }
 
-void GamePadInfo::setVisibility(Widget::Visibility visibility) {
-    getPlatform()->getPad()->setRepeatDelay(visibility == Visibility::Visible ? 0 : 500);
-    Widget::setVisibility(visibility);
-}
-
 void GamePadInfo::loop(const Utility::Vec2i &pos) {
     uint16_t buttons = getPlatform()->getPad()->getButtons();
     if (buttons & GamePad::Button::START && buttons & GamePad::Button::SELECT) {

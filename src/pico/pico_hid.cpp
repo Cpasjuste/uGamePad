@@ -38,14 +38,19 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *desc_re
     uint16_t vid, pid;
     tuh_vid_pid_get(dev_addr, &vid, &pid);
 
-    printf("PicoHid: vid: %x, pid: %x, addr: %i, instance: %i, len: %i\r\n",
+    printf("PicoHid: vid: %04x, pid: %04x, addr: %i, instance: %i, len: %i\r\n",
            vid, pid, dev_addr, instance, desc_len);
 
     // return if pad is not initialized yet (should not happen...)
-    if (!getPlatform()->getPad()) return;
+    if (!getPlatform()->getPad()) {
+        printf("PicoHid: pad not yet initialized...\r\n");
+        return;
+    }
 
     device = new Device{vid, pid};
 
+    // TODO: fix no timeout on tuh_descriptor_get_product_string_sync func (SNK Neo-Geo Mini)
+#if 0
     // get device "name" (product)
     uint16_t buf[128];
     if (tuh_descriptor_get_product_string_sync(
@@ -53,6 +58,7 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *desc_re
         auto p = convert_utf8_to_char(buf, TU_ARRAY_SIZE(buf));
         strncpy(device->name, p, 63);
     }
+#endif
 
     // check if device exists in user fs or device database
     auto userDevice = getPlatform()->getConfig()->loadDevice(device->vid, device->pid);
@@ -69,7 +75,7 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *desc_re
 
     // get and parse report descriptor if not set from "userDevice"
     if (!device->report) {
-        device->report = (ReportData *) malloc(sizeof(ReportData));
+        device->report = (InputReportDescriptor *) malloc(sizeof(InputReportDescriptor));
         // parse report descriptor
         if (!parse_report_descriptor((uint8_t *) desc_report, desc_len, device)) {
             printf("PicoHid: could not parse report descriptor for %04x:%04x\r\n", device->vid, device->pid);
@@ -77,11 +83,13 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const *desc_re
             delete (device);
             return;
         }
+        // set device name
+        strncpy(device->name, "USB Gamepad", 63);
     }
 
     // only handle joystick devices
     if (device->report->type != REPORT_TYPE_JOYSTICK) {
-        printf("PicoHid: device %04x:%04x is not a joystick, skipping...\r\n", device->vid, device->pid);
+        printf("PicoHid: device %04x:%04x is not a gamepad, skipping...\r\n", device->vid, device->pid);
         free(device->report);
         delete (device);
         return;

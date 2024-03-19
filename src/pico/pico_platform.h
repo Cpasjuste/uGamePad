@@ -9,34 +9,7 @@
 #include "pico_gfx.h"
 
 #if defined(PICO_BUILD)
-#if !defined(UGP_DEV_BOARD)
-// uGamePad retail board
-// use pins 0 and 1 for tx/rx (bouttons 5/6)
-#define GPIO_TX             D0  // vga pin 10
-#define GPIO_RX             D1  // vga pin 2
-#define GPIO_BUTTON_UP      D14
-#define GPIO_BUTTON_DOWN    D15
-#define GPIO_BUTTON_ENTER   D26
-#define GPIO_OLED_SDA       D12
-#define GPIO_OLED_SCL       D13
-// output pins
-#define GPIO_BTN_B1         D3
-#define GPIO_BTN_B2         D4
-#define GPIO_BTN_B3         D5
-#define GPIO_BTN_B4         D9
-#define GPIO_BTN_B5         D0
-#define GPIO_BTN_B6         D1
-#define GPIO_BTN_SELECT     D8
-#define GPIO_BTN_START      D6
-#define GPIO_BTN_UP         D10
-#define GPIO_BTN_DOWN       D11
-#define GPIO_BTN_LEFT       D2
-#define GPIO_BTN_RIGHT      D7
-// nes pins
-#define GPIO_NES_LATCH      D2
-#define GPIO_NES_CLOCK      D3
-#define GPIO_NES_DATA       D4
-#else
+#if defined(UGP_DEV_BOARD)
 // uGamePad pico dev board
 // debug pins
 #define GPIO_TX             0
@@ -60,6 +33,81 @@
 #define GPIO_BTN_DOWN       7
 #define GPIO_BTN_LEFT       16
 #define GPIO_BTN_RIGHT      9
+// nes pins
+#define GPIO_NES_LATCH      2
+#define GPIO_NES_CLOCK      3
+#define GPIO_NES_DATA       4
+
+// uGamePad retail board
+// use pins 0 and 1 for tx/rx (buttons 5/6)
+#define GPIO_TX             0  // vga pin 10
+#define GPIO_RX             1  // vga pin 2
+#define GPIO_BUTTON_UP      14
+#define GPIO_BUTTON_DOWN    15
+#define GPIO_BUTTON_ENTER   26
+#define GPIO_OLED_SDA       12
+#define GPIO_OLED_SCL       13
+// output pins
+#define GPIO_BTN_B1         3
+#define GPIO_BTN_B2         4
+#define GPIO_BTN_B3         5
+#define GPIO_BTN_B4         9
+#define GPIO_BTN_B5         0
+#define GPIO_BTN_B6         1
+#define GPIO_BTN_SELECT     8
+#define GPIO_BTN_START      6
+#define GPIO_BTN_UP         10
+#define GPIO_BTN_DOWN       11
+#define GPIO_BTN_LEFT       2
+#define GPIO_BTN_RIGHT      7
+// nes pins
+#define GPIO_NES_LATCH      2
+#define GPIO_NES_CLOCK      3
+#define GPIO_NES_DATA       4
+#elif defined(RETROPICO_BOARD)
+// uGamePad retail board
+// use pins 0 and 1 for tx/rx (buttons 5/6)
+#define GPIO_TX             16  // vga pin 10
+#define GPIO_RX             17  // vga pin 2
+#define GPIO_BUTTON_UP      (8)
+#define GPIO_BUTTON_DOWN    (9)
+#define GPIO_BUTTON_ENTER   (15)
+// output pins
+#define GPIO_BTN_B1         UINT8_MAX
+#define GPIO_BTN_B2         UINT8_MAX
+#define GPIO_BTN_B3         UINT8_MAX
+#define GPIO_BTN_B4         UINT8_MAX
+#define GPIO_BTN_B5         UINT8_MAX
+#define GPIO_BTN_B6         UINT8_MAX
+#define GPIO_BTN_SELECT     UINT8_MAX
+#define GPIO_BTN_START      UINT8_MAX
+#define GPIO_BTN_UP         UINT8_MAX
+#define GPIO_BTN_DOWN       UINT8_MAX
+#define GPIO_BTN_LEFT       UINT8_MAX
+#define GPIO_BTN_RIGHT      UINT8_MAX
+#else
+// uGamePad retail board
+// use pins 0 and 1 for tx/rx (bouttons 5/6)
+#define GPIO_TX             0  // vga pin 10
+#define GPIO_RX             1  // vga pin 2
+#define GPIO_BUTTON_UP      14
+#define GPIO_BUTTON_DOWN    15
+#define GPIO_BUTTON_ENTER   26
+#define GPIO_OLED_SDA       12
+#define GPIO_OLED_SCL       13
+// output pins
+#define GPIO_BTN_B1         3
+#define GPIO_BTN_B2         4
+#define GPIO_BTN_B3         5
+#define GPIO_BTN_B4         9
+#define GPIO_BTN_B5         0
+#define GPIO_BTN_B6         1
+#define GPIO_BTN_SELECT     8
+#define GPIO_BTN_START      6
+#define GPIO_BTN_UP         10
+#define GPIO_BTN_DOWN       11
+#define GPIO_BTN_LEFT       2
+#define GPIO_BTN_RIGHT      7
 // nes pins
 #define GPIO_NES_LATCH      2
 #define GPIO_NES_CLOCK      3

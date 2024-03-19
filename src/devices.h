@@ -13,8 +13,7 @@
 #define BIT(n) (1U<<(n))
 #endif
 
-#define INDEX_NONE UINT16_MAX
-#define BUTTON_NONE UINT16_MAX
+#define INPUT_DUMMY UINT8_MAX
 #define MAX_BUTTONS 12
 #define MAX_AXIS 4
 
@@ -73,13 +72,13 @@ namespace uGamePad {
 
             } joystick;
         };
-    } ReportData;
+    } InputReportDescriptor;
 
     struct Device {
         uint16_t vid = 0;
         uint16_t pid = 0;
         char name[64]{};
-        ReportData *report = nullptr;
+        InputReportDescriptor *report = nullptr;
         void *user_data = nullptr;
 
         [[nodiscard]] std::string getVendor() const {

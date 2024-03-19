@@ -31,6 +31,7 @@ static void SSD1306_Render(uint8_t *buf, struct render_area *area);
 static void calc_render_area_buflen(struct render_area *area);
 
 PicoDisplay::PicoDisplay() : Adafruit_GFX(SSD1306_WIDTH, SSD1306_HEIGHT) {
+#if !defined(RETROPICO_BOARD)
     // I2C is "open drain", pull-ups to keep signal high when no data is being sent
     i2c_init(i2c_default, SSD1306_I2C_CLK * 1000);
     gpio_set_function(GPIO_OLED_SDA, GPIO_FUNC_I2C);
@@ -53,18 +54,25 @@ PicoDisplay::PicoDisplay() : Adafruit_GFX(SSD1306_WIDTH, SSD1306_HEIGHT) {
     // zero the entire display
     memset(framebuffer, 0, SSD1306_BUF_LEN);
     SSD1306_Render(framebuffer, &frame_area);
+#endif
 }
 
 void PicoDisplay::drawPixel(int16_t x, int16_t y, uint16_t color) {
+#if !defined(RETROPICO_BOARD)
     SSD1306_SetPixel(framebuffer, x, y, color);
+#endif
 }
 
 void PicoDisplay::clear() {
+#if !defined(RETROPICO_BOARD)
     memset(framebuffer, 0, SSD1306_BUF_LEN);
+#endif
 }
 
 void PicoDisplay::flip() {
+#if !defined(RETROPICO_BOARD)
     SSD1306_Render(framebuffer, &frame_area);
+#endif
 }
 
 ///

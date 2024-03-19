@@ -11,6 +11,11 @@ using namespace uGamePad;
 void Hid::onDeviceConnected(Device *device) {
     printf("Hid::onDeviceConnected: %s (%04x:%04x)\r\n", device->name, device->vid, device->pid);
 
+    // debug
+    std::vector<uint8_t> buffer(4096);
+    Utility::serialize(device, &buffer);
+    printf("\r\n%s\r\n", buffer.data());
+
     // set gamepad device
     getPlatform()->getPad()->setDevice(device);
 }
