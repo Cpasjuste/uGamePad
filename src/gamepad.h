@@ -35,17 +35,21 @@ namespace uGamePad {
             DPAD_RIGHT = BIT(9),
             DPAD_UP = BIT(10),
             DPAD_DOWN = BIT(11),
-            AXIS_LEFT = BIT(12),
-            AXIS_RIGHT = BIT(13),
-            AXIS_UP = BIT(14),
-            AXIS_DOWN = BIT(15),
-            MENU = BIT(16),
-            DELAY = BIT(17),
+            AXIS_L_LEFT = BIT(12),
+            AXIS_L_RIGHT = BIT(13),
+            AXIS_L_UP = BIT(14),
+            AXIS_L_DOWN = BIT(15),
+            AXIS_R_LEFT = BIT(16),
+            AXIS_R_RIGHT = BIT(17),
+            AXIS_R_UP = BIT(18),
+            AXIS_R_DOWN = BIT(19),
+            MENU = BIT(20),
+            DELAY = BIT(21),
             // Generic catch-all directions
-            LEFT = DPAD_LEFT | AXIS_LEFT,
-            RIGHT = DPAD_RIGHT | AXIS_RIGHT,
-            UP = DPAD_UP | AXIS_UP,
-            DOWN = DPAD_DOWN | AXIS_DOWN,
+            LEFT = DPAD_LEFT | AXIS_L_LEFT | AXIS_R_LEFT,
+            RIGHT = DPAD_RIGHT | AXIS_L_RIGHT | AXIS_R_RIGHT,
+            UP = DPAD_UP | AXIS_L_UP | AXIS_R_UP,
+            DOWN = DPAD_DOWN | AXIS_L_DOWN | AXIS_R_DOWN,
         };
 
         enum Mode {
@@ -56,7 +60,7 @@ namespace uGamePad {
         };
 
         struct PinMapping {
-            uint16_t button;
+            uint32_t button;
             uint8_t pin;
             bool direction;
             int defaultState;
@@ -80,7 +84,7 @@ namespace uGamePad {
 
         virtual void setOutputMode(const std::string &modeName);
 
-        virtual uint16_t &getButtons() { return m_buttons; }
+        virtual uint32_t &getButtons() { return m_buttons; }
 
         virtual bool onHidReport(const uint8_t *report, uint16_t len);
 
@@ -94,8 +98,8 @@ namespace uGamePad {
 
     protected:
         Device *p_device = nullptr;
-        uint16_t m_buttons{0};
-        uint16_t m_buttons_prev{0};
+        uint32_t m_buttons{0};
+        uint32_t m_buttons_prev{0};
         Clock m_repeatClock;
         uint16_t m_repeatDelayMs = REPEAT_DELAY_DEFAULT;
         std::vector<GamePad::Output> m_outputModes;
@@ -115,9 +119,9 @@ namespace uGamePad {
 
         int bezierY(float t);
 
-        uint16_t getButtonsFromAxis(int x, int y, uint8_t type = 0/*ReportData::AxisType::AXIS_I16*/);
+        uint32_t getButtonsFromAxis(int x, int y, uint8_t type = AXIS_TYPE_U8 | AXIS_TYPE_LEFT);
 
-        static uint16_t getButtonsFromHat(int hat);
+        static uint32_t getButtonsFromHat(int hat);
     };
 }
 

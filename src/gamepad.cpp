@@ -17,10 +17,10 @@ GamePad::GamePad() {
     }
 }
 
-uint16_t GamePad::getButtonsFromHat(int hat) {
-    uint16_t buttons = 0;
+uint32_t GamePad::getButtonsFromHat(int hat) {
+    uint32_t buttons = 0;
 
-    static constexpr uint16_t table[] = {
+    static constexpr uint32_t table[] = {
             Button::DPAD_UP,
             Button::DPAD_UP | Button::DPAD_RIGHT,
             Button::DPAD_RIGHT,
@@ -39,8 +39,8 @@ uint16_t GamePad::getButtonsFromHat(int hat) {
     return buttons;
 }
 
-uint16_t GamePad::getButtonsFromAxis(int x, int y, uint8_t type) {
-    uint16_t buttons = 0;
+uint32_t GamePad::getButtonsFromAxis(int x, int y, uint8_t type) {
+    uint32_t buttons = 0;
     float slope = 0.414214f; // tangent of 22.5 degrees for size of angular zones
     auto analogX = (float) x, analogY = (float) y;
 
@@ -58,27 +58,27 @@ uint16_t GamePad::getButtonsFromAxis(int x, int y, uint8_t type) {
         if (analogY > 0 && analogX > 0) {
             // upper right quadrant
             if (analogY > slope * analogX)
-                buttons |= Button::AXIS_UP;
+                buttons |= type & AXIS_TYPE_LEFT ? Button::AXIS_L_UP : Button::AXIS_R_UP;
             if (analogX > slope * analogY)
-                buttons |= Button::AXIS_RIGHT;
+                buttons |= type & AXIS_TYPE_LEFT ? Button::AXIS_L_RIGHT : Button::AXIS_R_RIGHT;
         } else if (analogY > 0 && analogX <= 0) {
             // upper left quadrant
             if (analogY > slope * (-analogX))
-                buttons |= Button::AXIS_UP;
+                buttons |= type & AXIS_TYPE_LEFT ? Button::AXIS_L_UP : Button::AXIS_R_UP;
             if ((-analogX) > slope * analogY)
-                buttons |= Button::AXIS_LEFT;
+                buttons |= type & AXIS_TYPE_LEFT ? Button::AXIS_L_LEFT : Button::AXIS_R_LEFT;
         } else if (analogY <= 0 && analogX > 0) {
             // lower right quadrant
             if ((-analogY) > slope * analogX)
-                buttons |= Button::AXIS_DOWN;
+                buttons |= type & AXIS_TYPE_LEFT ? Button::AXIS_L_DOWN : Button::AXIS_R_DOWN;
             if (analogX > slope * (-analogY))
-                buttons |= Button::AXIS_RIGHT;
+                buttons |= type & AXIS_TYPE_LEFT ? Button::AXIS_L_RIGHT : Button::AXIS_R_RIGHT;
         } else if (analogY <= 0 && analogX <= 0) {
             // lower left quadrant
             if ((-analogY) > slope * (-analogX))
-                buttons |= Button::AXIS_DOWN;
+                buttons |= type & AXIS_TYPE_LEFT ? Button::AXIS_L_DOWN : Button::AXIS_R_DOWN;
             if ((-analogX) > slope * (-analogY))
-                buttons |= Button::AXIS_LEFT;
+                buttons |= type & AXIS_TYPE_LEFT ? Button::AXIS_L_LEFT : Button::AXIS_R_LEFT;
         }
     }
 
@@ -152,11 +152,13 @@ bool GamePad::onHidReport(const uint8_t *report, uint16_t len) {
             if (data->joystick.axis[i].size > 8) {
                 int16_t x = (int16_t &) report[data->joystick.axis[i].offset / 8];
                 int16_t y = (int16_t &) report[data->joystick.axis[i + 1].offset / 8];
-                m_buttons |= GamePad::getButtonsFromAxis(x, y, AXIS_TYPE_S16);
+                m_buttons |= GamePad::getButtonsFromAxis(
+                        x, y, AXIS_TYPE_S16 | (i < 2 ? AXIS_TYPE_LEFT : AXIS_TYPE_RIGHT));
             } else {
                 uint8_t x = (uint8_t &) report[data->joystick.axis[i].offset / 8];
                 uint8_t y = (uint8_t &) report[data->joystick.axis[i + 1].offset / 8];
-                m_buttons |= GamePad::getButtonsFromAxis(x, y, AXIS_TYPE_U8);
+                m_buttons |= GamePad::getButtonsFromAxis(
+                        x, y, AXIS_TYPE_U8 | (i < 2 ? AXIS_TYPE_LEFT : AXIS_TYPE_RIGHT));
             }
         }
     } else {
@@ -196,7 +198,8 @@ bool GamePad::onHidReport(const uint8_t *report, uint16_t len) {
 
         for (int i = 0; i < MAX_AXIS; i += 2) {
             if (data->joystick.axis[i].size == 0) continue;
-            m_buttons |= GamePad::getButtonsFromAxis(axis[i], axis[i + 1], AXIS_TYPE_U8 | AXIS_TYPE_FLIP_Y);
+            m_buttons |= GamePad::getButtonsFromAxis(
+                    axis[i], axis[i + 1], AXIS_TYPE_U8 | AXIS_TYPE_FLIP_Y | (i < 2 ? AXIS_TYPE_LEFT : AXIS_TYPE_RIGHT));
         }
 
         // hat

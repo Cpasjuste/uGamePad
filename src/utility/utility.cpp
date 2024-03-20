@@ -48,10 +48,14 @@ std::string Utility::toString(uint32_t buttons) {
     if (buttons & GamePad::Button::DPAD_DOWN) ret += "DPAD_DOWN ";
     if (buttons & GamePad::Button::DPAD_LEFT) ret += "DPAD_LEFT ";
     if (buttons & GamePad::Button::DPAD_RIGHT) ret += "DPAD_RIGHT ";
-    if (buttons & GamePad::Button::AXIS_UP) ret += "AXIS_UP ";
-    if (buttons & GamePad::Button::AXIS_DOWN) ret += "AXIS_DOWN ";
-    if (buttons & GamePad::Button::AXIS_LEFT) ret += "AXIS_LEFT ";
-    if (buttons & GamePad::Button::AXIS_RIGHT) ret += "AXIS_RIGHT ";
+    if (buttons & GamePad::Button::AXIS_L_UP) ret += "AXIS_L_UP ";
+    if (buttons & GamePad::Button::AXIS_L_DOWN) ret += "AXIS_L_DOWN ";
+    if (buttons & GamePad::Button::AXIS_L_LEFT) ret += "AXIS_L_LEFT ";
+    if (buttons & GamePad::Button::AXIS_L_RIGHT) ret += "AXIS_L_RIGHT ";
+    if (buttons & GamePad::Button::AXIS_R_UP) ret += "AXIS_R_UP ";
+    if (buttons & GamePad::Button::AXIS_R_DOWN) ret += "AXIS_R_DOWN ";
+    if (buttons & GamePad::Button::AXIS_R_LEFT) ret += "AXIS_R_LEFT ";
+    if (buttons & GamePad::Button::AXIS_R_RIGHT) ret += "AXIS_R_RIGHT ";
 
     return ret;
 }

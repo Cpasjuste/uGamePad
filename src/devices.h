@@ -21,6 +21,8 @@
 #define AXIS_TYPE_S8        BIT(1)
 #define AXIS_TYPE_S16       BIT(2)
 #define AXIS_TYPE_FLIP_Y    BIT(3)
+#define AXIS_TYPE_LEFT      BIT(4)
+#define AXIS_TYPE_RIGHT     BIT(5)
 
 #define REPORT_TYPE_NONE        0
 #define REPORT_TYPE_MOUSE       1
