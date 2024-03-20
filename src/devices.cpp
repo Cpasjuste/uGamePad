@@ -15,10 +15,10 @@ static constexpr InputReportDescriptor xboxReport = {
         .joystick = {
                 .axis = {
                         // {offset, size, {min, max}}
-                        {48, 16, {-32768, 32767}},
-                        {64, 16, {-32768, 32767}},
-                        {80, 16, {-32768, 32767}},
-                        {96, 16, {-32768, 32767}}
+                        {48, 16, {-32768, 32767}},  // AXIS_L_LEFT / RIGHT
+                        {64, 16, {-32768, 32767}},  // AXIS_L_UP / DOWN
+                        {80, 16, {-32768, 32767}},  // AXIS_R_LEFT / RIGHT
+                        {96, 16, {-32768, 32767}}   // AXIS_R_UP / DOWN
                 },
                 .buttons = {
                         // byte, bitmask, controller button, ugamepad button
@@ -30,10 +30,10 @@ static constexpr InputReportDescriptor xboxReport = {
                         3, BIT(1),      // LR       -> B6
                         2, BIT(4),      // START    -> START
                         2, BIT(5),      // BACK     -> SELECT
-                        2, BIT(2),      // LEFT     -> LEFT
-                        2, BIT(3),      // RIGHT    -> RIGHT
-                        2, BIT(0),      // UP       -> UP
-                        2, BIT(1),      // DOWN     -> DOWN
+                        2, BIT(2),      // LEFT     -> DPAD_LEFT
+                        2, BIT(3),      // RIGHT    -> DPAD_RIGHT
+                        2, BIT(0),      // UP       -> DPAD_UP
+                        2, BIT(1),      // DOWN     -> DPAD_DOWN
                 },
                 .init = {
                         // values, size
@@ -52,10 +52,10 @@ static constexpr InputReportDescriptor ds4Report = {
         .joystick = {
                 .axis = {
                         // {offset, size, {min, max}}
-                        {8,  8, {0, 255}},
-                        {16, 8, {0, 255}},
-                        {24, 8, {0, 255}},
-                        {32, 8, {0, 255}}
+                        {8,  8, {0, 255}},  // AXIS_L_LEFT / RIGHT
+                        {16, 8, {0, 255}},  // AXIS_L_UP / DOWN
+                        {24, 8, {0, 255}},  // AXIS_R_LEFT / RIGHT
+                        {32, 8, {0, 255}}   // AXIS_R_UP / DOWN
                 },
                 .buttons = {
                         // byte, bitmask, controller button, ugamepad button
@@ -85,10 +85,10 @@ static constexpr InputReportDescriptor ds5Report = {
         .joystick = {
                 .axis = {
                         // {offset, size, {min, max}}
-                        {8,  8, {0, 255}},
-                        {16, 8, {0, 255}},
-                        {24, 8, {0, 255}},
-                        {32, 8, {0, 255}}
+                        {8,  8, {0, 255}},  // AXIS_L_LEFT / RIGHT
+                        {16, 8, {0, 255}},  // AXIS_L_UP / DOWN
+                        {24, 8, {0, 255}},  // AXIS_R_LEFT / RIGHT
+                        {32, 8, {0, 255}}   // AXIS_R_UP / DOWN
                 },
                 .buttons = {
                         // byte, bitmask, controller button, ugamepad button
@@ -141,8 +141,8 @@ static constexpr InputReportDescriptor cheapSnesReport = {
         .joystick = {
                 .axis = {
                         // {offset, size, {min, max}}
-                        {24, 8, {0, 255}},
-                        {32, 8, {0, 255}}
+                        {24, 8, {0, 255}},  // AXIS_L_LEFT / RIGHT
+                        {32, 8, {0, 255}}   // AXIS_L_UP / DOWN
                 },
                 .buttons = {
                         // byte, bitmask, controller button, ugamepad button

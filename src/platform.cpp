@@ -2,9 +2,7 @@
 // Created by cpasjuste on 30/03/23.
 //
 
-#include "main.h"
 #include "platform.h"
-
 
 using namespace uGamePad;
 

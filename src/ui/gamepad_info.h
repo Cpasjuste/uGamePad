@@ -12,9 +12,16 @@
 namespace uGamePad {
     class GamePadInfo : public Bitmap {
     public:
+        enum Mode {
+            Info,
+            Remap
+        };
+
         GamePadInfo(const Utility::Vec2i &pos, const Utility::Vec2i &size, uint8_t *bitmap);
 
         void loop(const Utility::Vec2i &pos) override;
+
+        void setMode(const Mode &mode);
 
     private:
         struct GamePadButton {
@@ -22,7 +29,12 @@ namespace uGamePad {
             uint32_t button{};
         };
 
+        Text *p_text;
+        Mode m_mode = Info;
+        Device *p_newDevice;
+        uint8_t m_button_index = 0;
         std::vector<GamePadButton> m_buttons;
+        Clock m_clock_button_visibility, m_clock_timeout;
     };
 }
 

@@ -85,6 +85,14 @@ uint32_t GamePad::getButtonsFromAxis(int x, int y, uint8_t type) {
     return buttons;
 }
 
+uint8_t GamePad::getButtonIndex(uint32_t button) {
+    for (int i = 0; i < MAX_BUTTONS; i++) {
+        if (button & BIT(i)) return i;
+    }
+
+    return UINT8_MAX;
+}
+
 void GamePad::lerp(Utility::Vec2i *dest, Utility::Vec2i *first, Utility::Vec2i *second, float t) {
     dest->x = (int16_t) ((float) first->x + ((float) second->x - (float) first->x) * t);
     dest->y = (int16_t) ((float) first->y + ((float) second->y - (float) first->y) * t);
@@ -128,6 +136,15 @@ void GamePad::setOutputMode(const std::string &modeName) {
             printf("GamePad::setOutputMode: %s\r\n", getOutputMode()->name.c_str());
             break;
         }
+    }
+}
+
+void GamePad::flush() {
+    while (true) {
+        if (!m_buttons) {
+            break;
+        }
+        getPlatform()->loop();
     }
 }
 

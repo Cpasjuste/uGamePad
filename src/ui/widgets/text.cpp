@@ -32,6 +32,8 @@ std::string Text::getString() {
 }
 
 void Text::setString(const std::string &str) {
+    if (str == m_text) return;
+
     int16_t x, y;
     uint16_t w, h;
     m_text = str;

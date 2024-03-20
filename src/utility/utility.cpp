@@ -56,6 +56,8 @@ std::string Utility::toString(uint32_t buttons) {
     if (buttons & GamePad::Button::AXIS_R_DOWN) ret += "AXIS_R_DOWN ";
     if (buttons & GamePad::Button::AXIS_R_LEFT) ret += "AXIS_R_LEFT ";
     if (buttons & GamePad::Button::AXIS_R_RIGHT) ret += "AXIS_R_RIGHT ";
+    if (buttons & GamePad::Button::MENU) ret += "MENU ";
+    if (buttons & GamePad::Button::DELAY) ret += "DELAY ";
 
     return ret;
 }
