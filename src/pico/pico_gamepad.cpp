@@ -140,9 +140,9 @@ void PicoGamePad::setOutputMode(const GamePad::Mode &mode) {
     }
 }
 
-uint16_t PicoGamePad::getHardwareButtons() {
+uint32_t PicoGamePad::getHardwareButtons() {
     // handle hardware buttons
-    uint16_t buttons = 0;
+    uint32_t buttons = 0;
     if (!gpio_get(GPIO_BUTTON_UP)) buttons |= GamePad::Button::UP;
     if (!gpio_get(GPIO_BUTTON_DOWN)) buttons |= GamePad::Button::DOWN;
     if (!gpio_get(GPIO_BUTTON_ENTER)) {

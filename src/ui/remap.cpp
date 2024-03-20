@@ -45,7 +45,7 @@ void UiRemap::setVisibility(Widget::Visibility visibility) {
 void UiRemap::loop(const Utility::Vec2i &pos) {
     if (m_visibility == Visibility::Hidden) return;
 
-    uint16_t buttons = getPlatform()->getPad()->getButtons();
+    auto buttons = getPlatform()->getPad()->getButtons();
 
     if (!m_started && buttons && !(buttons & GamePad::Button::DELAY)) {
         m_started = true;

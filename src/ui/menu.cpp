@@ -61,7 +61,7 @@ void Menu::update() {
 
 void Menu::loop(const Utility::Vec2i &pos) {
     // handle buttons
-    uint16_t buttons = getPlatform()->getPad()->getButtons();
+    auto buttons = getPlatform()->getPad()->getButtons();
     if (buttons & GamePad::Button::UP) {
         int index = option_index + highlight_index;
         int middle = max_lines / 2;

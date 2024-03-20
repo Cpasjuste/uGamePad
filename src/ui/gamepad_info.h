@@ -19,7 +19,7 @@ namespace uGamePad {
     private:
         struct GamePadButton {
             Widget *widget = nullptr;
-            uint16_t button{};
+            uint32_t button{};
         };
 
         std::vector<GamePadButton> m_buttons;

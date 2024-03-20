@@ -12,6 +12,8 @@
 
 using namespace uGamePad;
 
+#define DEFAULT_MENU MenuWidget::GamePadTest
+
 Ui::Ui() {
     p_screen = new Widget();
     p_screen->setSize(getPlatform()->getGfx()->getSize());
@@ -41,7 +43,7 @@ Ui::Ui() {
     p_screen->add(p_splashText);
 
     // show splash screen
-    show(MenuWidget::Splash);
+    show(DEFAULT_MENU);
 }
 
 void Ui::show(Ui::MenuWidget menuWidget) {
@@ -72,7 +74,7 @@ void Ui::show(Ui::MenuWidget menuWidget) {
         p_remapWidget->setVisibility(Widget::Visibility::Hidden);
         p_splash->setVisibility(Widget::Visibility::Hidden);
         p_splashText->setVisibility(Widget::Visibility::Hidden);
-        getPlatform()->getPad()->setRepeatDelay(REPEAT_DELAY_DEFAULT);
+        getPlatform()->getPad()->setRepeatDelay(0);
     } else if (menuWidget == MenuWidget::Remap) {
         p_screen->setVisibility(Widget::Visibility::Visible);
         p_remapWidget->setVisibility(Widget::Visibility::Visible);
@@ -96,7 +98,7 @@ void Ui::flip() {
 void Ui::loop() {
     // check for menu combo keys
     if (!p_screen->isVisible()) {
-        uint16_t buttons = getPlatform()->getPad()->getButtons();
+        auto buttons = getPlatform()->getPad()->getButtons();
         if (buttons & GamePad::Button::MENU) {
             show(MenuWidget::MainMenu);
         } else if (buttons & GamePad::Button::START && buttons & GamePad::Button::SELECT) {

@@ -230,7 +230,7 @@ void GamePad::loop() {
         m_repeatClock.restart();
         m_buttons_prev = m_buttons;
     } else {
-        uint16_t diff = m_buttons_prev ^ m_buttons;
+        uint32_t diff = m_buttons_prev ^ m_buttons;
         m_buttons_prev = m_buttons;
         if (diff > 0) {
             m_repeatClock.restart();

@@ -14,7 +14,7 @@ namespace uGamePad {
 
         void setOutputMode(const Mode &mode) override;
 
-        static uint16_t getHardwareButtons();
+        static uint32_t getHardwareButtons();
 
     private:
 #ifndef TODO_NES_SNES_MD_CABLES
@@ -22,7 +22,7 @@ namespace uGamePad {
 
         static void onClockFalling();
 #endif
-        uint16_t m_buttons_old{}, m_buttons_diff{};
+        uint32_t m_buttons_old{}, m_buttons_diff{};
     };
 }
 

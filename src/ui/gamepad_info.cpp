@@ -26,11 +26,16 @@ GamePadInfo::GamePadInfo(const Utility::Vec2i &pos, const Utility::Vec2i &size, 
     m_buttons.push_back({new Triangle({37, 32}, 6, 0, true), GamePad::Button::DPAD_DOWN});
     m_buttons.push_back({new Triangle({31, 26}, 6, 90, true), GamePad::Button::DPAD_LEFT});
     m_buttons.push_back({new Triangle({43, 26}, 6, -90, true), GamePad::Button::DPAD_RIGHT});
-    // axis
+    // left axis
     m_buttons.push_back({new Triangle({54, 32}, 6, 180, true), GamePad::Button::AXIS_L_UP});
     m_buttons.push_back({new Triangle({54, 51}, 6, 0, true), GamePad::Button::AXIS_L_DOWN});
     m_buttons.push_back({new Triangle({44, 42}, 6, 90, true), GamePad::Button::AXIS_L_LEFT});
     m_buttons.push_back({new Triangle({63, 42}, 6, -90, true), GamePad::Button::AXIS_L_RIGHT});
+    // right axis
+    m_buttons.push_back({new Triangle({73, 32}, 6, 180, true), GamePad::Button::AXIS_R_UP});
+    m_buttons.push_back({new Triangle({73, 51}, 6, 0, true), GamePad::Button::AXIS_R_DOWN});
+    m_buttons.push_back({new Triangle({63, 42}, 6, 90, true), GamePad::Button::AXIS_R_LEFT});
+    m_buttons.push_back({new Triangle({82, 42}, 6, -90, true), GamePad::Button::AXIS_R_RIGHT});
 
     // add buttons
     for (const auto &button: m_buttons) {
@@ -47,7 +52,7 @@ GamePadInfo::GamePadInfo(const Utility::Vec2i &pos, const Utility::Vec2i &size, 
 }
 
 void GamePadInfo::loop(const Utility::Vec2i &pos) {
-    uint16_t buttons = getPlatform()->getPad()->getButtons();
+    auto buttons = getPlatform()->getPad()->getButtons();
     if (buttons & GamePad::Button::START && buttons & GamePad::Button::SELECT) {
         getPlatform()->getUi()->show(Ui::MenuWidget::MainMenu);
         return;
