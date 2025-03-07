@@ -12,7 +12,7 @@ Platform *getPlatform() {
     return platform;
 }
 
-int main() {
+[[noreturn]] int main() {
 #if LINUX
     platform = new LinuxPlatform();
 #else

@@ -5,7 +5,6 @@ cmake_minimum_required(VERSION 3.5)
 option(PLATFORM_LINUX "Linux target platform" OFF)
 # pico options
 option(PICO_DEV_BOARD "Build for ugp dev board" OFF)
-option(PICO_RETROPICO_BOARD "Build for retropico board (debug)" OFF)
 option(PICO_DEBUG_UART "Pico uart debug" OFF)
 option(PICO_DEBUG_USB "Pico usb debug" OFF)
 
@@ -87,13 +86,6 @@ else ()
     )
     if (PICO_DEV_BOARD)
         list(APPEND FLAGS -DUGP_DEV_BOARD)
-    endif ()
-    if (PICO_RETROPICO_BOARD)
-        list(APPEND FLAGS
-                -DRETROPICO_BOARD
-                -DPICO_DEFAULT_UART_TX_PIN=16
-                -DPICO_DEFAULT_UART_RX_PIN=17
-        )
     endif ()
 endif ()
 

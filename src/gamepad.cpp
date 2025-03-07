@@ -21,14 +21,14 @@ uint32_t GamePad::getButtonsFromHat(int hat) {
     uint32_t buttons = 0;
 
     static constexpr uint32_t table[] = {
-            Button::DPAD_UP,
-            Button::DPAD_UP | Button::DPAD_RIGHT,
-            Button::DPAD_RIGHT,
-            Button::DPAD_DOWN | Button::DPAD_RIGHT,
-            Button::DPAD_DOWN,
-            Button::DPAD_LEFT | Button::DPAD_DOWN,
-            Button::DPAD_LEFT,
-            Button::DPAD_LEFT | Button::DPAD_UP,
+        Button::DPAD_UP,
+        Button::DPAD_UP | Button::DPAD_RIGHT,
+        Button::DPAD_RIGHT,
+        Button::DPAD_DOWN | Button::DPAD_RIGHT,
+        Button::DPAD_DOWN,
+        Button::DPAD_LEFT | Button::DPAD_DOWN,
+        Button::DPAD_LEFT,
+        Button::DPAD_LEFT | Button::DPAD_UP,
     };
 
     auto i = static_cast<int>(hat);
@@ -100,11 +100,11 @@ void GamePad::lerp(Utility::Vec2i *dest, Utility::Vec2i *first, Utility::Vec2i *
 
 int GamePad::bezierY(float t) {
     Utility::Vec2i ab, bc, cd, ab_bc, bc_cd, dest;
-    lerp(&ab, &m_pa, &m_pb, t);     /* point between a and b */
-    lerp(&bc, &m_pb, &m_pc, t);     /* point between b and c */
-    lerp(&cd, &m_pc, &m_pd, t);     /* point between c and d */
-    lerp(&ab_bc, &ab, &bc, t);      /* point between ab and bc */
-    lerp(&bc_cd, &bc, &cd, t);      /* point between bc and cd */
+    lerp(&ab, &m_pa, &m_pb, t); /* point between a and b */
+    lerp(&bc, &m_pb, &m_pc, t); /* point between b and c */
+    lerp(&cd, &m_pc, &m_pd, t); /* point between c and d */
+    lerp(&ab_bc, &ab, &bc, t); /* point between ab and bc */
+    lerp(&bc_cd, &bc, &cd, t); /* point between bc and cd */
     lerp(&dest, &ab_bc, &bc_cd, t); /* point on the bezier-curve */
     return dest.y;
 }
@@ -139,7 +139,7 @@ void GamePad::setOutputMode(const std::string &modeName) {
     }
 }
 
-void GamePad::flush() {
+void GamePad::flush() const {
     while (true) {
         if (!m_buttons) {
             break;
@@ -155,7 +155,7 @@ bool GamePad::onHidReport(const uint8_t *report, uint16_t len) {
     }
 
     //printf("uGamePad::loop: received data for '%s', len: %i)\r\n", p_device->name, len);
-    auto *data = p_device->report;
+    const auto *data = p_device->report;
 
     // reset buttons state
     m_buttons = 0;
@@ -167,22 +167,20 @@ bool GamePad::onHidReport(const uint8_t *report, uint16_t len) {
         for (int i = 0; i < MAX_AXIS; i += 2) {
             if (data->joystick.axis[i].offset >= len * 8) continue;
             if (data->joystick.axis[i].size > 8) {
-                int16_t x = (int16_t &) report[data->joystick.axis[i].offset / 8];
-                int16_t y = (int16_t &) report[data->joystick.axis[i + 1].offset / 8];
-                m_buttons |= GamePad::getButtonsFromAxis(
-                        x, y, AXIS_TYPE_S16 | (i < 2 ? AXIS_TYPE_LEFT : AXIS_TYPE_RIGHT));
+                const int16_t x = (int16_t &) report[data->joystick.axis[i].offset / 8];
+                const int16_t y = (int16_t &) report[data->joystick.axis[i + 1].offset / 8];
+                m_buttons |= getButtonsFromAxis(x, y, AXIS_TYPE_S16 | (i < 2 ? AXIS_TYPE_LEFT : AXIS_TYPE_RIGHT));
             } else {
-                uint8_t x = (uint8_t &) report[data->joystick.axis[i].offset / 8];
-                uint8_t y = (uint8_t &) report[data->joystick.axis[i + 1].offset / 8];
-                m_buttons |= GamePad::getButtonsFromAxis(
-                        x, y, AXIS_TYPE_U8 | (i < 2 ? AXIS_TYPE_LEFT : AXIS_TYPE_RIGHT));
+                const uint8_t x = (uint8_t &) report[data->joystick.axis[i].offset / 8];
+                const uint8_t y = (uint8_t &) report[data->joystick.axis[i + 1].offset / 8];
+                m_buttons |= getButtonsFromAxis(x, y, AXIS_TYPE_U8 | (i < 2 ? AXIS_TYPE_LEFT : AXIS_TYPE_RIGHT));
             }
         }
     } else {
         // generic hid gamepad
         int16_t axis[MAX_AXIS];
         for (int i = 0; i < MAX_AXIS; i++) {
-            bool is_signed = data->joystick.axis[i].logical.min > data->joystick.axis[i].logical.max;
+            const bool is_signed = data->joystick.axis[i].logical.min > data->joystick.axis[i].logical.max;
             if (data->joystick.axis[i].size == 0) {
                 axis[i] = 127;
             } else {
@@ -208,15 +206,17 @@ bool GamePad::onHidReport(const uint8_t *report, uint16_t len) {
 
                 int h_range = (max - min);
                 // scale to 0-255
-                if (axis[i] <= min) axis[i] = (int16_t) min; else if (axis[i] >= max) axis[i] = (int16_t) max;
-                if (!h_range) axis[i] = 127; else axis[i] = (int16_t) (((axis[i] - min) * 255) / h_range);
+                if (axis[i] <= min) axis[i] = (int16_t) min;
+                else if (axis[i] >= max) axis[i] = (int16_t) max;
+                if (!h_range) axis[i] = 127;
+                else axis[i] = (int16_t) (((axis[i] - min) * 255) / h_range);
             }
         }
 
         for (int i = 0; i < MAX_AXIS; i += 2) {
             if (data->joystick.axis[i].size == 0) continue;
             m_buttons |= GamePad::getButtonsFromAxis(
-                    axis[i], axis[i + 1], AXIS_TYPE_U8 | AXIS_TYPE_FLIP_Y | (i < 2 ? AXIS_TYPE_LEFT : AXIS_TYPE_RIGHT));
+                axis[i], axis[i + 1], AXIS_TYPE_U8 | AXIS_TYPE_FLIP_Y | (i < 2 ? AXIS_TYPE_LEFT : AXIS_TYPE_RIGHT));
         }
 
         // hat
@@ -228,8 +228,7 @@ bool GamePad::onHidReport(const uint8_t *report, uint16_t len) {
     // process buttons
     for (int i = 0; i < data->joystick.button_count; i++) {
         if (data->joystick.buttons[i].byte_offset == INPUT_DUMMY) continue;
-        m_buttons |= report[data->joystick.buttons[i].byte_offset]
-                     & data->joystick.buttons[i].bitmask ? (1 << i) : 0;
+        m_buttons |= report[data->joystick.buttons[i].byte_offset] & data->joystick.buttons[i].bitmask ? (1 << i) : 0;
     }
 
 #ifndef NDEBUG
@@ -247,12 +246,12 @@ void GamePad::loop() {
         m_repeatClock.restart();
         m_buttons_prev = m_buttons;
     } else {
-        uint32_t diff = m_buttons_prev ^ m_buttons;
+        const uint32_t diff = m_buttons_prev ^ m_buttons;
         m_buttons_prev = m_buttons;
         if (diff > 0) {
             m_repeatClock.restart();
         } else {
-            m_buttons = Button::DELAY;
+            m_buttons = DELAY;
         }
     }
 }
