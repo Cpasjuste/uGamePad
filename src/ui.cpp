@@ -12,7 +12,7 @@
 
 using namespace uGamePad;
 
-#define DEFAULT_MENU MenuWidget::MainMenu
+#define DEFAULT_MENU MenuWidget::Splash
 
 Ui::Ui() {
     p_screen = new Widget();
@@ -41,8 +41,8 @@ Ui::Ui() {
     show(DEFAULT_MENU);
 }
 
-void Ui::show(Ui::MenuWidget menuWidget) {
-    if (menuWidget == MenuWidget::Splash) {
+void Ui::show(const MenuWidget menuWidget) {
+    if (menuWidget == Splash) {
         p_screen->setVisibility(Widget::Visibility::Visible);
         p_menu->setVisibility(Widget::Visibility::Hidden);
         p_gamePadInfo->setVisibility(Widget::Visibility::Hidden);
@@ -53,24 +53,21 @@ void Ui::show(Ui::MenuWidget menuWidget) {
         // disable screen updates when not needed (not in menu)
         p_screen->setVisibility(Widget::Visibility::Hidden);
         getPlatform()->getPad()->setRepeatDelay(0);
-    } else if (menuWidget == MenuWidget::MainMenu) {
+    } else if (menuWidget == MainMenu) {
         p_screen->setVisibility(Widget::Visibility::Visible);
         p_menu->setVisibility(Widget::Visibility::Visible);
         p_gamePadInfo->setVisibility(Widget::Visibility::Hidden);
         p_splash->setVisibility(Widget::Visibility::Hidden);
         p_splashText->setVisibility(Widget::Visibility::Hidden);
         getPlatform()->getPad()->setRepeatDelay(REPEAT_DELAY_DEFAULT);
-    } else if (menuWidget == MenuWidget::GamePadTest
-               || menuWidget == MenuWidget::Remap) {
+    } else if (menuWidget == GamePadTest || menuWidget == Remap) {
         p_screen->setVisibility(Widget::Visibility::Visible);
         p_menu->setVisibility(Widget::Visibility::Hidden);
         p_splash->setVisibility(Widget::Visibility::Hidden);
         p_splashText->setVisibility(Widget::Visibility::Hidden);
         p_gamePadInfo->setVisibility(Widget::Visibility::Visible);
-        getPlatform()->getPad()->setRepeatDelay(menuWidget == MenuWidget::GamePadTest ? 0 : UINT16_MAX);
-        p_gamePadInfo->setMode(menuWidget == MenuWidget::GamePadTest ?
-                               GamePadInfo::Mode::Info : GamePadInfo::Mode::Remap);
-
+        getPlatform()->getPad()->setRepeatDelay(menuWidget == GamePadTest ? 0 : UINT16_MAX);
+        p_gamePadInfo->setMode(menuWidget == GamePadTest ? GamePadInfo::Mode::Info : GamePadInfo::Mode::Remap);
     }
 }
 
@@ -86,12 +83,12 @@ void Ui::flip() {
 void Ui::loop() {
     // check for menu combo keys
     if (!p_screen->isVisible()) {
-        auto buttons = getPlatform()->getPad()->getButtons();
+        const auto buttons = getPlatform()->getPad()->getButtons();
         if (buttons & GamePad::Button::MENU) {
-            show(MenuWidget::MainMenu);
+            show(MainMenu);
         } else if (buttons & GamePad::Button::START && buttons & GamePad::Button::SELECT) {
             if (m_triggerMenuClock.getElapsedTime().asSeconds() > 1) {
-                show(MenuWidget::MainMenu);
+                show(MainMenu);
             }
         } else if (!(buttons & GamePad::Button::DELAY)) {
             m_triggerMenuClock.restart();
