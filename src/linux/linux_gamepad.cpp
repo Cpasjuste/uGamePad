@@ -13,24 +13,24 @@ LinuxGamePad::LinuxGamePad() : GamePad() {
     for (int i = 0; i < 4; i++) {
 #endif
     m_outputModes.push_back(
-            {
-                    .name = "Jamma",
-                    .mode = GamePad::Mode::Jamma,
-                    .mappings = {
-                            {GamePad::Button::B1,     SDL_SCANCODE_KP_1},
-                            {GamePad::Button::B2,     SDL_SCANCODE_KP_2},
-                            {GamePad::Button::B3,     SDL_SCANCODE_KP_3},
-                            {GamePad::Button::B4,     SDL_SCANCODE_KP_4},
-                            {GamePad::Button::B5,     SDL_SCANCODE_KP_5},
-                            {GamePad::Button::B6,     SDL_SCANCODE_KP_6},
-                            {GamePad::Button::SELECT, SDL_SCANCODE_SPACE},
-                            {GamePad::Button::START,  SDL_SCANCODE_RETURN},
-                            {GamePad::Button::UP,     SDL_SCANCODE_UP},
-                            {GamePad::Button::DOWN,   SDL_SCANCODE_DOWN},
-                            {GamePad::Button::LEFT,   SDL_SCANCODE_LEFT},
-                            {GamePad::Button::RIGHT,  SDL_SCANCODE_RIGHT},
-                    }
+        {
+            .name = "Jamma",
+            .mode = Jamma,
+            .mappings = {
+                {B1, SDL_SCANCODE_KP_1},
+                {B2, SDL_SCANCODE_KP_2},
+                {B3, SDL_SCANCODE_KP_3},
+                {B4, SDL_SCANCODE_KP_4},
+                {B5, SDL_SCANCODE_KP_5},
+                {B6, SDL_SCANCODE_KP_6},
+                {SELECT, SDL_SCANCODE_SPACE},
+                {START, SDL_SCANCODE_RETURN},
+                {UP, SDL_SCANCODE_UP},
+                {DOWN, SDL_SCANCODE_DOWN},
+                {LEFT, SDL_SCANCODE_LEFT},
+                {RIGHT, SDL_SCANCODE_RIGHT},
             }
+        }
     );
 #ifndef TODO_NES_SNES_MD_CABLES
     }

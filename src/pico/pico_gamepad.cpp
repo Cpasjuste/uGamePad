@@ -19,38 +19,38 @@ PicoGamePad::PicoGamePad() : GamePad() {
     s_picoGamePad = this;
 
     // setup hardware buttons
-    gpio_set_function(GPIO_BUTTON_UP, GPIO_FUNC_SIO);
-    gpio_set_dir(GPIO_BUTTON_UP, GPIO_IN);
-    gpio_pull_up(GPIO_BUTTON_UP);
-    gpio_set_function(GPIO_BUTTON_DOWN, GPIO_FUNC_SIO);
-    gpio_set_dir(GPIO_BUTTON_DOWN, GPIO_IN);
-    gpio_pull_up(GPIO_BUTTON_DOWN);
-    gpio_set_function(GPIO_BUTTON_ENTER, GPIO_FUNC_SIO);
-    gpio_set_dir(GPIO_BUTTON_ENTER, GPIO_IN);
-    gpio_pull_up(GPIO_BUTTON_ENTER);
+    gpio_set_function(GPIO_HW_BTN_UP, GPIO_FUNC_SIO);
+    gpio_set_dir(GPIO_HW_BTN_UP, GPIO_IN);
+    gpio_pull_up(GPIO_HW_BTN_UP);
+    gpio_set_function(GPIO_HW_BTN_DOWN, GPIO_FUNC_SIO);
+    gpio_set_dir(GPIO_HW_BTN_DOWN, GPIO_IN);
+    gpio_pull_up(GPIO_HW_BTN_DOWN);
+    gpio_set_function(GPIO_HW_BTN_ENTER, GPIO_FUNC_SIO);
+    gpio_set_dir(GPIO_HW_BTN_ENTER, GPIO_IN);
+    gpio_pull_up(GPIO_HW_BTN_ENTER);
 
     // setup output modes
     m_outputModes = {
-            {
-                    .name = "Jamma",
-                    .mode = GamePad::Mode::Jamma,
-                    .mappings = {
-                            {GamePad::Button::B1, GPIO_BTN_B1, GPIO_OUT, GPIO_HIGH},
-                            {GamePad::Button::B2, GPIO_BTN_B2, GPIO_OUT, GPIO_HIGH},
-                            {GamePad::Button::B3, GPIO_BTN_B3, GPIO_OUT, GPIO_HIGH},
-                            {GamePad::Button::B4, GPIO_BTN_B4, GPIO_OUT, GPIO_HIGH},
+        {
+            .name = "Jamma",
+            .mode = Jamma,
+            .mappings = {
+                {B1, GPIO_BTN_B1, GPIO_OUT, GPIO_HIGH},
+                {B2, GPIO_BTN_B2, GPIO_OUT, GPIO_HIGH},
+                {B3, GPIO_BTN_B3, GPIO_OUT, GPIO_HIGH},
+                {B4, GPIO_BTN_B4, GPIO_OUT, GPIO_HIGH},
 #if !defined(UGP_DEBUG) || defined(UGP_DEV_BOARD) // used by tx/rx serial debug
-                            {GamePad::Button::B5, GPIO_BTN_B5, GPIO_OUT, GPIO_HIGH},
-                            {GamePad::Button::B6, GPIO_BTN_B6, GPIO_OUT, GPIO_HIGH},
+                {B5, GPIO_BTN_B5, GPIO_OUT, GPIO_HIGH},
+                {B6, GPIO_BTN_B6, GPIO_OUT, GPIO_HIGH},
 #endif
-                            {GamePad::Button::SELECT, GPIO_BTN_SELECT, GPIO_OUT, GPIO_HIGH},
-                            {GamePad::Button::START, GPIO_BTN_START, GPIO_OUT, GPIO_HIGH},
-                            {GamePad::Button::UP, GPIO_BTN_UP, GPIO_OUT, GPIO_HIGH},
-                            {GamePad::Button::DOWN, GPIO_BTN_DOWN, GPIO_OUT, GPIO_HIGH},
-                            {GamePad::Button::LEFT, GPIO_BTN_LEFT, GPIO_OUT, GPIO_HIGH},
-                            {GamePad::Button::RIGHT, GPIO_BTN_RIGHT, GPIO_OUT, GPIO_HIGH},
-                    }
-            },
+                {SELECT, GPIO_BTN_SELECT, GPIO_OUT, GPIO_HIGH},
+                {START, GPIO_BTN_START, GPIO_OUT, GPIO_HIGH},
+                {UP, GPIO_BTN_UP, GPIO_OUT, GPIO_HIGH},
+                {DOWN, GPIO_BTN_DOWN, GPIO_OUT, GPIO_HIGH},
+                {LEFT, GPIO_BTN_LEFT, GPIO_OUT, GPIO_HIGH},
+                {RIGHT, GPIO_BTN_RIGHT, GPIO_OUT, GPIO_HIGH},
+            }
+        },
 #ifndef TODO_NES_SNES_MD_CABLES
             {
                     .name = "Nes",
@@ -113,7 +113,7 @@ void PicoGamePad::onClockFalling() {
 
 void PicoGamePad::setOutputMode(const GamePad::Mode &mode) {
     GamePad::setOutputMode(mode);
-    auto out = getOutputMode();
+    const auto out = getOutputMode();
     if (out) {
         printf("PicoGamePad::setOutputMode: %s\r\n", out->name.c_str());
         // setup output pins
@@ -143,12 +143,14 @@ void PicoGamePad::setOutputMode(const GamePad::Mode &mode) {
 uint32_t PicoGamePad::getHardwareButtons() {
     // handle hardware buttons
     uint32_t buttons = 0;
-    if (!gpio_get(GPIO_BUTTON_UP)) buttons |= GamePad::Button::UP;
-    if (!gpio_get(GPIO_BUTTON_DOWN)) buttons |= GamePad::Button::DOWN;
-    if (!gpio_get(GPIO_BUTTON_ENTER)) {
-        buttons |= GamePad::Button::START;
-        buttons |= GamePad::Button::MENU;
+    if (!gpio_get(GPIO_HW_BTN_UP)) buttons |= UP;
+    if (!gpio_get(GPIO_HW_BTN_DOWN)) buttons |= DOWN;
+    if (!gpio_get(GPIO_HW_BTN_ENTER)) {
+        buttons |= START;
+        buttons |= MENU;
     }
+
+    if (buttons) printf("getHardwareButtons: %u\r\n", buttons);
 
     return buttons;
 }
@@ -161,10 +163,10 @@ bool PicoGamePad::onHidReport(const uint8_t *report, uint16_t len) {
     m_buttons |= getHardwareButtons();
 
     // handle gamepad states
-    auto ui = getPlatform()->getUi();
+    const auto ui = getPlatform()->getUi();
     if (ui && !ui->isVisible()) {
         // get output mode/mapping
-        GamePad::Output *output = getOutputMode();
+        const auto output = getOutputMode();
         // handle jamma mode
         if (output->mode == GamePad::Mode::Jamma) {
             // set gpio states, only send buttons changed states
