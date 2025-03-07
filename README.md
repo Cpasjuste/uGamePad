@@ -1,10 +1,24 @@
 # uGamePad
 
 ## adding support for new gamepad
+`lsusb`
 ```
-$ lsusb 
 Bus 001 Device 010: ID 0079:0011 DragonRise Inc. Gamepad
 sudo usbhid-dump -s 001:010 -f -e stream
+```
+
+## testing/debug in linux with an xbox 360 controller
+`lsusb`
+```
+Bus 003 Device 004: ID 24c6:550d ThrustMaster, Inc. Hori Gem Controller for Xbox 360
+```
+`sudo nano /etc/udev/rules.d/72-ugamepad.rules`
+```
+# Add hid raw access for this specific controllers
+# ThrustMaster, Inc. Hori Gem Controller for Xbox 360
+
+KERNEL=="hidraw*", ATTRS{idVendor}=="24c6", ATTRS{idProduct}=="550d", MODE="0660", TAG+="uaccess"
+SUBSYSTEM=="usb", ATTRS{idVendor}=="24c6", ATTRS{idProduct}=="550d", MODE="0666"
 ```
 
 ## uGamePad v1.1 (USB-A)
