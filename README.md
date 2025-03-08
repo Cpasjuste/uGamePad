@@ -350,6 +350,9 @@ SNK Neo-Geo Mini, Xbox, Xbox One (not tested), DualShock 4, DualShock 5 (not tes
 See [devices.cpp](src/devices.cpp)
 
 ## Testing/debug in linux with an xbox 360 controller
+
+A lot of work have been made to support linux for easier debugging (including rendering, flashfs, hid raw access, etc...). This allow, for example, adding support for new gamedads or add new functionality without actually using/having the device.
+
 `lsusb`
 ```
 Bus 003 Device 004: ID 24c6:550d ThrustMaster, Inc. Hori Gem Controller for Xbox 360
