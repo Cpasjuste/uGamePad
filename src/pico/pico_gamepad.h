@@ -6,9 +6,11 @@
 #define U_GAMEPAD_PICO_GAMEPAD_H
 
 namespace uGamePad {
-    class PicoGamePad : public GamePad {
+    class PicoGamePad final : public GamePad {
     public:
         PicoGamePad();
+
+        ~PicoGamePad() override = default;
 
         bool onHidReport(const uint8_t *report, uint16_t len) override;
 

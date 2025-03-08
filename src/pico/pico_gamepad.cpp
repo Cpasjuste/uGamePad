@@ -13,9 +13,12 @@
 using namespace uGamePad;
 
 static PicoGamePad *s_picoGamePad = nullptr;
-static volatile uint8_t m_clock_count = 0;
 
-PicoGamePad::PicoGamePad() : GamePad() {
+#ifndef TODO_NES_SNES_MD_CABLES
+static volatile uint8_t m_clock_count = 0;
+#endif
+
+PicoGamePad::PicoGamePad() {
     s_picoGamePad = this;
 
     // setup hardware buttons
@@ -126,7 +129,7 @@ void PicoGamePad::setOutputMode(const GamePad::Mode &mode) {
             detachInterrupt(digitalPinToInterrupt(GPIO_NES_CLOCK));
         }
 #endif
-        for (auto &mapping: out->mappings) {
+        for (const auto &mapping: out->mappings) {
             if (mapping.pin != UINT8_MAX) {
                 //pinMode(mapping.pin, mapping.pinMode);
                 gpio_set_function(mapping.pin, GPIO_FUNC_SIO);
@@ -168,7 +171,7 @@ bool PicoGamePad::onHidReport(const uint8_t *report, uint16_t len) {
         // get output mode/mapping
         const auto output = getOutputMode();
         // handle jamma mode
-        if (output->mode == GamePad::Mode::Jamma) {
+        if (output->mode == Jamma) {
             // set gpio states, only send buttons changed states
             m_buttons_diff = m_buttons_old ^ m_buttons;
             m_buttons_old = m_buttons;
