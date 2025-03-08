@@ -36,7 +36,15 @@ void LinuxHid::loop() {
     // return if pad is not initialized yet (should not happen...)
     if (!getPlatform()->getPad()) return;
 
-    if (m_discover_clock.getElapsedTime().asSeconds() > 1) {
+
+    // only scan if no gamepad/hid device is present
+    if (m_force_discovery || !getPlatform()->getPad()->getDevice() && m_discover_clock.getElapsedTime().asSeconds() >
+        1) {
+        printf("LinuxHid: discovery...\r\n");
+
+        // reset force flag
+        m_force_discovery = false;
+
         // get device list
         hid_device_info *devices = hid_enumerate(0, 0);
 
@@ -95,7 +103,8 @@ void LinuxHid::loop() {
             // get and parse report descriptor if not set from "userDevice"
             if (!device->report) {
                 device->report = (InputReportDescriptor *) malloc(sizeof(InputReportDescriptor));
-                auto reportSize = hid_get_report_descriptor(handle, report_buffer, HID_API_MAX_REPORT_DESCRIPTOR_SIZE);
+                const auto reportSize = hid_get_report_descriptor(handle, report_buffer,
+                                                                  HID_API_MAX_REPORT_DESCRIPTOR_SIZE);
                 if (!device->report || reportSize < 32) {
                     printf("LinuxHid: could not get report descriptor for %04x:%04x\r\n", device->vid, device->pid);
                     // free resources
@@ -144,7 +153,7 @@ void LinuxHid::loop() {
 
             if (!found) {
                 printf("LinuxHid: device removed: %04x:%04x\r\n", devices_list[i]->vid, devices_list[i]->pid);
-                auto device = devices_list[i];
+                const auto device = devices_list[i];
                 if (device->user_data) hid_close((hid_device *) device->user_data);
                 devices_list.erase(devices_list.begin() + (int) i);
                 onDeviceDisconnected(device);
@@ -156,16 +165,18 @@ void LinuxHid::loop() {
         // release hid devices
         hid_free_enumeration(devices);
 
+        // restart discovery clock
         m_discover_clock.restart();
     }
 
     // handle reports (only one joystick supported...)
     if (!devices_list.empty()) {
-        auto device = devices_list[0];
+        const auto device = devices_list[0];
         if (device->user_data) {
             report_buffer[0] = device->report->report_id;
-            int len = hid_read((hid_device *) device->user_data, report_buffer, device->report->report_size);
-            if (len > 1) {
+            const int len = hid_read((hid_device *) device->user_data, report_buffer, device->report->report_size);
+            //printf("len: %i\r\n", len);
+            if (len >= 0) {
 #if 0
                 printf("%s: ", hd.name);
                     for (int i = 0; i < len; i++) {
@@ -177,6 +188,9 @@ void LinuxHid::loop() {
                     printf("\r\n");
 #endif
                 onDeviceInputReport(device, report_buffer, len);
+            } else {
+                // device disconnected ? force hid devices rescan
+                m_force_discovery = true;
             }
         }
     }

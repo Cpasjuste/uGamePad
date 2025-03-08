@@ -16,6 +16,7 @@ namespace uGamePad {
 
     private:
         bool m_inited = false;
+        bool m_force_discovery = false;
         Clock m_discover_clock;
     };
 }
