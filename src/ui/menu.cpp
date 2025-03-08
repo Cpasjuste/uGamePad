@@ -100,7 +100,9 @@ void Menu::loop(const Utility::Vec2i &pos) {
             option->next();
             update();
         }
-    } else if (buttons & GamePad::Button::B1 || buttons & GamePad::Button::START) {
+    } else if (buttons & GamePad::Button::B2) {
+        getPlatform()->getUi()->show(Ui::MenuWidget::Splash);
+    } else if (buttons & GamePad::Button::B1 || buttons & GamePad::Button::MENU) {
         const auto option = getSelection();
         if (option != nullptr) {
             if (option->name == "BUTTONS REMAP") {

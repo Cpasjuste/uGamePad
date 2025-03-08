@@ -234,7 +234,7 @@ bool GamePad::onHidReport(const uint8_t *report, const uint16_t len) {
 
 #ifndef NDEBUG
     if (m_buttons) {
-        printf("%s: %s\r\n", p_device->name, Utility::toString(m_buttons).c_str());
+        //printf("%s: %s\r\n", p_device->name, Utility::toString(m_buttons).c_str());
     }
 #endif
 

@@ -148,10 +148,7 @@ uint32_t PicoGamePad::getHardwareButtons() {
     uint32_t buttons = 0;
     if (!gpio_get(GPIO_HW_BTN_UP)) buttons |= UP;
     if (!gpio_get(GPIO_HW_BTN_DOWN)) buttons |= DOWN;
-    if (!gpio_get(GPIO_HW_BTN_ENTER)) {
-        buttons |= START;
-        buttons |= MENU;
-    }
+    if (!gpio_get(GPIO_HW_BTN_ENTER)) buttons |= MENU;
 
     if (buttons) printf("getHardwareButtons: %u\r\n", buttons);
 

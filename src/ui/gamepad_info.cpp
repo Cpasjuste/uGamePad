@@ -100,7 +100,8 @@ void GamePadInfo::loop(const Utility::Vec2i &pos) {
 
     const auto buttons = getPlatform()->getPad()->getButtons();
     if (m_mode == Info) {
-        if (buttons & GamePad::Button::START && buttons & GamePad::Button::SELECT) {
+        if (buttons & GamePad::Button::MENU ||
+            buttons & GamePad::Button::START && buttons & GamePad::Button::SELECT) {
             getPlatform()->getPad()->flush();
             getPlatform()->getUi()->show(Ui::MenuWidget::MainMenu);
             return;

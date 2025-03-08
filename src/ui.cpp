@@ -12,8 +12,6 @@
 
 using namespace uGamePad;
 
-#define DEFAULT_MENU MenuWidget::Splash
-
 Ui::Ui() {
     p_screen = new Widget();
     p_screen->setSize(getPlatform()->getGfx()->getSize());
@@ -38,10 +36,14 @@ Ui::Ui() {
     p_screen->add(p_splashText);
 
     // show splash screen
-    show(DEFAULT_MENU);
+    show(Splash);
 }
 
 void Ui::show(const MenuWidget menuWidget) {
+    printf("Ui::show: %i\r\n", menuWidget);
+    if (m_menuCurrent == menuWidget) return;
+    m_menuCurrent = menuWidget;
+
     if (menuWidget == Splash) {
         p_screen->setVisibility(Widget::Visibility::Visible);
         p_menu->setVisibility(Widget::Visibility::Hidden);
@@ -71,15 +73,6 @@ void Ui::show(const MenuWidget menuWidget) {
     }
 }
 
-void Ui::flip() {
-    if (p_screen->isVisible()) {
-        // draw the whole ui
-        getPlatform()->getGfx()->clear();
-        p_screen->loop(p_screen->getPosition());
-        getPlatform()->getGfx()->flip();
-    }
-}
-
 void Ui::loop() {
     // check for menu combo keys
     if (!p_screen->isVisible()) {
@@ -95,5 +88,14 @@ void Ui::loop() {
         }
     } else {
         flip();
+    }
+}
+
+void Ui::flip() {
+    if (p_screen->isVisible()) {
+        // draw the whole ui
+        getPlatform()->getGfx()->clear();
+        p_screen->loop(p_screen->getPosition());
+        getPlatform()->getGfx()->flip();
     }
 }

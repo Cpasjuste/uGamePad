@@ -14,6 +14,7 @@ namespace uGamePad {
     class Ui {
     public:
         enum MenuWidget {
+            None,
             MainMenu,
             Splash,
             GamePadTest,
@@ -36,6 +37,7 @@ namespace uGamePad {
         Bitmap *p_splash;
         Text *p_splashText;
         GamePadInfo *p_gamePadInfo;
+        MenuWidget m_menuCurrent = None;
         Clock m_triggerMenuClock;
     };
 }
