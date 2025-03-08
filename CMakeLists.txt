@@ -83,7 +83,9 @@ else ()
             tinyusb_device
             tinyusb_host
             tinyusb_board
+            "-Wl,--print-memory-usage"
     )
+
     if (PICO_DEV_BOARD)
         list(APPEND FLAGS -DUGP_DEV_BOARD)
     endif ()

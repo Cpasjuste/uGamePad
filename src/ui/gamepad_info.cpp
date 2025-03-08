@@ -57,14 +57,14 @@ GamePadInfo::GamePadInfo(const Utility::Vec2i &pos, const Utility::Vec2i &size, 
 
 void GamePadInfo::setMode(const Mode &mode) {
     m_mode = mode;
-    if (m_mode == Mode::Info) {
+    if (m_mode == Info) {
         p_text->setString(PAD_INFO_TEXT);
         getPlatform()->getPad()->setRepeatDelay(0);
     } else {
         // copy current device data to temp/remapped device
         const auto device = getPlatform()->getPad()->getDevice();
         if (!device) {
-            m_mode = Mode::Info;
+            m_mode = Info;
             p_text->setString(PAD_INFO_TEXT);
             return;
         }
@@ -77,13 +77,18 @@ void GamePadInfo::setMode(const Mode &mode) {
         p_newDevice->report = static_cast<InputReportDescriptor *>(report);
         memcpy(p_newDevice->report, device->report, sizeof(InputReportDescriptor));
 
+        // reset/hide any pressed button
+        for (const auto &button: m_buttons) {
+            button.widget->setVisibility(Visibility::Hidden);
+        }
+
         // clear inputs before starting
         getPlatform()->getPad()->flush();
         getPlatform()->getPad()->setRepeatDelay(UINT16_MAX);
 
         // restart
-        m_clock_timeout.restart();
         m_button_index = 0;
+        m_clock_timeout.restart();
     }
 }
 
@@ -94,8 +99,9 @@ void GamePadInfo::loop(const Utility::Vec2i &pos) {
     }
 
     const auto buttons = getPlatform()->getPad()->getButtons();
-    if (m_mode == Mode::Info) {
+    if (m_mode == Info) {
         if (buttons & GamePad::Button::START && buttons & GamePad::Button::SELECT) {
+            getPlatform()->getPad()->flush();
             getPlatform()->getUi()->show(Ui::MenuWidget::MainMenu);
             return;
         }
@@ -106,7 +112,6 @@ void GamePadInfo::loop(const Utility::Vec2i &pos) {
         if (buttons && !(buttons & GamePad::Button::DELAY) || m_clock_timeout.getElapsedTime().asSeconds() > 5) {
             // remap input descriptor
             if (!(buttons & GamePad::Button::DELAY)) {
-#warning "TODO: finish this (axis/hat)"
                 const auto cDesc = getPlatform()->getPad()->getDevice()->report;
                 const auto nDesc = p_newDevice->report;
                 switch (buttons) {
@@ -127,14 +132,18 @@ void GamePadInfo::loop(const Utility::Vec2i &pos) {
                         nDesc->joystick.buttons[m_button_index].bitmask =
                                 cDesc->joystick.buttons[GamePad::getButtonIndex(buttons)].bitmask;
                         break;
+#warning "TODO/FIXME: add axis/hat remap support"
                     default:
                         return;
                 }
             }
 
-            m_buttons[m_button_index].widget->setVisibility(Widget::Visibility::Hidden);
+            m_buttons[m_button_index].widget->setVisibility(Visibility::Hidden);
+
             m_button_index++;
-            if (m_button_index >= m_buttons.size()) {
+#warning "TODO/FIXME: add axis/hat remap support"
+            //if (m_button_index >= m_buttons.size()) {
+            if (m_button_index >= m_buttons.size() - 8) {
                 // all done
                 const auto report = getPlatform()->getPad()->getDevice()->report;
                 memcpy(report, p_newDevice->report, sizeof(InputReportDescriptor));
