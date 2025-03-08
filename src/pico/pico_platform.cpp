@@ -77,3 +77,10 @@ void PicoPlatform::loop() {
 int PicoPlatform::getFreeHeap() {
     return 0;
 }
+
+// https://github.com/raspberrypi/pico-sdk/issues/1768
+extern "C" {
+int _getentropy(void *buffer, size_t length) {
+    return -1;
+}
+}
