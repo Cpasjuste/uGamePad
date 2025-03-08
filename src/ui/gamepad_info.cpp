@@ -82,9 +82,10 @@ void GamePadInfo::setMode(const Mode &mode) {
             button.widget->setVisibility(Visibility::Hidden);
         }
 
-        // clear inputs before starting
-        getPlatform()->getPad()->flush();
         getPlatform()->getPad()->setRepeatDelay(UINT16_MAX);
+
+        // clear any previous inputs
+        getPlatform()->getPad()->flush();
 
         // restart
         m_button_index = 0;
@@ -102,8 +103,9 @@ void GamePadInfo::loop(const Utility::Vec2i &pos) {
     if (m_mode == Info) {
         if (buttons & GamePad::Button::MENU ||
             buttons & GamePad::Button::START && buttons & GamePad::Button::SELECT) {
-            getPlatform()->getPad()->flush();
             getPlatform()->getUi()->show(Ui::MenuWidget::MainMenu);
+            // needed to clear hardware "menu/start" button
+            if (buttons & GamePad::Button::MENU) getPlatform()->getPad()->flush();
             return;
         }
         for (const auto &button: m_buttons) {

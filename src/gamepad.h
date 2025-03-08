@@ -17,7 +17,7 @@
 #define DEAD_ZONE 4000
 #define GPIO_LOW 0
 #define GPIO_HIGH 1
-#define REPEAT_DELAY_DEFAULT 500
+#define REPEAT_DELAY_DEFAULT UINT16_MAX
 
 namespace uGamePad {
     class GamePad {

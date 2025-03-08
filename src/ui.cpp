@@ -41,8 +41,8 @@ Ui::Ui() {
 
 void Ui::show(const MenuWidget menuWidget) {
     printf("Ui::show: %i\r\n", menuWidget);
+
     if (m_menuCurrent == menuWidget) return;
-    m_menuCurrent = menuWidget;
 
     if (menuWidget == Splash) {
         p_screen->setVisibility(Widget::Visibility::Visible);
@@ -71,6 +71,8 @@ void Ui::show(const MenuWidget menuWidget) {
         getPlatform()->getPad()->setRepeatDelay(menuWidget == GamePadTest ? 0 : UINT16_MAX);
         p_gamePadInfo->setMode(menuWidget == GamePadTest ? GamePadInfo::Mode::Info : GamePadInfo::Mode::Remap);
     }
+
+    m_menuCurrent = menuWidget;
 }
 
 void Ui::loop() {
@@ -79,6 +81,8 @@ void Ui::loop() {
         const auto buttons = getPlatform()->getPad()->getButtons();
         if (buttons & GamePad::Button::MENU) {
             show(MainMenu);
+            // needed to clear hardware "menu/start" button
+            getPlatform()->getPad()->flush();
         } else if (buttons & GamePad::Button::START && buttons & GamePad::Button::SELECT) {
             if (m_triggerMenuClock.getElapsedTime().asSeconds() > 1) {
                 show(MainMenu);

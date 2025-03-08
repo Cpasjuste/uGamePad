@@ -116,6 +116,9 @@ void Menu::loop(const Utility::Vec2i &pos) {
                 option->next();
                 update();
             }
+
+            // needed to clear hardware "menu/start" button
+            if (buttons & GamePad::Button::MENU) getPlatform()->getPad()->flush();
         }
     }
 
