@@ -8,9 +8,11 @@
 #include "gamepad.h"
 
 namespace uGamePad {
-    class LinuxGamePad : public GamePad {
+    class LinuxGamePad final : public GamePad {
     public:
         LinuxGamePad();
+
+        ~LinuxGamePad() override = default;
 
         void loop() override;
     };
