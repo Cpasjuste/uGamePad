@@ -3,7 +3,7 @@
 //
 
 #include "main.h"
-#include "gamepad_info.h"
+#include "gamepad_settings.h"
 #include "triangle.h"
 #include "rectangle.h"
 
@@ -11,7 +11,7 @@ using namespace uGamePad;
 
 #define PAD_INFO_TEXT "SELECT+START:EXIT"
 
-GamePadInfo::GamePadInfo(const Utility::Vec2i &pos, const Utility::Vec2i &size, uint8_t *bitmap)
+GamePadSettings::GamePadSettings(const Utility::Vec2i &pos, const Utility::Vec2i &size, uint8_t *bitmap)
     : Bitmap(pos, size, bitmap) {
     // must match gamepad.h buttons definition
     m_buttons.push_back({new Circle({70, 32}, 2, true), GamePad::Button::B1});
@@ -41,7 +41,7 @@ GamePadInfo::GamePadInfo(const Utility::Vec2i &pos, const Utility::Vec2i &size, 
     // add buttons
     for (const auto &button: m_buttons) {
         button.widget->setVisibility(Visibility::Hidden);
-        GamePadInfo::add(button.widget);
+        GamePadSettings::add(button.widget);
     }
 
     // info text
@@ -49,33 +49,32 @@ GamePadInfo::GamePadInfo(const Utility::Vec2i &pos, const Utility::Vec2i &size, 
                       PAD_INFO_TEXT, Utility::Color::Black);
     p_text->setOrigin(Origin::Bottom);
     p_text->setDrawBackground(true);
-    GamePadInfo::add(p_text);
+    GamePadSettings::add(p_text);
 
     p_newDevice = new Device();
     p_newDevice->report = new InputReportDescriptor();
 }
 
-void GamePadInfo::setMode(const Mode &mode) {
+void GamePadSettings::setMode(const Mode &mode) {
     m_mode = mode;
     if (m_mode == Info) {
         p_text->setString(PAD_INFO_TEXT);
         getPlatform()->getPad()->setRepeatDelay(0);
     } else {
-        // copy current device data to temp/remapped device
-        const auto device = getPlatform()->getPad()->getDevice();
-        if (!device) {
+        if (!getPlatform()->getPad()->getDevice()) {
             m_mode = Info;
             p_text->setString(PAD_INFO_TEXT);
+            getPlatform()->getPad()->setRepeatDelay(0);
             return;
         }
 
-        // copy actual device data to new device
-        // save "new device" report ptr
-        void *report = p_newDevice->report;
-        memcpy(p_newDevice, device, sizeof(Device));
-        // restore report ptr
-        p_newDevice->report = static_cast<InputReportDescriptor *>(report);
-        memcpy(p_newDevice->report, device->report, sizeof(InputReportDescriptor));
+        // restore default device report descriptor to be able to use all buttons...
+        getPlatform()->getPad()->setDeviceDefaultDescriptor();
+
+        // copy default device data/report descriptor to new device
+        memcpy(p_newDevice, getPlatform()->getPad()->getDeviceDefaults(), sizeof(Device));
+        memcpy(p_newDevice->report, getPlatform()->getPad()->getDeviceDefaults()->report,
+               sizeof(InputReportDescriptor));
 
         // reset/hide any pressed button
         for (const auto &button: m_buttons) {
@@ -93,7 +92,7 @@ void GamePadInfo::setMode(const Mode &mode) {
     }
 }
 
-void GamePadInfo::loop(const Utility::Vec2i &pos) {
+void GamePadSettings::loop(const Utility::Vec2i &pos) {
     if (!getPlatform()->getPad()->getDevice()) {
         Bitmap::loop(pos);
         return;
@@ -147,7 +146,7 @@ void GamePadInfo::loop(const Utility::Vec2i &pos) {
 #warning "TODO/FIXME: add axis/hat remap support"
             //if (m_button_index >= m_buttons.size()) {
             if (m_button_index >= m_buttons.size() - 8) {
-                // all done
+                // all done, update report descriptor of current device
                 const auto report = getPlatform()->getPad()->getDevice()->report;
                 memcpy(report, p_newDevice->report, sizeof(InputReportDescriptor));
                 getPlatform()->getConfig()->saveDevice(getPlatform()->getPad()->getDevice());

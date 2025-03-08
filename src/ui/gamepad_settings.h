@@ -2,22 +2,22 @@
 // Created by cpasjuste on 03/04/23.
 //
 
-#ifndef U_GAMEPAD_GAMEPAD_INFO_H
-#define U_GAMEPAD_GAMEPAD_INFO_H
+#ifndef U_GAMEPAD_GAMEPAD_SETTINGS_H
+#define U_GAMEPAD_GAMEPAD_SETTINGS_H
 
 #include "circle.h"
 #include "bitmap.h"
 #include "text.h"
 
 namespace uGamePad {
-    class GamePadInfo : public Bitmap {
+    class GamePadSettings : public Bitmap {
     public:
         enum Mode {
             Info,
             Remap
         };
 
-        GamePadInfo(const Utility::Vec2i &pos, const Utility::Vec2i &size, uint8_t *bitmap);
+        GamePadSettings(const Utility::Vec2i &pos, const Utility::Vec2i &size, uint8_t *bitmap);
 
         void loop(const Utility::Vec2i &pos) override;
 
@@ -38,4 +38,4 @@ namespace uGamePad {
     };
 }
 
-#endif //U_GAMEPAD_GAMEPAD_INFO_H
+#endif //U_GAMEPAD_GAMEPAD_SETTINGS_H

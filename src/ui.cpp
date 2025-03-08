@@ -4,7 +4,7 @@
 
 #include "main.h"
 #include "rectangle.h"
-#include "gamepad_info.h"
+#include "gamepad_settings.h"
 #include "ui.h"
 #include "text.h"
 #include "bitmap.h"
@@ -22,7 +22,7 @@ Ui::Ui() {
     p_screen->add(p_menu);
 
     // gamepad info menu
-    p_gamePadInfo = new GamePadInfo({64, 32}, {90, 60}, bmp_gamepad_90x60);
+    p_gamePadInfo = new GamePadSettings({64, 32}, {90, 60}, bmp_gamepad_90x60);
     p_gamePadInfo->setOrigin(Widget::Origin::Center);
     p_gamePadInfo->setVisibility(Widget::Visibility::Hidden);
     p_screen->add(p_gamePadInfo);
@@ -69,7 +69,7 @@ void Ui::show(const MenuWidget menuWidget) {
         p_splashText->setVisibility(Widget::Visibility::Hidden);
         p_gamePadInfo->setVisibility(Widget::Visibility::Visible);
         getPlatform()->getPad()->setRepeatDelay(menuWidget == GamePadTest ? 0 : UINT16_MAX);
-        p_gamePadInfo->setMode(menuWidget == GamePadTest ? GamePadInfo::Mode::Info : GamePadInfo::Mode::Remap);
+        p_gamePadInfo->setMode(menuWidget == GamePadTest ? GamePadSettings::Mode::Info : GamePadSettings::Mode::Remap);
     }
 
     m_menuCurrent = menuWidget;
@@ -80,11 +80,13 @@ void Ui::loop() {
     if (!p_screen->isVisible()) {
         const auto buttons = getPlatform()->getPad()->getButtons();
         if (buttons & GamePad::Button::MENU) {
+            p_menu->reset();
             show(MainMenu);
             // needed to clear hardware "menu/start" button
             getPlatform()->getPad()->flush();
         } else if (buttons & GamePad::Button::START && buttons & GamePad::Button::SELECT) {
             if (m_triggerMenuClock.getElapsedTime().asSeconds() > 1) {
+                p_menu->reset();
                 show(MainMenu);
             }
         } else if (!(buttons & GamePad::Button::DELAY)) {

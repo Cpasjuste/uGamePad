@@ -90,9 +90,20 @@ namespace uGamePad {
 
         virtual bool onHidReport(const uint8_t *report, uint16_t len);
 
-        void setDevice(Device *device) { p_device = device; }
+        void setDevice(Device *device) {
+            p_device = device;
+            if (p_device) p_deviceDefaults = get_device(p_device->vid, p_device->pid);
+        }
+
+        void setDeviceDefaultDescriptor() const {
+            if (p_device && p_deviceDefaults) {
+                memcpy(p_device->report, p_deviceDefaults->report, sizeof(InputReportDescriptor));
+            }
+        }
 
         Device *getDevice() { return p_device; }
+
+        Device *getDeviceDefaults() { return p_deviceDefaults; }
 
         uint16_t getRepeatDelay() { return m_repeatDelayMs; }
 
@@ -104,6 +115,7 @@ namespace uGamePad {
 
     protected:
         Device *p_device = nullptr;
+        Device *p_deviceDefaults = nullptr;
         uint32_t m_buttons{0};
         uint32_t m_buttons_prev{0};
         Clock m_repeatClock;
