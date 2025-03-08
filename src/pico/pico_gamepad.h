@@ -12,6 +12,8 @@ namespace uGamePad {
 
         ~PicoGamePad() override = default;
 
+        void loop() override;
+
         bool onHidReport(const uint8_t *report, uint16_t len) override;
 
         void setOutputMode(const Mode &mode) override;

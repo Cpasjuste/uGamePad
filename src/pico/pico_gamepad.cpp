@@ -150,7 +150,9 @@ uint32_t PicoGamePad::getHardwareButtons() {
     if (!gpio_get(GPIO_HW_BTN_DOWN)) buttons |= DOWN;
     if (!gpio_get(GPIO_HW_BTN_ENTER)) buttons |= MENU;
 
+#ifndef NDEBUG
     if (buttons) printf("getHardwareButtons: %u\r\n", buttons);
+#endif
 
     return buttons;
 }
@@ -158,9 +160,6 @@ uint32_t PicoGamePad::getHardwareButtons() {
 bool PicoGamePad::onHidReport(const uint8_t *report, uint16_t len) {
     // process report in base class
     GamePad::onHidReport(report, len);
-
-    // update hardware buttons
-    m_buttons |= getHardwareButtons();
 
     // handle gamepad states
     const auto ui = getPlatform()->getUi();
@@ -188,4 +187,11 @@ bool PicoGamePad::onHidReport(const uint8_t *report, uint16_t len) {
     }
 
     return true;
+}
+
+void PicoGamePad::loop() {
+    // update hardware buttons
+    m_buttons |= getHardwareButtons();
+
+    GamePad::loop();
 }

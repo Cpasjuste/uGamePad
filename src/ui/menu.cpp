@@ -30,13 +30,13 @@ Menu::Menu() : Rectangle({0, 0}, getPlatform()->getGfx()->getSize()) {
         modes.push_back(out.name);
     }
     m_options.push_back({"OUTPUT MODE", modes});
+    m_options.push_back({"GAMEPAD TEST", {"Go"}});
     m_options.push_back({"BUTTONS REMAP", {"Go"}});
 #ifdef WIP_DISABLE_OPTION_AUTO_FIRE
     m_options.push_back({"AUTO FIRE", {"Todo"}});
 #else
     m_options.push_back({"AUTO FIRE", {"OFF", "ON"}});
 #endif
-    m_options.push_back({"GAMEPAD TEST", {"Go"}});
     m_options.push_back({"EXIT", {"Go"}});
 
     // update lines
