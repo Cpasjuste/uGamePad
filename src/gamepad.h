@@ -68,15 +68,17 @@ namespace uGamePad {
 
         struct Output {
             std::string name;
-            Mode mode = Mode::Jamma;
+            Mode mode = Jamma;
             std::vector<PinMapping> mappings;
         };
 
         GamePad();
 
+        virtual ~GamePad() = default;
+
         virtual void loop();
 
-        virtual std::vector<GamePad::Output> getOutputModes() { return m_outputModes; };
+        virtual std::vector<Output> getOutputModes() { return m_outputModes; };
 
         virtual Output *getOutputMode();
 
@@ -106,8 +108,8 @@ namespace uGamePad {
         uint32_t m_buttons_prev{0};
         Clock m_repeatClock;
         uint16_t m_repeatDelayMs = REPEAT_DELAY_DEFAULT;
-        std::vector<GamePad::Output> m_outputModes;
-        Mode m_outputMode = Mode::Jamma;
+        std::vector<Output> m_outputModes;
+        Mode m_outputMode = Jamma;
 
         ///
         /// axis handling

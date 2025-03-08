@@ -17,7 +17,7 @@ namespace uGamePad {
 
         void onDeviceDisconnected(Device *device);
 
-        void onDeviceInputReport(Device *device, uint8_t const *report, uint16_t len);
+        void onDeviceInputReport(const Device *device, uint8_t const *report, uint16_t len);
     };
 }
 

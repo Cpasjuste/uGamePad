@@ -148,7 +148,7 @@ void GamePad::flush() const {
     }
 }
 
-bool GamePad::onHidReport(const uint8_t *report, uint16_t len) {
+bool GamePad::onHidReport(const uint8_t *report, const uint16_t len) {
     if (!p_device || !p_device->report) {
         printf("uGamePad::onHidReport: error: device not set\r\n");
         return false;
@@ -248,7 +248,7 @@ void GamePad::loop() {
     } else {
         const uint32_t diff = m_buttons_prev ^ m_buttons;
         m_buttons_prev = m_buttons;
-        if (diff > 0) {
+        if (diff) {
             m_repeatClock.restart();
         } else {
             m_buttons = DELAY;

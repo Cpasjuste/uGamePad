@@ -12,7 +12,7 @@
 #include "clock.h"
 
 uGamePad::Clock::Clock() {
-    m_startTime = Clock::getCurrentTime();
+    m_startTime = getCurrentTime();
 }
 
 uGamePad::Time uGamePad::Clock::getCurrentTime() const {
@@ -30,8 +30,8 @@ uGamePad::Time uGamePad::Clock::getElapsedTime() const {
 }
 
 uGamePad::Time uGamePad::Clock::restart() {
-    Time now = getCurrentTime();
-    Time elapsed = now - m_startTime;
+    const Time now = getCurrentTime();
+    const Time elapsed = now - m_startTime;
     m_startTime = now;
     return elapsed;
 }

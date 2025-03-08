@@ -61,10 +61,10 @@ void Menu::update() {
 
 void Menu::loop(const Utility::Vec2i &pos) {
     // handle buttons
-    auto buttons = getPlatform()->getPad()->getButtons();
+    const auto buttons = getPlatform()->getPad()->getButtons();
     if (buttons & GamePad::Button::UP) {
-        int index = option_index + highlight_index;
-        int middle = max_lines / 2;
+        const int index = option_index + highlight_index;
+        const int middle = max_lines / 2;
         if (highlight_index <= middle && index - middle > 0) {
             option_index--;
         } else {
@@ -76,8 +76,8 @@ void Menu::loop(const Utility::Vec2i &pos) {
         }
         update();
     } else if (buttons & GamePad::Button::DOWN) {
-        int index = option_index + highlight_index;
-        int middle = max_lines / 2;
+        const int index = option_index + highlight_index;
+        const int middle = max_lines / 2;
         if (highlight_index >= middle && index + middle < (int) m_options.size()) {
             option_index++;
         } else {
@@ -89,23 +89,24 @@ void Menu::loop(const Utility::Vec2i &pos) {
         }
         update();
     } else if (buttons & GamePad::Button::LEFT) {
-        auto option = getSelection();
+        const auto option = getSelection();
         if (option != nullptr) {
             option->prev();
             update();
         }
     } else if (buttons & GamePad::Button::RIGHT) {
-        auto option = getSelection();
+        const auto option = getSelection();
         if (option != nullptr) {
             option->next();
             update();
         }
     } else if (buttons & GamePad::Button::B1 || buttons & GamePad::Button::START) {
-        auto option = getSelection();
+        const auto option = getSelection();
         if (option != nullptr) {
             if (option->name == "BUTTONS REMAP") {
                 getPlatform()->getUi()->show(Ui::MenuWidget::Remap);
-            } if (option->name == "GAMEPAD TEST") {
+            }
+            if (option->name == "GAMEPAD TEST") {
                 getPlatform()->getUi()->show(Ui::MenuWidget::GamePadTest);
             } else if (option->name == "EXIT") {
                 getPlatform()->getUi()->show(Ui::MenuWidget::Splash);

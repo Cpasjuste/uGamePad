@@ -20,8 +20,8 @@ void Hid::onDeviceConnected(Device *device) {
     getPlatform()->getPad()->setDevice(device);
 }
 
-void Hid::onDeviceInputReport(Device *device, const uint8_t *report, uint16_t len) {
-    auto pad = getPlatform()->getPad();
+void Hid::onDeviceInputReport(const Device *device, const uint8_t *report, const uint16_t len) {
+    const auto pad = getPlatform()->getPad();
     if (!pad->getDevice()) return;
 
     if (pad->getDevice()->pid != device->pid || pad->getDevice()->vid != device->vid) {
