@@ -144,7 +144,8 @@ void GamePad::flush() const {
         if (!m_buttons) {
             break;
         }
-        getPlatform()->loop();
+        getPlatform()->getHid()->loop();
+        getPlatform()->getPad()->loop();
     }
 }
 
