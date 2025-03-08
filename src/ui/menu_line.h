@@ -6,6 +6,8 @@
 #define U_GAMEPAD_MENU_LINE_H
 
 #include "widget.h"
+#include "rectangle.h"
+#include "text.h"
 
 namespace uGamePad {
     class MenuLine : public Rectangle {

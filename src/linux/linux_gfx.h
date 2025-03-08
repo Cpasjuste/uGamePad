@@ -5,8 +5,6 @@
 #ifndef U_GAMEPAD_LINUX_GFX_H
 #define U_GAMEPAD_LINUX_GFX_H
 
-#include "gfx.h"
-
 namespace uGamePad {
     class LinuxGfx : public Gfx {
     public:

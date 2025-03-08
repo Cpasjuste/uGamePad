@@ -1,160 +1,138 @@
 //
-// Created by cpasjuste on 05/04/23.
+// Created by cpasjuste on 10/03/24.
 //
 
-#include <Adafruit_SPIFlash.h>
-#include <msc/Adafruit_USBD_MSC.h>
-#include <ArduinoJson.h>
-#include "main.h"
+#include <cstring>
+#include <bsp/board_api.h>
+#include <device/usbd.h>
+#include <class/msc/msc_device.h>
 #include "pico_fs.h"
-#include "utility/json.h"
+#include "pico_flash.h"
 
-#include "fat12/ff_format.h"
-extern Adafruit_SPIFlash flash;
-Adafruit_USBD_MSC usb_msc;
-FatVolume m_fatfs;
-
-int32_t msc_read_cb(uint32_t lba, void *buffer, uint32_t bufsize);
-
-int32_t msc_write_cb(uint32_t lba, uint8_t *buffer, uint32_t bufsize);
-
-void msc_flush_cb();
+// https://github.com/32blit/32blit-sdk/blob/dba448a1c6e776d704fb299647786a30cef20478/32blit-pico/usb_device.cpp
 
 using namespace uGamePad;
 
-PicoFs::PicoFs() : Fs() {
-    if (!flash.begin()) {
-        printf("PicoFs: failed to initialize flash chip!\r\n");
-        return;
-    }
+static bool storage_ejected = false;
 
-    if (!m_fatfs.begin(&flash)) {
-        printf("PicoFs: failed to mount fat partition, formatting...\r\n");
-        format_fat12();
-        if (!m_fatfs.begin(&flash)) {
-            printf("PicoFs: failed to mount fat partition, formatting failed...\r\n");
-            return;
-        }
-    }
-
-    m_available = true;
+void tud_mount_cb() {
+    storage_ejected = false;
 }
 
-void PicoFs::createDirectory(const std::string &path) {
-    if (m_available) {
-        if (!m_fatfs.exists(path.c_str())) m_fatfs.mkdir(path.c_str(), true);
-        sync();
-    }
+void tud_msc_inquiry_cb(uint8_t lun, uint8_t vendor_id[8], uint8_t product_id[16], uint8_t product_rev[4]) {
+    (void) lun;
+
+    const char vid[] = "uGamePad";
+    const char pid[] = "uGamePad FlashFs";
+    const char rev[] = "1.0";
+
+    memcpy(vendor_id, vid, strlen(vid));
+    memcpy(product_id, pid, strlen(pid));
+    memcpy(product_rev, rev, strlen(rev));
 }
 
-std::vector<uint8_t> PicoFs::readFile(const std::string &path) {
-    if (!m_available) {
-        printf("PicoFs::readFile: filesystem not available...\r\n");
-        return {};
-    }
-
-    File32 file = m_fatfs.open(path.c_str(), FILE_READ);
-    if (!file) {
-        printf("PicoFs::readFile: could not open %s for reading...\r\n", path.c_str());
-        return {};
-    }
-
-    std::vector<uint8_t> buffer(file.size());
-    if (!file.readBytes(buffer.data(), buffer.size())) {
-        printf("PicoFs::readFile: could not read %s...\r\n", path.c_str());
-        file.close();
-        return {};
-    }
-
-    file.close();
-    return buffer;
-}
-
-bool PicoFs::writeFile(const std::string &path, const std::vector<uint8_t> &data) {
-    if (!m_available) {
-        printf("PicoFs::writeFile: filesystem not available...\r\n");
+bool tud_msc_test_unit_ready_cb(uint8_t lun) {
+    if (storage_ejected) {
+        tud_msc_set_sense(lun, SCSI_SENSE_NOT_READY, 0x3a, 0x00);
         return false;
     }
 
-    File32 file = m_fatfs.open(path.c_str(), O_RDWR | O_CREAT | O_TRUNC);
-    if (!file) {
-        printf("PicoFs::writeFile: could not open %s for writing...\r\n", path.c_str());
-        file.close();
-        return false;
-    }
-
-    if (!file.write(data.data(), data.size())) {
-        printf("PicoFs::writeFile: could not write to %s...\r\n", path.c_str());
-        file.close();
-        return false;
-    }
-
-    file.close();
-    sync();
     return true;
 }
 
-void PicoFs::sync() {
-    if (m_available) {
-        flash.syncBlocks();
-        m_fatfs.cacheClear();
+void tud_msc_capacity_cb(uint8_t lun, uint32_t *block_count, uint16_t *block_size) {
+    (void) lun;
+
+    io_flash_get_size(*block_size, *block_count);
+}
+
+bool tud_msc_start_stop_cb(uint8_t lun, uint8_t power_condition, bool start, bool load_eject) {
+    (void) lun;
+    (void) power_condition;
+
+    if (load_eject) {
+        if (start) {
+        } else
+            storage_ejected = true;
     }
+
+    return true;
 }
 
-Fs::DeviceInfo PicoFs::getDeviceInfo() {
-    uint64_t size = m_fatfs.clusterCount() * m_fatfs.bytesPerCluster();
-    auto used = (uint64_t) ((m_fatfs.clusterCount() - m_fatfs.freeClusterCount()) *
-                            (uint64_t) m_fatfs.bytesPerCluster());
-    return {size, used};
+int32_t tud_msc_read10_cb(uint8_t lun, uint32_t lba, uint32_t offset, void *buffer, uint32_t bufsize) {
+    (void) lun;
+
+    return io_flash_read(lba, offset, buffer, bufsize);
 }
 
-void PicoFs::setUsbMode(uGamePad::Fs::UsbMode mode) {
+int32_t tud_msc_write10_cb(uint8_t lun, uint32_t lba, uint32_t offset, uint8_t *buffer, uint32_t bufsize) {
+    (void) lun;
+
+    return io_flash_write(lba, offset, buffer, bufsize);
+}
+
+int32_t tud_msc_scsi_cb(uint8_t lun, uint8_t const scsi_cmd[16], void *buffer, uint16_t bufsize) {
+    uint16_t resplen = 0;
+
+    switch (scsi_cmd[0]) {
+        case SCSI_CMD_PREVENT_ALLOW_MEDIUM_REMOVAL:
+            // Host is about to read/write etc ... better not to disconnect disk
+            resplen = 0;
+            break;
+
+        default:
+            // Set Sense = Invalid Command Operation
+            tud_msc_set_sense(lun, SCSI_SENSE_ILLEGAL_REQUEST, 0x20, 0x00);
+
+            // negative means error -> tinyusb could stall and/or response with failed status
+            resplen = -1;
+            break;
+    }
+
+    return resplen;
+}
+
+bool tud_msc_is_writable_cb(uint8_t lun) {
+    //return !get_files_open();
+    return true;
+}
+
+void uGamePad::PicoFs::setUsbMode(uGamePad::Fs::UsbMode mode) {
     if (!m_available) {
         printf("PicoFs::share: error: flash filesystem not available...\r\n");
         return;
     }
 
     if (mode == UsbMode::Msc) {
-        usb_msc.setID("uGamePad", "FlashFs", "1.0");
-        usb_msc.setReadWriteCallback(msc_read_cb, msc_write_cb, msc_flush_cb);
-        usb_msc.setCapacity(flash.size() / 512, 512);
-        usb_msc.setUnitReady(true);
-        if (!usb_msc.begin()) {
-            printf("PicoFs::share: error: usb msc begin failed\r\n");
-            return;
+        board_init();
+
+        // init usb stack
+        if (!tusb_init()) {
+            printf("PicoFs::setUsbMode: tusb_init failed...\r\n");
+            while (true);
+        }
+
+        // init device stack on configured roothub port
+        if (!tud_init(BOARD_TUD_RHPORT)) {
+            printf("PicoFs::setUsbMode: tud_init failed...\r\n");
+            while (true);
+        }
+    } else {
+        // init board
+        board_init();
+
+        // init usb stack
+        if (!tusb_init()) {
+            printf("PicoFs::setUsbMode: tusb_init failed...\r\n");
+            while (true);
+        }
+
+        // init usb host stack
+        if (!tuh_init(BOARD_TUH_RHPORT)) {
+            printf("PicoFs::setUsbMode: tuh_init failed...\r\n");
+            while (true);
         }
     }
 
     Fs::setUsbMode(mode);
-}
-
-/*
- * USB MSC CALLBACKS
- */
-
-// Callback invoked when received READ10 command.
-// Copy disk's data to buffer (up to bufsize) and
-// return number of copied bytes (must be multiple of block size)
-int32_t msc_read_cb(uint32_t lba, void *buffer, uint32_t bufsize) {
-    // Note: SPIFLash Block API: readBlocks/writeBlocks/syncBlocks
-    // already include 4K sector caching internally. We don't need to cache it, yahhhh!!
-    return flash.readBlocks(lba, (uint8_t *) buffer, bufsize / 512) ? bufsize : -1;
-}
-
-// Callback invoked when received WRITE10 command.
-// Process data in buffer to disk's storage and
-// return number of written bytes (must be multiple of block size)
-int32_t msc_write_cb(uint32_t lba, uint8_t *buffer, uint32_t bufsize) {
-    // Note: SPIFLash Block API: readBlocks/writeBlocks/syncBlocks
-    // already include 4K sector caching internally. We don't need to cache it, yahhhh!!
-    return flash.writeBlocks(lba, buffer, bufsize / 512) ? bufsize : -1;
-}
-
-// Callback invoked when WRITE10 command is completed (status received and accepted by host).
-// used to flush any pending cache.
-void msc_flush_cb() {
-    // sync with flash
-    flash.syncBlocks();
-    // clear file system's cache to force refresh
-    m_fatfs.cacheClear();
 }

@@ -12,15 +12,13 @@ Platform *getPlatform() {
     return platform;
 }
 
-void setup() {
-#if NATIVE
+[[noreturn]] int main() {
+#if LINUX
     platform = new LinuxPlatform();
 #else
     platform = new PicoPlatform();
 #endif
     platform->setup();
-}
 
-void loop() {
-    platform->loop();
+    while (true) platform->loop();
 }

@@ -2,25 +2,26 @@
 // Created by cpasjuste on 18/04/23.
 //
 
-#ifdef NATIVE
+#ifdef LINUX
 #include <ctime>
 #include <sys/time.h>
 #else
-#include <api/ArduinoAPI.h>
+#include <pico/time.h>
 #endif
+
 #include "clock.h"
 
 uGamePad::Clock::Clock() {
-    m_startTime = Clock::getCurrentTime();
+    m_startTime = getCurrentTime();
 }
 
 uGamePad::Time uGamePad::Clock::getCurrentTime() const {
-#ifdef NATIVE
+#ifdef LINUX
     timespec time = {};
     clock_gettime(CLOCK_MONOTONIC, &time);
     return microseconds((long) time.tv_sec * 1000000 + time.tv_nsec / 1000);
 #else
-    return microseconds((long) micros());
+    return microseconds((long) to_us_since_boot(get_absolute_time()));
 #endif
 }
 
@@ -29,8 +30,8 @@ uGamePad::Time uGamePad::Clock::getElapsedTime() const {
 }
 
 uGamePad::Time uGamePad::Clock::restart() {
-    Time now = getCurrentTime();
-    Time elapsed = now - m_startTime;
+    const Time now = getCurrentTime();
+    const Time elapsed = now - m_startTime;
     m_startTime = now;
     return elapsed;
 }

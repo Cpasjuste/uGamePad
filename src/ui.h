@@ -8,15 +8,17 @@
 #include <cstdint>
 #include "utility/clock.h"
 #include "menu.h"
-#include "gamepad_info.h"
+#include "gamepad_settings.h"
 
 namespace uGamePad {
     class Ui {
     public:
         enum MenuWidget {
+            None,
             MainMenu,
             Splash,
-            GamePadTest
+            GamePadTest,
+            Remap,
         };
 
         explicit Ui();
@@ -34,7 +36,8 @@ namespace uGamePad {
         Menu *p_menu;
         Bitmap *p_splash;
         Text *p_splashText;
-        GamePadInfo *p_gamePadInfo;
+        GamePadSettings *p_gamePadInfo;
+        MenuWidget m_menuCurrent = None;
         Clock m_triggerMenuClock;
     };
 }

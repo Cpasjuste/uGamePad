@@ -6,20 +6,27 @@
 #define U_GAMEPAD_PICO_GAMEPAD_H
 
 namespace uGamePad {
-    class PicoGamePad : public GamePad {
+    class PicoGamePad final : public GamePad {
     public:
         PicoGamePad();
 
-        bool report(const uint8_t *report, uint16_t len);
+        ~PicoGamePad() override = default;
+
+        void loop() override;
+
+        bool onHidReport(const uint8_t *report, uint16_t len) override;
 
         void setOutputMode(const Mode &mode) override;
 
+        static uint32_t getHardwareButtons();
+
     private:
+#ifndef TODO_NES_SNES_MD_CABLES
         static void onLatchRising();
 
         static void onClockFalling();
-
-        uint16_t m_buttons_old{}, m_buttons_diff{};
+#endif
+        uint32_t m_buttons_old{}, m_buttons_diff{};
     };
 }
 

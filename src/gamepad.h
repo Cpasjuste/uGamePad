@@ -9,14 +9,15 @@
 #include <string>
 #include <vector>
 #include "devices.h"
-#include "utility/utility.h"
-#include "utility/clock.h"
+#include "clock.h"
+#include "utility.h"
 
-#define TODO_NES_SNES_CABLES
+#define TODO_NES_SNES_MD_CABLES
 
-#define MAX_BUTTONS 12
-#define MAX_AXIS 4
 #define DEAD_ZONE 4000
+#define GPIO_LOW 0
+#define GPIO_HIGH 1
+#define REPEAT_DELAY_DEFAULT UINT16_MAX
 
 namespace uGamePad {
     class GamePad {
@@ -30,12 +31,25 @@ namespace uGamePad {
             B6 = BIT(5),
             START = BIT(6),
             SELECT = BIT(7),
-            LEFT = BIT(8),
-            RIGHT = BIT(9),
-            UP = BIT(10),
-            DOWN = BIT(11),
-            MENU = BIT(12),
-            DELAY = BIT(13)
+            DPAD_LEFT = BIT(8),
+            DPAD_RIGHT = BIT(9),
+            DPAD_UP = BIT(10),
+            DPAD_DOWN = BIT(11),
+            AXIS_L_LEFT = BIT(12),
+            AXIS_L_RIGHT = BIT(13),
+            AXIS_L_UP = BIT(14),
+            AXIS_L_DOWN = BIT(15),
+            AXIS_R_LEFT = BIT(16),
+            AXIS_R_RIGHT = BIT(17),
+            AXIS_R_UP = BIT(18),
+            AXIS_R_DOWN = BIT(19),
+            MENU = BIT(20),
+            DELAY = BIT(21),
+            // Generic catch-all directions
+            LEFT = DPAD_LEFT | AXIS_L_LEFT | AXIS_R_LEFT,
+            RIGHT = DPAD_RIGHT | AXIS_L_RIGHT | AXIS_R_RIGHT,
+            UP = DPAD_UP | AXIS_L_UP | AXIS_R_UP,
+            DOWN = DPAD_DOWN | AXIS_L_DOWN | AXIS_R_DOWN,
         };
 
         enum Mode {
@@ -46,23 +60,25 @@ namespace uGamePad {
         };
 
         struct PinMapping {
-            uint16_t button;
+            uint32_t button;
             uint8_t pin;
-            int pinMode;
-            int pinStatus;
+            bool direction;
+            int defaultState;
         };
 
         struct Output {
             std::string name;
-            Mode mode = Mode::Jamma;
+            Mode mode = Jamma;
             std::vector<PinMapping> mappings;
         };
 
         GamePad();
 
+        virtual ~GamePad() = default;
+
         virtual void loop();
 
-        virtual std::vector<GamePad::Output> getOutputModes() { return m_outputModes; };
+        virtual std::vector<Output> getOutputModes() { return m_outputModes; };
 
         virtual Output *getOutputMode();
 
@@ -70,29 +86,42 @@ namespace uGamePad {
 
         virtual void setOutputMode(const std::string &modeName);
 
-        virtual uint16_t &getButtons() { return m_buttons; };
+        virtual uint32_t &getButtons() { return m_buttons; }
 
-        void setDevice(const Device *device, uint8_t dev_addr, uint8_t instance);
+        virtual bool onHidReport(const uint8_t *report, uint16_t len);
 
-        const Device *getDevice() { return p_device; };
+        void setDevice(Device *device) {
+            p_device = device;
+            if (p_device) p_deviceDefaults = get_device(p_device->vid, p_device->pid);
+        }
 
-        bool isUnknown() { return !p_device || p_device->vendor == 0 && p_device->product == 0; }
+        void setDeviceDefaultDescriptor() const {
+            if (p_device && p_deviceDefaults) {
+                memcpy(p_device->report, p_deviceDefaults->report, sizeof(InputReportDescriptor));
+            }
+        }
 
-        uint16_t getRepeatDelay() { return m_repeatDelayMs; };
+        Device *getDevice() { return p_device; }
 
-        void setRepeatDelay(uint16_t ms) { m_repeatDelayMs = ms; };
+        Device *getDeviceDefaults() { return p_deviceDefaults; }
+
+        uint16_t getRepeatDelay() { return m_repeatDelayMs; }
+
+        void setRepeatDelay(uint16_t ms) { m_repeatDelayMs = ms; }
+
+        void flush() const;
+
+        static uint8_t getButtonIndex(uint32_t button);
 
     protected:
-        uint8_t m_addr = 0;
-        uint8_t m_instance = 0;
-        const Device p_device_unknown = {0x0000, 0x0000, "Unknown device", nullptr};
-        const Device *p_device = &p_device_unknown;
-        uint16_t m_buttons{0};
-        uint16_t m_buttons_prev{0};
+        Device *p_device = nullptr;
+        Device *p_deviceDefaults = nullptr;
+        uint32_t m_buttons{0};
+        uint32_t m_buttons_prev{0};
         Clock m_repeatClock;
-        uint16_t m_repeatDelayMs = 1000;
-        std::vector<GamePad::Output> m_outputModes;
-        Mode m_outputMode = Mode::Jamma;
+        uint16_t m_repeatDelayMs = REPEAT_DELAY_DEFAULT;
+        std::vector<Output> m_outputModes;
+        Mode m_outputMode = Jamma;
 
         ///
         /// axis handling
@@ -108,9 +137,9 @@ namespace uGamePad {
 
         int bezierY(float t);
 
-        uint16_t getButtonsFromAxis(int x, int y, uint8_t type = ReportData::AxisType::AXIS_I16);
+        uint32_t getButtonsFromAxis(int x, int y, uint8_t type = AXIS_TYPE_U8 | AXIS_TYPE_LEFT);
 
-        static uint16_t getButtonsFromHat(int hat);
+        static uint32_t getButtonsFromHat(int hat);
     };
 }
 

@@ -32,12 +32,14 @@ std::string Text::getString() {
 }
 
 void Text::setString(const std::string &str) {
+    if (str == m_text) return;
+
     int16_t x, y;
     uint16_t w, h;
     m_text = str;
     getGfx()->getTextBounds(str.c_str(), m_position.x, m_position.y, &x, &y, &w, &h);
     setSize((int16_t) w, (int16_t) h);
-    m_bg_rect->setSize(w, h);
+    m_bg_rect->setSize((int16_t) (w + 1), (int16_t) (h + 1));
 }
 
 void Text::setDrawBackground(bool drawBg) {

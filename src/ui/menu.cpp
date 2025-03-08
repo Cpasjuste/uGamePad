@@ -30,17 +30,13 @@ Menu::Menu() : Rectangle({0, 0}, getPlatform()->getGfx()->getSize()) {
         modes.push_back(out.name);
     }
     m_options.push_back({"OUTPUT MODE", modes});
-#ifdef WIP_DISABLE_OPTION_REMAP
-    m_options.push_back({"BUTTONS REMAP", {"Todo"}});
-#else
-    m_options.push_back({"BUTTONS REMAP", {"TODO"}});
-#endif
+    m_options.push_back({"GAMEPAD TEST", {"Go"}});
+    m_options.push_back({"BUTTONS REMAP", {"Go"}});
 #ifdef WIP_DISABLE_OPTION_AUTO_FIRE
     m_options.push_back({"AUTO FIRE", {"Todo"}});
 #else
     m_options.push_back({"AUTO FIRE", {"OFF", "ON"}});
 #endif
-    m_options.push_back({"GAMEPAD TEST", {"Go"}});
     m_options.push_back({"EXIT", {"Go"}});
 
     // update lines
@@ -48,7 +44,7 @@ Menu::Menu() : Rectangle({0, 0}, getPlatform()->getGfx()->getSize()) {
 }
 
 void Menu::update() {
-// update lines
+    // update lines
     for (uint8_t i = 0; i < max_lines; i++) {
         if (option_index + i >= m_options.size()) {
             p_lines[i]->setVisibility(Visibility::Hidden);
@@ -65,10 +61,10 @@ void Menu::update() {
 
 void Menu::loop(const Utility::Vec2i &pos) {
     // handle buttons
-    uint16_t buttons = getPlatform()->getPad()->getButtons();
+    const auto buttons = getPlatform()->getPad()->getButtons();
     if (buttons & GamePad::Button::UP) {
-        int index = option_index + highlight_index;
-        int middle = max_lines / 2;
+        const int index = option_index + highlight_index;
+        const int middle = max_lines / 2;
         if (highlight_index <= middle && index - middle > 0) {
             option_index--;
         } else {
@@ -80,8 +76,8 @@ void Menu::loop(const Utility::Vec2i &pos) {
         }
         update();
     } else if (buttons & GamePad::Button::DOWN) {
-        int index = option_index + highlight_index;
-        int middle = max_lines / 2;
+        const int index = option_index + highlight_index;
+        const int middle = max_lines / 2;
         if (highlight_index >= middle && index + middle < (int) m_options.size()) {
             option_index++;
         } else {
@@ -93,20 +89,25 @@ void Menu::loop(const Utility::Vec2i &pos) {
         }
         update();
     } else if (buttons & GamePad::Button::LEFT) {
-        auto option = getSelection();
+        const auto option = getSelection();
         if (option != nullptr) {
             option->prev();
             update();
         }
     } else if (buttons & GamePad::Button::RIGHT) {
-        auto option = getSelection();
+        const auto option = getSelection();
         if (option != nullptr) {
             option->next();
             update();
         }
-    } else if (buttons & GamePad::Button::B1 || buttons & GamePad::Button::START) {
-        auto option = getSelection();
+    } else if (buttons & GamePad::Button::B2) {
+        getPlatform()->getUi()->show(Ui::MenuWidget::Splash);
+    } else if (buttons & GamePad::Button::B1 || buttons & GamePad::Button::MENU) {
+        const auto option = getSelection();
         if (option != nullptr) {
+            if (option->name == "BUTTONS REMAP") {
+                getPlatform()->getUi()->show(Ui::MenuWidget::Remap);
+            }
             if (option->name == "GAMEPAD TEST") {
                 getPlatform()->getUi()->show(Ui::MenuWidget::GamePadTest);
             } else if (option->name == "EXIT") {
@@ -115,6 +116,9 @@ void Menu::loop(const Utility::Vec2i &pos) {
                 option->next();
                 update();
             }
+
+            // needed to clear hardware "menu/start" button
+            if (buttons & GamePad::Button::MENU) getPlatform()->getPad()->flush();
         }
     }
 

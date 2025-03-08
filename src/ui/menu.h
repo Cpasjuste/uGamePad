@@ -37,6 +37,11 @@ namespace uGamePad {
 
         MenuOption *getSelection();
 
+        void reset() {
+            option_index = highlight_index = 0;
+            update();
+        }
+
     private:
         void update();
 

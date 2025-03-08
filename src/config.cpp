@@ -3,9 +3,7 @@
 //
 
 #include <vector>
-#include "main.h"
 #include "config.h"
-#include "utility/json.h"
 
 using namespace uGamePad;
 
@@ -28,7 +26,6 @@ Config::Config(Fs *fs) {
 
     // load configuration file
 
-
 #if 0 // TESTING
     saveDevice(const_cast<Device *>(get_device_at(0)));
     auto dev = loadDevice(0x0079, 0x18d4);
@@ -47,27 +44,41 @@ Device *Config::loadDevice(uint16_t vid, uint16_t pid) {
 }
 
 Device *Config::loadDevice(const std::string &path) {
-    std::vector<uint8_t> buffer = p_fs->readFile(path);
-    if (buffer.empty()) {
-        printf("Config::load: could not read file...\r\n");
-        return nullptr;
+    if (Fs::fileExists(path)) {
+        Fs::File file{path};
+        if (!file.isOpen()) {
+            printf("Config::loadDevice: could not open file for reading... (%s)\r\n", path.c_str());
+            return nullptr;
+        }
+
+        std::vector<uint8_t> buffer(file.getLength());
+        int32_t read = file.read(0, buffer.size(), reinterpret_cast<char *>(buffer.data()));
+        if (read != buffer.size()) {
+            printf("Config::loadDevice: could not read file... (%s)\r\n", path.c_str());
+            return nullptr;
+        }
+
+        return Utility::deserialize(&buffer);
     }
 
-    return Json::getDevice(buffer);
+    return nullptr;
 }
 
 bool Config::saveDevice(Device *device) {
     if (!device) {
-        printf("Config::save: filesystem not available...\r\n");
+        printf("Config::saveDevice: filesystem not available...\r\n");
         return false;
     }
 
-    std::vector<uint8_t> buffer = Json::getDevice(device);
-    if (buffer.empty()) {
-        printf("Config::save: failed to serialize device...\r\n");
+    std::vector<uint8_t> buffer(4096);
+    bool ret = Utility::serialize(device, &buffer);
+    if (!ret || buffer.empty()) {
+        printf("Config::saveDevice: failed to serialize device...\r\n");
         return false;
     }
 
     std::string path = p_fs->getDeviceDirectory() + "/" + device->getVendor() + "-" + device->getProduct() + ".json";
-    return p_fs->writeFile(path, buffer);
+    Fs::File file{path, Fs::File::OpenMode::Write};
+    int32_t wrote = file.write(0, buffer.size(), reinterpret_cast<const char *>(buffer.data()));
+    return wrote == buffer.size();
 }

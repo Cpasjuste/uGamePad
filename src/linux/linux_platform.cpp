@@ -4,22 +4,24 @@
 
 #include "main.h"
 #include "linux_platform.h"
-#include "linux_fs.h"
 
 using namespace uGamePad;
 
 void LinuxPlatform::setup() {
     // init filesystem
-    p_fs = new LinuxFs();
+    p_fs = new Fs();
 
     // init config
     p_config = new Config(p_fs);
 
-    // init display
-    p_gfx = new LinuxGfx();
-
     // init gamepad
     p_pad = new LinuxGamePad();
+
+    // linux hid api
+    p_hid = new LinuxHid();
+
+    // init display
+    p_gfx = new LinuxGfx();
 
     // all done
     Platform::setup();

@@ -4,7 +4,7 @@
 
 #include "main.h"
 #include "rectangle.h"
-#include "gamepad_info.h"
+#include "gamepad_settings.h"
 #include "ui.h"
 #include "text.h"
 #include "bitmap.h"
@@ -22,7 +22,7 @@ Ui::Ui() {
     p_screen->add(p_menu);
 
     // gamepad info menu
-    p_gamePadInfo = new GamePadInfo({64, 32}, {90, 60}, bmp_gamepad_90x60);
+    p_gamePadInfo = new GamePadSettings({64, 32}, {90, 60}, bmp_gamepad_90x60);
     p_gamePadInfo->setOrigin(Widget::Origin::Center);
     p_gamePadInfo->setVisibility(Widget::Visibility::Hidden);
     p_screen->add(p_gamePadInfo);
@@ -36,11 +36,15 @@ Ui::Ui() {
     p_screen->add(p_splashText);
 
     // show splash screen
-    show(MenuWidget::Splash);
+    show(Splash);
 }
 
-void Ui::show(Ui::MenuWidget menuWidget) {
-    if (menuWidget == MenuWidget::Splash) {
+void Ui::show(const MenuWidget menuWidget) {
+    printf("Ui::show: %i\r\n", menuWidget);
+
+    if (m_menuCurrent == menuWidget) return;
+
+    if (menuWidget == Splash) {
         p_screen->setVisibility(Widget::Visibility::Visible);
         p_menu->setVisibility(Widget::Visibility::Hidden);
         p_gamePadInfo->setVisibility(Widget::Visibility::Hidden);
@@ -50,18 +54,46 @@ void Ui::show(Ui::MenuWidget menuWidget) {
         flip();
         // disable screen updates when not needed (not in menu)
         p_screen->setVisibility(Widget::Visibility::Hidden);
-    } else if (menuWidget == MenuWidget::MainMenu) {
+        getPlatform()->getPad()->setRepeatDelay(0);
+    } else if (menuWidget == MainMenu) {
         p_screen->setVisibility(Widget::Visibility::Visible);
         p_menu->setVisibility(Widget::Visibility::Visible);
         p_gamePadInfo->setVisibility(Widget::Visibility::Hidden);
         p_splash->setVisibility(Widget::Visibility::Hidden);
         p_splashText->setVisibility(Widget::Visibility::Hidden);
-    } else if (menuWidget == MenuWidget::GamePadTest) {
+        getPlatform()->getPad()->setRepeatDelay(REPEAT_DELAY_DEFAULT);
+    } else if (menuWidget == GamePadTest || menuWidget == Remap) {
         p_screen->setVisibility(Widget::Visibility::Visible);
         p_menu->setVisibility(Widget::Visibility::Hidden);
-        p_gamePadInfo->setVisibility(Widget::Visibility::Visible);
         p_splash->setVisibility(Widget::Visibility::Hidden);
         p_splashText->setVisibility(Widget::Visibility::Hidden);
+        p_gamePadInfo->setVisibility(Widget::Visibility::Visible);
+        getPlatform()->getPad()->setRepeatDelay(menuWidget == GamePadTest ? 0 : UINT16_MAX);
+        p_gamePadInfo->setMode(menuWidget == GamePadTest ? GamePadSettings::Mode::Info : GamePadSettings::Mode::Remap);
+    }
+
+    m_menuCurrent = menuWidget;
+}
+
+void Ui::loop() {
+    // check for menu combo keys
+    if (!p_screen->isVisible()) {
+        const auto buttons = getPlatform()->getPad()->getButtons();
+        if (buttons & GamePad::Button::MENU) {
+            p_menu->reset();
+            show(MainMenu);
+            // needed to clear hardware "menu/start" button
+            getPlatform()->getPad()->flush();
+        } else if (buttons & GamePad::Button::START && buttons & GamePad::Button::SELECT) {
+            if (m_triggerMenuClock.getElapsedTime().asSeconds() > 1) {
+                p_menu->reset();
+                show(MainMenu);
+            }
+        } else if (!(buttons & GamePad::Button::DELAY)) {
+            m_triggerMenuClock.restart();
+        }
+    } else {
+        flip();
     }
 }
 
@@ -71,23 +103,5 @@ void Ui::flip() {
         getPlatform()->getGfx()->clear();
         p_screen->loop(p_screen->getPosition());
         getPlatform()->getGfx()->flip();
-    }
-}
-
-void Ui::loop() {
-    // check for menu combo keys
-    if (!p_screen->isVisible()) {
-        uint16_t buttons = getPlatform()->getPad()->getButtons();
-        if (buttons & GamePad::Button::MENU) {
-            show(MenuWidget::MainMenu);
-        } else if (buttons & GamePad::Button::START && buttons & GamePad::Button::SELECT) {
-            if (m_triggerMenuClock.getElapsedTime().asSeconds() > 1) {
-                show(MenuWidget::MainMenu);
-            }
-        } else if (!(buttons & GamePad::Button::DELAY)) {
-            m_triggerMenuClock.restart();
-        }
-    } else {
-        flip();
     }
 }
