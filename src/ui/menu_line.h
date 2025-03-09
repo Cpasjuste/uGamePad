@@ -5,7 +5,6 @@
 #ifndef U_GAMEPAD_MENU_LINE_H
 #define U_GAMEPAD_MENU_LINE_H
 
-#include "widget.h"
 #include "rectangle.h"
 #include "text.h"
 

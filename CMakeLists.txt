@@ -8,6 +8,9 @@ option(PICO_DEV_BOARD "Build for ugp dev board" OFF)
 option(PICO_DEBUG_UART "Pico uart debug" OFF)
 option(PICO_DEBUG_USB "Pico usb debug" OFF)
 
+set(APP_VERSION "1.0")
+set(HW_REVISION "1.1")
+
 if (NOT PLATFORM_LINUX)
     set(ENV{PICO_SDK_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/external/pico-sdk)
     set(PICO_SDK_PATH ${CMAKE_CURRENT_SOURCE_DIR}/external/pico-sdk)
@@ -87,6 +90,7 @@ else ()
     )
 
     if (PICO_DEV_BOARD)
+        set(HW_REVISION "1.1-dev")
         list(APPEND FLAGS -DUGP_DEV_BOARD)
     endif ()
 endif ()
@@ -96,7 +100,11 @@ endif ()
 ####################
 add_executable(${PROJECT_NAME} ${SOURCES})
 target_include_directories(${PROJECT_NAME} PUBLIC ${INCLUDES})
-target_compile_definitions(${PROJECT_NAME} PUBLIC ${FLAGS})
+target_compile_definitions(${PROJECT_NAME} PUBLIC
+        ${FLAGS}
+        -DAPP_VERSION=${APP_VERSION}
+        -DHW_REVISION=${HW_REVISION}
+)
 target_link_libraries(${PROJECT_NAME} ${LIBS})
 
 if (NOT PLATFORM_LINUX)
