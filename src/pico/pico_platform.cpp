@@ -39,7 +39,7 @@ void PicoPlatform::setup() {
     p_gfx = new PicoGfx();
 
     // check for bootloader mode (hardware) button press
-    auto hardwareButtons = PicoGamePad::getHardwareButtons();
+    const auto hardwareButtons = PicoGamePad::getHardwareButtons();
     if (hardwareButtons & GamePad::Button::UP) {
         printf("PicoPlatform::setup: bootloader mode called\r\n");
         Utility::reboot(true);
@@ -61,6 +61,7 @@ void PicoPlatform::setup() {
 }
 
 void PicoPlatform::loop() {
+#ifndef PICO_DEBUG_USB
     if (p_fs->getUsbMode() == Fs::UsbMode::Msc) {
         // handle usb device (msc) updates
         if (tud_inited()) {
@@ -70,6 +71,7 @@ void PicoPlatform::loop() {
             return;
         }
     }
+#endif
 
     Platform::loop();
 }

@@ -3,7 +3,9 @@
 //
 
 #include <cstring>
+#ifndef PICO_DEBUG_USB
 #include <bsp/board_api.h>
+#endif
 #include <device/usbd.h>
 #include <class/msc/msc_device.h>
 #include "pico_fs.h"
@@ -84,7 +86,7 @@ int32_t tud_msc_scsi_cb(uint8_t lun, uint8_t const scsi_cmd[16], void *buffer, u
             // Set Sense = Invalid Command Operation
             tud_msc_set_sense(lun, SCSI_SENSE_ILLEGAL_REQUEST, 0x20, 0x00);
 
-            // negative means error -> tinyusb could stall and/or response with failed status
+        // negative means error -> tinyusb could stall and/or response with failed status
             resplen = -1;
             break;
     }
@@ -103,6 +105,7 @@ void uGamePad::PicoFs::setUsbMode(uGamePad::Fs::UsbMode mode) {
         return;
     }
 
+#ifndef PICO_DEBUG_USB
     if (mode == UsbMode::Msc) {
         board_init();
 
@@ -133,6 +136,7 @@ void uGamePad::PicoFs::setUsbMode(uGamePad::Fs::UsbMode mode) {
             while (true);
         }
     }
+#endif
 
     Fs::setUsbMode(mode);
 }

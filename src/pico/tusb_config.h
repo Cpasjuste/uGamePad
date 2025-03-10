@@ -23,6 +23,8 @@
  *
  */
 
+#ifndef PICO_DEBUG_USB
+
 #ifndef _TUSB_CONFIG_H_
 #define _TUSB_CONFIG_H_
 
@@ -146,3 +148,5 @@ extern "C" {
 #endif
 
 #endif /* _TUSB_CONFIG_H_ */
+
+#endif

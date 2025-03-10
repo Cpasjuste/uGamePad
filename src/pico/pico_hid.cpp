@@ -21,6 +21,7 @@ static void convert_utf16le_to_utf8(const uint16_t *utf16, size_t utf16_len, uin
 static char *convert_utf8_to_char(uint16_t *temp_buf, size_t buf_len);
 
 void PicoHid::loop() {
+#ifndef PICO_DEBUG_USB
     // handle usb host updates
     if (getPlatform()->getFs()->getUsbMode() == Fs::UsbMode::Host) {
         if (tuh_inited()) {
@@ -30,6 +31,7 @@ void PicoHid::loop() {
             return;
         }
     }
+#endif
 
     Hid::loop();
 }
@@ -179,7 +181,7 @@ static void convert_utf16le_to_utf8(const uint16_t *utf16, size_t utf16_len, uin
 }
 
 static char *convert_utf8_to_char(uint16_t *temp_buf, size_t buf_len) {
-    if ((temp_buf[0] & 0xff) == 0) return nullptr;  // empty
+    if ((temp_buf[0] & 0xff) == 0) return nullptr; // empty
     size_t utf16_len = ((temp_buf[0] & 0xff) - 2) / sizeof(uint16_t);
     auto utf8_len = (size_t) count_utf8_bytes(temp_buf + 1, utf16_len);
     convert_utf16le_to_utf8(temp_buf + 1, utf16_len, (uint8_t *) temp_buf, sizeof(uint16_t) * buf_len);

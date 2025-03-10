@@ -83,11 +83,19 @@ else ()
     list(APPEND LIBS
             hardware_i2c
             pico_stdlib
-            tinyusb_device
-            tinyusb_host
-            tinyusb_board
             "-Wl,--print-memory-usage"
     )
+
+    # allow usb debug (without gamepad support of course...)
+    if (PICO_DEBUG_USB)
+        list(APPEND FLAGS -DPICO_DEBUG_USB)
+    else ()
+        list(APPEND LIBS
+                tinyusb_board
+                tinyusb_device
+                tinyusb_host
+        )
+    endif ()
 
     if (PICO_DEV_BOARD)
         set(HW_REVISION "1.1-dev")

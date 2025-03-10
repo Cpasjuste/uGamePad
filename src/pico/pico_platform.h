@@ -38,8 +38,8 @@
 #define GPIO_NES_CLOCK      3
 #define GPIO_NES_DATA       4
 #else
-// uGamePad retail board
-// use pins 0 and 1 for tx/rx (bouttons 5/6)
+// uGamePad retail board v1.1
+// use pins 0 and 1 for tx/rx (buttons 5/6)
 #define GPIO_TX             0  // vga pin 10
 #define GPIO_RX             1  // vga pin 2
 #define GPIO_HW_BTN_UP      14
