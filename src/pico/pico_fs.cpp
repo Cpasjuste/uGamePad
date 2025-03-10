@@ -106,11 +106,16 @@ void uGamePad::PicoFs::setUsbMode(uGamePad::Fs::UsbMode mode) {
     }
 
 #ifndef PICO_DEBUG_USB
-    if (mode == UsbMode::Msc) {
+    if (mode == Msc) {
         board_init();
 
         // init usb stack
-        if (!tusb_init()) {
+        constexpr tusb_rhport_init_t dev_init = {
+            .role = TUSB_ROLE_DEVICE,
+            .speed = TUSB_SPEED_AUTO
+        };
+
+        if (!tusb_init(BOARD_TUD_RHPORT, &dev_init)) {
             printf("PicoFs::setUsbMode: tusb_init failed...\r\n");
             while (true);
         }
@@ -125,7 +130,12 @@ void uGamePad::PicoFs::setUsbMode(uGamePad::Fs::UsbMode mode) {
         board_init();
 
         // init usb stack
-        if (!tusb_init()) {
+        constexpr tusb_rhport_init_t dev_init = {
+            .role = TUSB_ROLE_HOST,
+            .speed = TUSB_SPEED_AUTO
+        };
+
+        if (!tusb_init(BOARD_TUD_RHPORT, &dev_init)) {
             printf("PicoFs::setUsbMode: tusb_init failed...\r\n");
             while (true);
         }
