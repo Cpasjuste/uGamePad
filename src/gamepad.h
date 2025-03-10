@@ -15,6 +15,7 @@
 #define TODO_NES_SNES_MD_CABLES
 
 #define DEAD_ZONE 4000
+#define GPIO_FLOAT (-1)
 #define GPIO_LOW 0
 #define GPIO_HIGH 1
 #define REPEAT_DELAY_DEFAULT UINT16_MAX

@@ -23,7 +23,7 @@ namespace uGamePad {
 
         Widget() = default;
 
-        ~Widget();
+        virtual ~Widget();
 
         virtual void add(Widget *widget);
 
