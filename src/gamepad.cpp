@@ -2,7 +2,6 @@
 // Created by cpasjuste on 24/03/23.
 //
 
-#include <valarray>
 #include "main.h"
 #include "gamepad.h"
 
@@ -139,14 +138,17 @@ void GamePad::setOutputMode(const std::string &modeName) {
     }
 }
 
-void GamePad::flush() const {
-    while (true) {
-        if (!m_buttons) {
-            break;
-        }
+void GamePad::flush() {
+    // disable "DELAY"
+    const auto delay = m_repeatDelayMs;
+    m_repeatDelayMs = 0;
+
+    while (m_buttons) {
         getPlatform()->getHid()->loop();
         getPlatform()->getPad()->loop();
     }
+
+    m_repeatDelayMs = delay;
 }
 
 bool GamePad::onHidReport(const uint8_t *report, const uint16_t len) {

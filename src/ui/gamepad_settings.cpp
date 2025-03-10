@@ -93,11 +93,6 @@ void GamePadSettings::setMode(const Mode &mode) {
 }
 
 void GamePadSettings::loop(const Utility::Vec2i &pos) {
-    if (!getPlatform()->getPad()->getDevice()) {
-        Bitmap::loop(pos);
-        return;
-    }
-
     const auto buttons = getPlatform()->getPad()->getButtons();
     if (m_mode == Info) {
         if (buttons & GamePad::Button::MENU ||

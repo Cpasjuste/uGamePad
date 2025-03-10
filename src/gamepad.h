@@ -110,7 +110,7 @@ namespace uGamePad {
 
         void setRepeatDelay(uint16_t ms) { m_repeatDelayMs = ms; }
 
-        void flush() const;
+        void flush();
 
         static uint8_t getButtonIndex(uint32_t button);
 
