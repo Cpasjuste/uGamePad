@@ -144,6 +144,7 @@ void GamePad::flush() {
     m_repeatDelayMs = 0;
 
     while (m_buttons) {
+        m_buttons = 0;
         getPlatform()->getHid()->loop();
         getPlatform()->getPad()->loop();
     }
@@ -214,7 +215,7 @@ bool GamePad::onHidReport(const uint8_t *report, const uint16_t len) {
 
         for (int i = 0; i < MAX_AXIS; i += 2) {
             if (data->joystick.axis[i].size == 0) continue;
-            m_buttons |= GamePad::getButtonsFromAxis(
+            m_buttons |= getButtonsFromAxis(
                 axis[i], axis[i + 1], AXIS_TYPE_U8 | AXIS_TYPE_FLIP_Y | (i < 2 ? AXIS_TYPE_LEFT : AXIS_TYPE_RIGHT));
         }
 

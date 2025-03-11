@@ -87,7 +87,7 @@ void GamePadSettings::setMode(const Mode &mode) {
         getPlatform()->getPad()->flush();
 
         // restart
-        m_button_index = 0;
+        m_remap_index = 0;
         m_clock_timeout.restart();
     }
 }
@@ -115,7 +115,7 @@ void GamePadSettings::loop(const Utility::Vec2i &pos) {
         if (!(buttons & GamePad::Button::DELAY)) {
             const auto cDesc = getPlatform()->getPad()->getDevice()->report;
             const auto nDesc = p_newDevice->report;
-            switch (buttons) {
+            switch (m_buttons[m_remap_index].button) {
                 case GamePad::Button::B1:
                 case GamePad::Button::B2:
                 case GamePad::Button::B3:
@@ -128,23 +128,28 @@ void GamePadSettings::loop(const Utility::Vec2i &pos) {
                 case GamePad::Button::DPAD_RIGHT:
                 case GamePad::Button::DPAD_UP:
                 case GamePad::Button::DPAD_DOWN:
-                    nDesc->joystick.buttons[m_button_index].byte_offset =
+                    nDesc->joystick.buttons[m_remap_index].byte_offset =
                             cDesc->joystick.buttons[GamePad::getButtonIndex(buttons)].byte_offset;
-                    nDesc->joystick.buttons[m_button_index].bitmask =
+                    nDesc->joystick.buttons[m_remap_index].bitmask =
                             cDesc->joystick.buttons[GamePad::getButtonIndex(buttons)].bitmask;
                     break;
+                case GamePad::Button::AXIS_L_LEFT:
+                case GamePad::Button::AXIS_L_UP:
+                case GamePad::Button::AXIS_R_LEFT:
+                case GamePad::Button::AXIS_R_UP:
 #warning "TODO/FIXME: add axis/hat remap support"
+                    break;
                 default:
-                    return;
+                    break;
             }
         }
 
-        m_buttons[m_button_index].widget->setVisibility(Visibility::Hidden);
+        m_buttons[m_remap_index].widget->setVisibility(Visibility::Hidden);
+        m_remap_index++;
 
-        m_button_index++;
 #warning "TODO/FIXME: add axis/hat remap support"
-        //if (m_button_index >= m_buttons.size()) {
-        if (m_button_index >= m_buttons.size() - 8) {
+        //if (m_remap_index >= m_buttons.size()) {
+        if (m_remap_index >= m_buttons.size() - 8) {
             // all done, update report descriptor of current device
             const auto report = getPlatform()->getPad()->getDevice()->report;
             memcpy(report, p_newDevice->report, sizeof(InputReportDescriptor));
@@ -153,21 +158,21 @@ void GamePadSettings::loop(const Utility::Vec2i &pos) {
             return;
         }
 
-        p_text->setString("PRESS " + Utility::toString(m_buttons[m_button_index].button));
+        p_text->setString("PRESS " + Utility::toString(m_buttons[m_remap_index].button));
         m_clock_timeout.restart();
     }
 
     // update timeout
     p_text->setString("PRESS "
-                      + Utility::toString(m_buttons[m_button_index].button)
+                      + Utility::toString(m_buttons[m_remap_index].button)
                       + "("
                       + std::to_string(5 - (int) m_clock_timeout.getElapsedTime().asSeconds())
                       + ")");
 
     // update button widget visibility
     if (m_clock_button_visibility.getElapsedTime().asMilliseconds() > 300) {
-        m_buttons[m_button_index].widget->setVisibility(
-            m_buttons[m_button_index].widget->isVisible() ? Visibility::Hidden : Visibility::Visible);
+        m_buttons[m_remap_index].widget->setVisibility(
+            m_buttons[m_remap_index].widget->isVisible() ? Visibility::Hidden : Visibility::Visible);
         m_clock_button_visibility.restart();
     }
 

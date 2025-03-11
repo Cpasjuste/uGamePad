@@ -32,7 +32,7 @@ namespace uGamePad {
         Text *p_text;
         Mode m_mode = Info;
         Device *p_newDevice;
-        uint8_t m_button_index = 0;
+        uint8_t m_remap_index = 0;
         std::vector<GamePadButton> m_buttons;
         Clock m_clock_button_visibility, m_clock_timeout;
     };
