@@ -14,6 +14,7 @@
 
 #define TODO_NES_SNES_MD_CABLES
 
+#define GAMEPAD_DZ 8000
 #define GPIO_FLOAT (-1)
 #define GPIO_LOW 0
 #define GPIO_HIGH 1
@@ -121,7 +122,6 @@ namespace uGamePad {
         Device *p_deviceDefaults = nullptr;
         uint32_t m_buttons{0};
         uint32_t m_buttons_prev{0};
-        uint16_t m_deadZone = 8000;
         Clock m_repeatClock;
         uint16_t m_repeatDelayMs = REPEAT_DELAY_DEFAULT;
         std::vector<Output> m_outputModes;

@@ -41,6 +41,7 @@ namespace uGamePad {
                 struct {
                     uint16_t offset;
                     uint8_t size;
+
                     struct {
                         int16_t min;
                         int16_t max;
@@ -55,10 +56,12 @@ namespace uGamePad {
                 struct {
                     uint16_t offset;
                     uint8_t size;
+
                     struct {
                         uint16_t min;
                         uint16_t max;
                     } logical;
+
                     struct {
                         uint16_t min;
                         uint16_t max;
@@ -71,7 +74,7 @@ namespace uGamePad {
                 } init;
 
                 uint8_t button_count;
-
+                uint16_t dead_zone;
             } joystick;
         };
     } InputReportDescriptor;

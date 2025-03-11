@@ -52,7 +52,8 @@ uint32_t GamePad::getButtonsFromAxis(const int x, const int y, const uint8_t typ
     }
 
     // radial and scaled deadzone
-    if (std::sqrt(analogX * analogX + analogY * analogY) >= static_cast<float>(m_deadZone)) {
+    const float dz = p_device ? (float) p_device->report->joystick.dead_zone : GAMEPAD_DZ;
+    if (std::sqrt(analogX * analogX + analogY * analogY) >= dz) {
         constexpr float slope = 0.414214f;
         // symmetric angular zones for all eight digital directions
         if (analogY > 0 && analogX > 0) {

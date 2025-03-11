@@ -11,21 +11,7 @@ Config::Config(Fs *fs) {
     p_fs = fs;
     p_fs->createDirectory(p_fs->getDeviceDirectory());
 
-    // setup options
-    //std::vector<std::string> modes;
-    //for (const auto &out: getPlatform()->getPad()->getOutputModes()) {
-    //    modes.push_back(out.name);
-    //}
-    /*
-    m_options.push_back({OptionId::OutputMode, OptionType::Option, "OUTPUT MODE", {}});
-    m_options.push_back({OptionId::ButtonsRemap, OptionType::SubMenu, "BUTTONS REMAP", {"GO"}});
-    m_options.push_back({OptionId::AutoFire, OptionType::Option, "AUTO FIRE", {"OFF", "ON"}});
-    m_options.push_back({OptionId::GamePadTest, OptionType::SubMenu, "GAMEPAD TEST", {"GO"}});
-    m_options.push_back({OptionId::Exit, OptionType::SubMenu, "EXIT", {"GO"}});
-    */
-
     // load configuration file
-
 #if 0 // TESTING
     saveDevice(const_cast<Device *>(get_device_at(0)));
     auto dev = loadDevice(0x0079, 0x18d4);

@@ -39,7 +39,8 @@ static constexpr InputReportDescriptor xboxReport = {
                         // values, size
                         {0x01, 0x03, 0x02}, 3 // set led
                 },
-                .button_count = 12
+                .button_count = 12,
+                .dead_zone = 8000
         }
 };
 
@@ -73,7 +74,8 @@ static constexpr InputReportDescriptor ds4Report = {
                         40, 4, {0, 7}, {0, 315}   // HAT
                         //32, 4, {0, 7}, {0, 315}   // HAT (as reported by descriptor)
                 },
-                .button_count = 8
+                .button_count = 8,
+                .dead_zone = 8000
         }
 };
 
@@ -105,7 +107,8 @@ static constexpr InputReportDescriptor ds5Report = {
                         // {offset, size, {logical_min, logical_max}, {physical_min, physical_max}
                         64, 4, {0, 7}, {0, 315}   // HAT
                 },
-                .button_count = 8
+                .button_count = 8,
+                .dead_zone = 8000
         }
 };
 

@@ -115,6 +115,7 @@ bool Utility::serialize(Device *device, std::vector<uint8_t> *buffer) {
     // joystick
     item = doc["input_descriptor"]["joystick"].to<JsonObject>();
     item["button_count"] = device->report->joystick.button_count;
+    item["dead_zone"] = device->report->joystick.dead_zone;
 
     // axis
     JsonArray array = doc["input_descriptor"]["joystick"]["axis"].to<JsonArray>();
@@ -169,7 +170,7 @@ Device *Utility::deserialize(const std::vector<uint8_t> *buffer) {
     }
 
     // create new device
-    auto device = new Device();
+    const auto device = new Device();
     device->report = new InputReportDescriptor();
 
     // device info
@@ -185,6 +186,7 @@ Device *Utility::deserialize(const std::vector<uint8_t> *buffer) {
 
     // joystick
     device->report->joystick.button_count = doc["input_descriptor"]["joystick"]["button_count"];
+    device->report->joystick.dead_zone = doc["input_descriptor"]["joystick"]["dead_zone"];
 
     // axis
     JsonArray axis = doc["input_descriptor"]["joystick"]["axis"];
