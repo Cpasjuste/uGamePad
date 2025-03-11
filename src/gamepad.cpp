@@ -40,44 +40,45 @@ uint32_t GamePad::getButtonsFromHat(const int hat) {
 
 uint32_t GamePad::getButtonsFromAxis(const int x, const int y, const uint8_t type) const {
     uint32_t buttons = 0;
-    auto analogX = (float) x, analogY = (float) y;
+    auto analogX = static_cast<float>(x), analogY = static_cast<float>(y);
 
     if (type & AXIS_TYPE_U8) {
-        analogX = (float) m_analog_map[x];
-        analogY = (float) m_analog_map[y];
+        analogX = static_cast<float>(m_analog_map[x]);
+        analogY = static_cast<float>(m_analog_map[y]);
     }
 
     if (type & AXIS_TYPE_FLIP_Y) {
         analogY = -analogY;
     }
 
-    if (std::sqrt(analogX * analogX + analogY * analogY) >= DEAD_ZONE) {
+    // radial and scaled deadzone
+    if (std::sqrt(analogX * analogX + analogY * analogY) >= static_cast<float>(m_deadZone)) {
         constexpr float slope = 0.414214f;
         // symmetric angular zones for all eight digital directions
         if (analogY > 0 && analogX > 0) {
             // upper right quadrant
             if (analogY > slope * analogX)
-                buttons |= type & AXIS_TYPE_LEFT ? Button::AXIS_L_UP : Button::AXIS_R_UP;
+                buttons |= type & AXIS_TYPE_LEFT ? AXIS_L_UP : AXIS_R_UP;
             if (analogX > slope * analogY)
-                buttons |= type & AXIS_TYPE_LEFT ? Button::AXIS_L_RIGHT : Button::AXIS_R_RIGHT;
+                buttons |= type & AXIS_TYPE_LEFT ? AXIS_L_RIGHT : AXIS_R_RIGHT;
         } else if (analogY > 0 && analogX <= 0) {
             // upper left quadrant
             if (analogY > slope * (-analogX))
-                buttons |= type & AXIS_TYPE_LEFT ? Button::AXIS_L_UP : Button::AXIS_R_UP;
+                buttons |= type & AXIS_TYPE_LEFT ? AXIS_L_UP : AXIS_R_UP;
             if ((-analogX) > slope * analogY)
-                buttons |= type & AXIS_TYPE_LEFT ? Button::AXIS_L_LEFT : Button::AXIS_R_LEFT;
+                buttons |= type & AXIS_TYPE_LEFT ? AXIS_L_LEFT : AXIS_R_LEFT;
         } else if (analogY <= 0 && analogX > 0) {
             // lower right quadrant
             if ((-analogY) > slope * analogX)
-                buttons |= type & AXIS_TYPE_LEFT ? Button::AXIS_L_DOWN : Button::AXIS_R_DOWN;
+                buttons |= type & AXIS_TYPE_LEFT ? AXIS_L_DOWN : AXIS_R_DOWN;
             if (analogX > slope * (-analogY))
-                buttons |= type & AXIS_TYPE_LEFT ? Button::AXIS_L_RIGHT : Button::AXIS_R_RIGHT;
+                buttons |= type & AXIS_TYPE_LEFT ? AXIS_L_RIGHT : AXIS_R_RIGHT;
         } else if (analogY <= 0 && analogX <= 0) {
             // lower left quadrant
             if ((-analogY) > slope * (-analogX))
-                buttons |= type & AXIS_TYPE_LEFT ? Button::AXIS_L_DOWN : Button::AXIS_R_DOWN;
+                buttons |= type & AXIS_TYPE_LEFT ? AXIS_L_DOWN : AXIS_R_DOWN;
             if ((-analogX) > slope * (-analogY))
-                buttons |= type & AXIS_TYPE_LEFT ? Button::AXIS_L_LEFT : Button::AXIS_R_LEFT;
+                buttons |= type & AXIS_TYPE_LEFT ? AXIS_L_LEFT : AXIS_R_LEFT;
         }
     }
 

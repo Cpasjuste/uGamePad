@@ -68,13 +68,14 @@ void GamePadSettings::setMode(const Mode &mode) {
             return;
         }
 
-        // restore default device report descriptor to be able to use all buttons...
+        // restore default device report descriptor to be able to use undefined buttons if any...
         getPlatform()->getPad()->setDeviceDefaultDescriptor();
 
         // copy default device data/report descriptor to new device
-        memcpy(p_newDevice, getPlatform()->getPad()->getDeviceDefaults(), sizeof(Device));
-        memcpy(p_newDevice->report, getPlatform()->getPad()->getDeviceDefaults()->report,
-               sizeof(InputReportDescriptor));
+        if (const auto d = getPlatform()->getPad()->getDeviceDefaults()) {
+            memcpy(p_newDevice, d, sizeof(Device));
+            memcpy(p_newDevice->report, d->report, sizeof(InputReportDescriptor));
+        }
 
         // reset/hide any pressed button
         for (const auto &button: m_buttons) {

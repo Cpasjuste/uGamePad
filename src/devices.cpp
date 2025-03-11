@@ -439,8 +439,8 @@ Device *get_device(uint16_t vid, uint16_t pid) {
     return nullptr;
 }
 
-Device *get_device_at(uint16_t i) {
-    auto device = (Device *) malloc(sizeof(Device));
+Device *get_device_at(const uint16_t i) {
+    const auto device = (Device *) malloc(sizeof(Device));
     memcpy(device, &devices[i], sizeof(Device));
     device->report = (InputReportDescriptor *) malloc(sizeof(InputReportDescriptor));
     memcpy(device->report, devices[i].report, sizeof(InputReportDescriptor));
