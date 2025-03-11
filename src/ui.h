@@ -5,9 +5,9 @@
 #ifndef U_GAMEPAD_UI_H
 #define U_GAMEPAD_UI_H
 
-#include <cstdint>
 #include "utility/clock.h"
 #include "menu.h"
+#include "system_info.h"
 #include "gamepad_settings.h"
 
 namespace uGamePad {
@@ -19,6 +19,7 @@ namespace uGamePad {
             Splash,
             GamePadTest,
             Remap,
+            InfoMenu,
         };
 
         explicit Ui();
@@ -37,6 +38,7 @@ namespace uGamePad {
         Bitmap *p_splash;
         Text *p_splashText;
         GamePadSettings *p_gamePadInfo;
+        SystemInfo *p_systemInfo;
         MenuWidget m_menuCurrent = None;
         Clock m_triggerMenuClock;
     };

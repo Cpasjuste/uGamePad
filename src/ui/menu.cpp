@@ -31,12 +31,13 @@ Menu::Menu() : Rectangle({0, 0}, getPlatform()->getGfx()->getSize()) {
     }
     m_options.push_back({"OUTPUT MODE", modes});
     m_options.push_back({"GAMEPAD TEST", {"Go"}});
-    m_options.push_back({"BUTTONS REMAP", {"Go"}});
+    m_options.push_back({"GAMEPAD REMAP", {"Go"}});
 #ifdef WIP_DISABLE_OPTION_AUTO_FIRE
     m_options.push_back({"AUTO FIRE", {"Todo"}});
 #else
     m_options.push_back({"AUTO FIRE", {"OFF", "ON"}});
 #endif
+    m_options.push_back({"SYSTEM INFO", {"Go"}});
     m_options.push_back({"EXIT", {"Go"}});
 
     // update lines
@@ -105,11 +106,12 @@ void Menu::loop(const Utility::Vec2i &pos) {
     } else if (buttons & GamePad::Button::B1 || buttons & GamePad::Button::MENU) {
         const auto option = getSelection();
         if (option != nullptr) {
-            if (option->name == "BUTTONS REMAP") {
-                getPlatform()->getUi()->show(Ui::MenuWidget::Remap);
-            }
             if (option->name == "GAMEPAD TEST") {
                 getPlatform()->getUi()->show(Ui::MenuWidget::GamePadTest);
+            } else if (option->name == "GAMEPAD REMAP") {
+                getPlatform()->getUi()->show(Ui::MenuWidget::Remap);
+            } else if (option->name == "SYSTEM INFO") {
+                getPlatform()->getUi()->show(Ui::MenuWidget::InfoMenu);
             } else if (option->name == "EXIT") {
                 getPlatform()->getUi()->show(Ui::MenuWidget::Splash);
             } else {

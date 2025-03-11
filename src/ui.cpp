@@ -3,8 +3,6 @@
 //
 
 #include "main.h"
-#include "rectangle.h"
-#include "gamepad_settings.h"
 #include "ui.h"
 #include "text.h"
 #include "bitmap.h"
@@ -27,6 +25,10 @@ Ui::Ui() {
     p_gamePadInfo->setVisibility(Widget::Visibility::Hidden);
     p_screen->add(p_gamePadInfo);
 
+    p_systemInfo = new SystemInfo({0, 0}, p_screen->getSize());
+    p_systemInfo->setVisibility(Widget::Visibility::Hidden);
+    p_screen->add(p_systemInfo);
+
     // splash
     p_splash = new Bitmap({64, 28}, {64, 43}, bmp_gamepad_64x43);
     p_splash->setOrigin(Widget::Origin::Center);
@@ -48,6 +50,7 @@ void Ui::show(const MenuWidget menuWidget) {
         p_screen->setVisibility(Widget::Visibility::Visible);
         p_menu->setVisibility(Widget::Visibility::Hidden);
         p_gamePadInfo->setVisibility(Widget::Visibility::Hidden);
+        p_systemInfo->setVisibility(Widget::Visibility::Hidden);
         p_splash->setVisibility(Widget::Visibility::Visible);
         p_splashText->setVisibility(Widget::Visibility::Visible);
         // draw
@@ -59,6 +62,7 @@ void Ui::show(const MenuWidget menuWidget) {
         p_screen->setVisibility(Widget::Visibility::Visible);
         p_menu->setVisibility(Widget::Visibility::Visible);
         p_gamePadInfo->setVisibility(Widget::Visibility::Hidden);
+        p_systemInfo->setVisibility(Widget::Visibility::Hidden);
         p_splash->setVisibility(Widget::Visibility::Hidden);
         p_splashText->setVisibility(Widget::Visibility::Hidden);
         getPlatform()->getPad()->setRepeatDelay(REPEAT_DELAY_DEFAULT);
@@ -67,9 +71,18 @@ void Ui::show(const MenuWidget menuWidget) {
         p_menu->setVisibility(Widget::Visibility::Hidden);
         p_splash->setVisibility(Widget::Visibility::Hidden);
         p_splashText->setVisibility(Widget::Visibility::Hidden);
+        p_systemInfo->setVisibility(Widget::Visibility::Hidden);
         p_gamePadInfo->setVisibility(Widget::Visibility::Visible);
         getPlatform()->getPad()->setRepeatDelay(menuWidget == GamePadTest ? 0 : UINT16_MAX);
         p_gamePadInfo->setMode(menuWidget == GamePadTest ? GamePadSettings::Mode::Info : GamePadSettings::Mode::Remap);
+    } else if (menuWidget == InfoMenu) {
+        p_screen->setVisibility(Widget::Visibility::Visible);
+        p_menu->setVisibility(Widget::Visibility::Hidden);
+        p_gamePadInfo->setVisibility(Widget::Visibility::Hidden);
+        p_systemInfo->setVisibility(Widget::Visibility::Visible);
+        p_splash->setVisibility(Widget::Visibility::Hidden);
+        p_splashText->setVisibility(Widget::Visibility::Hidden);
+        getPlatform()->getPad()->setRepeatDelay(REPEAT_DELAY_DEFAULT);
     }
 
     m_menuCurrent = menuWidget;

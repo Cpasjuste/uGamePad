@@ -9,7 +9,7 @@ option(PICO_DEBUG_UART "Pico uart debug" OFF)
 option(PICO_DEBUG_USB "Pico usb debug" OFF)
 
 set(APP_VERSION "1.0")
-set(HW_REVISION "1.1")
+set(HW_VERSION "Retail")
 
 if (NOT PLATFORM_LINUX)
     set(ENV{PICO_SDK_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/external/pico-sdk)
@@ -70,6 +70,8 @@ if (PLATFORM_LINUX)
     pkg_search_module(LIBUSB1 REQUIRED libusb-1.0)
     list(APPEND INCLUDES ${LIBUSB1_INCLUDE_DIRS})
     list(APPEND LIBS ${LIBUSB1_LIBRARIES})
+    # ...
+    set(HW_VERSION "Linux")
 else ()
     file(GLOB TEMP
             ${CMAKE_CURRENT_SOURCE_DIR}/src/pico/*.c*
@@ -98,7 +100,7 @@ else ()
     endif ()
 
     if (PICO_DEV_BOARD)
-        set(HW_REVISION "1.1-dev")
+        set(HW_VERSION "DEVBOARD")
         list(APPEND FLAGS -DUGP_DEV_BOARD)
     endif ()
 endif ()
@@ -110,8 +112,8 @@ add_executable(${PROJECT_NAME} ${SOURCES})
 target_include_directories(${PROJECT_NAME} PUBLIC ${INCLUDES})
 target_compile_definitions(${PROJECT_NAME} PUBLIC
         ${FLAGS}
-        -DAPP_VERSION=${APP_VERSION}
-        -DHW_REVISION=${HW_REVISION}
+        -DAPP_VERSION="${APP_VERSION}"
+        -DHW_VERSION="${HW_VERSION}"
 )
 target_link_libraries(${PROJECT_NAME} ${LIBS})
 

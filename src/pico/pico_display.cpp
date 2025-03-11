@@ -176,7 +176,7 @@ static void SSD1306_Render(uint8_t *buf, struct render_area *area) {
 }
 
 static void SSD1306_SetPixel(uint8_t *buf, int x, int y, bool on) {
-    assert(x >= 0 && x < SSD1306_WIDTH && y >= 0 && y < SSD1306_HEIGHT);
+    if (x < 0 || x >= SSD1306_WIDTH || y < 0 || y >= SSD1306_HEIGHT) return;
 
     // The calculation to determine the correct bit to set depends on which address
     // mode we are in. This code assumes horizontal
