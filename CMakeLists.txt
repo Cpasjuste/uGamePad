@@ -100,7 +100,7 @@ else ()
     endif ()
 
     if (PICO_DEV_BOARD)
-        set(HW_VERSION "DEVBOARD")
+        set(HW_VERSION "DEV")
         list(APPEND FLAGS -DUGP_DEV_BOARD)
     endif ()
 endif ()
