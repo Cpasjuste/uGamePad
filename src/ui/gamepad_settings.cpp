@@ -94,6 +94,7 @@ void GamePadSettings::setMode(const Mode &mode) {
 
 void GamePadSettings::loop(const Utility::Vec2i &pos) {
     const auto buttons = getPlatform()->getPad()->getButtons();
+
     if (m_mode == Info) {
         if (buttons & GamePad::Button::MENU ||
             buttons & GamePad::Button::START && buttons & GamePad::Button::SELECT) {
@@ -105,67 +106,69 @@ void GamePadSettings::loop(const Utility::Vec2i &pos) {
         for (const auto &button: m_buttons) {
             button.widget->setVisibility(button.button & buttons ? Visibility::Visible : Visibility::Hidden);
         }
-    } else {
-        if (buttons && !(buttons & GamePad::Button::DELAY) || m_clock_timeout.getElapsedTime().asSeconds() > 5) {
-            // remap input descriptor
-            if (!(buttons & GamePad::Button::DELAY)) {
-                const auto cDesc = getPlatform()->getPad()->getDevice()->report;
-                const auto nDesc = p_newDevice->report;
-                switch (buttons) {
-                    case GamePad::Button::B1:
-                    case GamePad::Button::B2:
-                    case GamePad::Button::B3:
-                    case GamePad::Button::B4:
-                    case GamePad::Button::B5:
-                    case GamePad::Button::B6:
-                    case GamePad::Button::START:
-                    case GamePad::Button::SELECT:
-                    case GamePad::Button::DPAD_LEFT:
-                    case GamePad::Button::DPAD_RIGHT:
-                    case GamePad::Button::DPAD_UP:
-                    case GamePad::Button::DPAD_DOWN:
-                        nDesc->joystick.buttons[m_button_index].byte_offset =
-                                cDesc->joystick.buttons[GamePad::getButtonIndex(buttons)].byte_offset;
-                        nDesc->joystick.buttons[m_button_index].bitmask =
-                                cDesc->joystick.buttons[GamePad::getButtonIndex(buttons)].bitmask;
-                        break;
+        Bitmap::loop(pos);
+        return;
+    }
+
+    if (buttons && !(buttons & GamePad::Button::DELAY) || m_clock_timeout.getElapsedTime().asSeconds() > 5) {
+        // remap input descriptor
+        if (!(buttons & GamePad::Button::DELAY)) {
+            const auto cDesc = getPlatform()->getPad()->getDevice()->report;
+            const auto nDesc = p_newDevice->report;
+            switch (buttons) {
+                case GamePad::Button::B1:
+                case GamePad::Button::B2:
+                case GamePad::Button::B3:
+                case GamePad::Button::B4:
+                case GamePad::Button::B5:
+                case GamePad::Button::B6:
+                case GamePad::Button::START:
+                case GamePad::Button::SELECT:
+                case GamePad::Button::DPAD_LEFT:
+                case GamePad::Button::DPAD_RIGHT:
+                case GamePad::Button::DPAD_UP:
+                case GamePad::Button::DPAD_DOWN:
+                    nDesc->joystick.buttons[m_button_index].byte_offset =
+                            cDesc->joystick.buttons[GamePad::getButtonIndex(buttons)].byte_offset;
+                    nDesc->joystick.buttons[m_button_index].bitmask =
+                            cDesc->joystick.buttons[GamePad::getButtonIndex(buttons)].bitmask;
+                    break;
 #warning "TODO/FIXME: add axis/hat remap support"
-                    default:
-                        return;
-                }
+                default:
+                    return;
             }
-
-            m_buttons[m_button_index].widget->setVisibility(Visibility::Hidden);
-
-            m_button_index++;
-#warning "TODO/FIXME: add axis/hat remap support"
-            //if (m_button_index >= m_buttons.size()) {
-            if (m_button_index >= m_buttons.size() - 8) {
-                // all done, update report descriptor of current device
-                const auto report = getPlatform()->getPad()->getDevice()->report;
-                memcpy(report, p_newDevice->report, sizeof(InputReportDescriptor));
-                getPlatform()->getConfig()->saveDevice(getPlatform()->getPad()->getDevice());
-                setMode(Info);
-                return;
-            }
-
-            p_text->setString("PRESS " + Utility::toString(m_buttons[m_button_index].button));
-            m_clock_timeout.restart();
         }
 
-        // update timeout
-        p_text->setString("PRESS "
-                          + Utility::toString(m_buttons[m_button_index].button)
-                          + "("
-                          + std::to_string(5 - (int) m_clock_timeout.getElapsedTime().asSeconds())
-                          + ")");
+        m_buttons[m_button_index].widget->setVisibility(Visibility::Hidden);
 
-        // update button widget visibility
-        if (m_clock_button_visibility.getElapsedTime().asMilliseconds() > 300) {
-            m_buttons[m_button_index].widget->setVisibility(
-                m_buttons[m_button_index].widget->isVisible() ? Visibility::Hidden : Visibility::Visible);
-            m_clock_button_visibility.restart();
+        m_button_index++;
+#warning "TODO/FIXME: add axis/hat remap support"
+        //if (m_button_index >= m_buttons.size()) {
+        if (m_button_index >= m_buttons.size() - 8) {
+            // all done, update report descriptor of current device
+            const auto report = getPlatform()->getPad()->getDevice()->report;
+            memcpy(report, p_newDevice->report, sizeof(InputReportDescriptor));
+            getPlatform()->getConfig()->saveDevice(getPlatform()->getPad()->getDevice());
+            setMode(Info);
+            return;
         }
+
+        p_text->setString("PRESS " + Utility::toString(m_buttons[m_button_index].button));
+        m_clock_timeout.restart();
+    }
+
+    // update timeout
+    p_text->setString("PRESS "
+                      + Utility::toString(m_buttons[m_button_index].button)
+                      + "("
+                      + std::to_string(5 - (int) m_clock_timeout.getElapsedTime().asSeconds())
+                      + ")");
+
+    // update button widget visibility
+    if (m_clock_button_visibility.getElapsedTime().asMilliseconds() > 300) {
+        m_buttons[m_button_index].widget->setVisibility(
+            m_buttons[m_button_index].widget->isVisible() ? Visibility::Hidden : Visibility::Visible);
+        m_clock_button_visibility.restart();
     }
 
     Bitmap::loop(pos);

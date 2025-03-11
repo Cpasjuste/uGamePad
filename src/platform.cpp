@@ -30,6 +30,10 @@ void Platform::setup() {
 }
 
 void Platform::loop() {
+    // reset buttons states
+    p_pad->setButtons(0);
+
+    // loops
     p_hid->loop();
     p_pad->loop();
     p_ui->loop();

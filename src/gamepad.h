@@ -89,6 +89,8 @@ namespace uGamePad {
 
         virtual uint32_t &getButtons() { return m_buttons; }
 
+        virtual void setButtons(const uint32_t buttons) { m_buttons = buttons; }
+
         virtual bool onHidReport(const uint8_t *report, uint16_t len);
 
         void setDevice(Device *device) {
@@ -102,14 +104,15 @@ namespace uGamePad {
             }
         }
 
-        Device *getDevice() { return p_device; }
+        Device *getDevice() const { return p_device; }
 
-        Device *getDeviceDefaults() { return p_deviceDefaults; }
+        Device *getDeviceDefaults() const { return p_deviceDefaults; }
 
-        uint16_t getRepeatDelay() { return m_repeatDelayMs; }
+        uint16_t getRepeatDelay() const { return m_repeatDelayMs; }
 
-        void setRepeatDelay(uint16_t ms) { m_repeatDelayMs = ms; }
+        void setRepeatDelay(const uint16_t ms) { m_repeatDelayMs = ms; }
 
+        // wait for buttons to be released
         void flush();
 
         static uint8_t getButtonIndex(uint32_t button);
@@ -138,7 +141,7 @@ namespace uGamePad {
 
         int bezierY(float t);
 
-        uint32_t getButtonsFromAxis(int x, int y, uint8_t type = AXIS_TYPE_U8 | AXIS_TYPE_LEFT);
+        uint32_t getButtonsFromAxis(int x, int y, uint8_t type = AXIS_TYPE_U8 | AXIS_TYPE_LEFT) const;
 
         static uint32_t getButtonsFromHat(int hat);
     };

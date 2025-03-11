@@ -10,27 +10,27 @@ using namespace uGamePad;
 GamePad::GamePad() {
     // create an accurate map from ds4/5 analog inputs (0 to 255) to uGamePad metrics (-32768 to 32767)
     for (int i = 0; i < 128; i++) {
-        float t = (float) i / 127.0f;
+        const float t = static_cast<float>(i) / 127.0f;
         m_analog_map[i + 128] = bezierY(t);
         m_analog_map[127 - i] = -1 * m_analog_map[i + 128];
     }
 }
 
-uint32_t GamePad::getButtonsFromHat(int hat) {
+uint32_t GamePad::getButtonsFromHat(const int hat) {
     uint32_t buttons = 0;
 
     static constexpr uint32_t table[] = {
-        Button::DPAD_UP,
-        Button::DPAD_UP | Button::DPAD_RIGHT,
-        Button::DPAD_RIGHT,
-        Button::DPAD_DOWN | Button::DPAD_RIGHT,
-        Button::DPAD_DOWN,
-        Button::DPAD_LEFT | Button::DPAD_DOWN,
-        Button::DPAD_LEFT,
-        Button::DPAD_LEFT | Button::DPAD_UP,
+        DPAD_UP,
+        DPAD_UP | DPAD_RIGHT,
+        DPAD_RIGHT,
+        DPAD_DOWN | DPAD_RIGHT,
+        DPAD_DOWN,
+        DPAD_LEFT | DPAD_DOWN,
+        DPAD_LEFT,
+        DPAD_LEFT | DPAD_UP,
     };
 
-    auto i = static_cast<int>(hat);
+    const auto i = static_cast<int>(hat);
     if (i < 8) {
         buttons |= table[i];
     }
@@ -38,9 +38,8 @@ uint32_t GamePad::getButtonsFromHat(int hat) {
     return buttons;
 }
 
-uint32_t GamePad::getButtonsFromAxis(int x, int y, uint8_t type) {
+uint32_t GamePad::getButtonsFromAxis(const int x, const int y, const uint8_t type) const {
     uint32_t buttons = 0;
-    float slope = 0.414214f; // tangent of 22.5 degrees for size of angular zones
     auto analogX = (float) x, analogY = (float) y;
 
     if (type & AXIS_TYPE_U8) {
@@ -53,6 +52,7 @@ uint32_t GamePad::getButtonsFromAxis(int x, int y, uint8_t type) {
     }
 
     if (std::sqrt(analogX * analogX + analogY * analogY) >= DEAD_ZONE) {
+        constexpr float slope = 0.414214f;
         // symmetric angular zones for all eight digital directions
         if (analogY > 0 && analogX > 0) {
             // upper right quadrant
@@ -84,7 +84,7 @@ uint32_t GamePad::getButtonsFromAxis(int x, int y, uint8_t type) {
     return buttons;
 }
 
-uint8_t GamePad::getButtonIndex(uint32_t button) {
+uint8_t GamePad::getButtonIndex(const uint32_t button) {
     for (int i = 0; i < MAX_BUTTONS; i++) {
         if (button & BIT(i)) return i;
     }
@@ -160,11 +160,7 @@ bool GamePad::onHidReport(const uint8_t *report, const uint16_t len) {
     //printf("uGamePad::loop: received data for '%s', len: %i)\r\n", p_device->name, len);
     const auto *data = p_device->report;
 
-    // reset buttons state
-    m_buttons = 0;
-
-    // TODO: fix
-    // process axis
+    // process axis // TODO: fix
     if (data->is_xbox) {
         // "xinput" gamepad
         for (int i = 0; i < MAX_AXIS; i += 2) {
@@ -207,7 +203,7 @@ bool GamePad::onHidReport(const uint8_t *report, const uint16_t len) {
                     }
                 }
 
-                int h_range = (max - min);
+                const int h_range = (max - min);
                 // scale to 0-255
                 if (axis[i] <= min) axis[i] = (int16_t) min;
                 else if (axis[i] >= max) axis[i] = (int16_t) max;

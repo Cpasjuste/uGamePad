@@ -23,8 +23,8 @@ LinuxGamePad::LinuxGamePad() : GamePad() {
                 {B4, SDL_SCANCODE_KP_4},
                 {B5, SDL_SCANCODE_KP_5},
                 {B6, SDL_SCANCODE_KP_6},
-                {SELECT, SDL_SCANCODE_SPACE},
-                {START, SDL_SCANCODE_RETURN},
+                {SELECT, SDL_SCANCODE_KP_PERIOD},
+                {START, SDL_SCANCODE_KP_ENTER},
                 {UP, SDL_SCANCODE_UP},
                 {DOWN, SDL_SCANCODE_DOWN},
                 {LEFT, SDL_SCANCODE_LEFT},
@@ -53,7 +53,7 @@ void LinuxGamePad::loop() {
         if (ev.type == SDL_QUIT) exit(0);
     }
 
-    // check for buttons (keyboard) press
+    // add key press to buttons
     for (const auto &mapping: getOutputMode()->mappings) {
         m_buttons |= SDL_GetKeyboardState(nullptr)[mapping.pin] > 0 ? mapping.button : 0;
     }

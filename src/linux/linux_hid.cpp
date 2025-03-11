@@ -36,11 +36,10 @@ void LinuxHid::loop() {
     // return if pad is not initialized yet (should not happen...)
     if (!getPlatform()->getPad()) return;
 
-
+    const auto elapsed = m_discover_clock.getElapsedTime().asSeconds();
     // only scan if no gamepad/hid device is present
-    if (m_force_discovery || !getPlatform()->getPad()->getDevice() && m_discover_clock.getElapsedTime().asSeconds() >
-        1) {
-        printf("LinuxHid: discovery...\r\n");
+    if (m_force_discovery || !getPlatform()->getPad()->getDevice() && elapsed > 1) {
+        //printf("LinuxHid: discovery...\r\n");
 
         // reset force flag
         m_force_discovery = false;
