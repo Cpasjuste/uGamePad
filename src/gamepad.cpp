@@ -146,7 +146,6 @@ void GamePad::flush() {
     m_repeatDelayMs = 0;
 
     while (m_buttons) {
-        //m_buttons = 0;
         getPlatform()->getHid()->loop();
         getPlatform()->getPad()->loop();
     }
