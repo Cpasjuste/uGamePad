@@ -95,9 +95,6 @@ PicoGamePad::PicoGamePad() {
 
     // setup output pins
     PicoGamePad::setOutputMode(m_outputMode);
-
-    // get/update hardware buttons states
-    m_buttons |= getHardwareButtons();
 }
 
 #ifndef TODO_NES_SNES_MD_CABLES
@@ -190,7 +187,7 @@ bool PicoGamePad::onHidReport(const uint8_t *report, uint16_t len) {
 
 void PicoGamePad::loop() {
     // add hardware buttons to gamepad buttons
-    m_buttons = getHardwareButtons();
+    m_buttons = getHardwareButtons(m_buttons);
 
     // call parent
     GamePad::loop();

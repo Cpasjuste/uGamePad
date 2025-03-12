@@ -160,6 +160,9 @@ bool GamePad::onHidReport(const uint8_t *report, const uint16_t len) {
         return false;
     }
 
+    // reset buttons states
+    m_buttons = 0;
+
     //printf("uGamePad::loop: received data for '%s', len: %i)\r\n", p_device->name, len);
     const auto *data = p_device->report;
 

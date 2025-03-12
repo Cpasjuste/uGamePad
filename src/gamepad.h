@@ -89,8 +89,6 @@ namespace uGamePad {
 
         virtual uint32_t &getButtons() { return m_buttons; }
 
-        virtual void setButtons(const uint32_t buttons) { m_buttons = buttons; }
-
         virtual bool onHidReport(const uint8_t *report, uint16_t len);
 
         void setDevice(Device *device) {
