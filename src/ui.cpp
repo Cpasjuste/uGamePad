@@ -37,13 +37,16 @@ Ui::Ui() {
     p_splashText->setOrigin(Widget::Origin::Bottom);
     p_screen->add(p_splashText);
 
+    // message box
+    p_messageBox = new MessageBox(8, 8, 112, 48);
+    p_screen->add(p_messageBox);
+
     // show splash screen
     show(Splash);
 }
 
 void Ui::show(const MenuWidget menuWidget) {
-    printf("Ui::show: %i\r\n", menuWidget);
-
+    //printf("Ui::show: %i\r\n", menuWidget);
     if (m_menuCurrent == menuWidget) return;
 
     if (menuWidget == Splash) {

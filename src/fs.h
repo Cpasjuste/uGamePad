@@ -100,6 +100,8 @@ namespace uGamePad {
 
         Fs();
 
+        virtual ~Fs() = default;
+
         virtual bool format();
 
         virtual bool isAvailable() { return m_available; };
@@ -115,9 +117,10 @@ namespace uGamePad {
         static bool directoryExists(const std::string &path);
 
         static std::vector<File::Info> getDir(
-                const std::string &path, std::function<bool(const File::Info &)> filter = nullptr);
+            const std::string &path, std::function<bool(const File::Info &)> filter = nullptr);
 
-        virtual void sync() {};
+        virtual void sync() {
+        };
 
         virtual void setUsbMode(UsbMode mode) { m_usb_mode = mode; };
 
@@ -142,7 +145,7 @@ namespace uGamePad {
 
             static uint32_t get_file_length(void *fh);
 
-            static void list_files(const std::string &path, std::function<void(File::Info &)> callback);
+            static void list_files(const std::string &path, const std::function<void(File::Info &)> &callback);
 
             static bool file_exists(const std::string &path);
 

@@ -15,7 +15,11 @@ SystemInfo::SystemInfo(const Utility::Vec2i &pos, const Utility::Vec2i &size) : 
 
     SystemInfo::add(new Text(4, 4, "uG. Software: v" APP_VERSION));
     SystemInfo::add(new Text(4, 16, "uG. Hardware: " HW_VERSION));
-    SystemInfo::add(new Text(4, 28, "uG. Dev: Cpasjuste"));
+    SystemInfo::add(new Text(4, 28, "uG. Build: " BUILD_DATE));
+
+    const auto t = new Text(size.x / 2, size.y - 4, "2025 @ Cpasjuste");
+    t->setOrigin(Origin::Bottom);
+    SystemInfo::add(t);
 }
 
 void SystemInfo::setVisibility(Visibility visibility) {

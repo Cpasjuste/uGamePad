@@ -32,11 +32,7 @@ Menu::Menu() : Rectangle({0, 0}, getPlatform()->getGfx()->getSize()) {
     m_options.push_back({"OUTPUT MODE", modes});
     m_options.push_back({"GAMEPAD TEST", {"Go"}});
     m_options.push_back({"GAMEPAD REMAP", {"Go"}});
-#ifdef WIP_DISABLE_OPTION_AUTO_FIRE
-    m_options.push_back({"AUTO FIRE", {"Todo"}});
-#else
-    m_options.push_back({"AUTO FIRE", {"OFF", "ON"}});
-#endif
+    m_options.push_back({"FACTORY RESET", {"Go"}});
     m_options.push_back({"SYSTEM INFO", {"Go"}});
     m_options.push_back({"EXIT", {"Go"}});
 
@@ -61,6 +57,11 @@ void Menu::update() {
 }
 
 void Menu::loop(const Utility::Vec2i &pos) {
+    if (getPlatform()->getUi()->getMessageBox()->isVisible()) {
+        Rectangle::loop(pos);
+        return;
+    }
+
     // handle buttons
     const auto buttons = getPlatform()->getPad()->getButtons();
     if (buttons & GamePad::Button::UP) {
@@ -110,6 +111,14 @@ void Menu::loop(const Utility::Vec2i &pos) {
                 getPlatform()->getUi()->show(Ui::MenuWidget::GamePadTest);
             } else if (option->name == "GAMEPAD REMAP") {
                 getPlatform()->getUi()->show(Ui::MenuWidget::Remap);
+            } else if (option->name == "FACTORY RESET") {
+                const auto mbox = getPlatform()->getUi()->getMessageBox();
+                mbox->show("FORMAT FLASH ?", "YES", "NO", [mbox](const Text *t) {
+                    if (t && t == mbox->getButtonLeft()) {
+                        getPlatform()->getFs()->format();
+                        Utility::reboot(false);
+                    }
+                });
             } else if (option->name == "SYSTEM INFO") {
                 getPlatform()->getUi()->show(Ui::MenuWidget::InfoMenu);
             } else if (option->name == "EXIT") {

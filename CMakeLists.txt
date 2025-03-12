@@ -10,6 +10,7 @@ option(PICO_DEBUG_USB "Pico usb debug" OFF)
 
 set(APP_VERSION "1.0")
 set(HW_VERSION "Retail")
+string(TIMESTAMP BUILD_DATE "%Y%m%d")
 
 if (NOT PLATFORM_LINUX)
     set(ENV{PICO_SDK_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/external/pico-sdk)
@@ -114,6 +115,7 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC
         ${FLAGS}
         -DAPP_VERSION="${APP_VERSION}"
         -DHW_VERSION="${HW_VERSION}"
+        -DBUILD_DATE="${BUILD_DATE}"
 )
 target_link_libraries(${PROJECT_NAME} ${LIBS})
 

@@ -9,6 +9,7 @@
 #include "menu.h"
 #include "system_info.h"
 #include "gamepad_settings.h"
+#include "messagebox.h"
 
 namespace uGamePad {
     class Ui {
@@ -32,6 +33,8 @@ namespace uGamePad {
 
         bool isVisible() { return p_screen->isVisible(); };
 
+        MessageBox *getMessageBox() const { return p_messageBox; };
+
     private:
         Widget *p_screen;
         Menu *p_menu;
@@ -39,6 +42,7 @@ namespace uGamePad {
         Text *p_splashText;
         GamePadSettings *p_gamePadInfo;
         SystemInfo *p_systemInfo;
+        MessageBox *p_messageBox;
         MenuWidget m_menuCurrent = None;
         Clock m_triggerMenuClock;
     };

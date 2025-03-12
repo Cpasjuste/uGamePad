@@ -19,11 +19,9 @@ using namespace uGamePad;
 static FATFS flash_fs;
 
 Fs::Fs() {
-    if (m_available) return;
-
     // mount flash fs
     printf("PicoFs: mounting flash fs...\r\n");
-    auto res = f_mount(&flash_fs, "flash:", 1);
+    const auto res = f_mount(&flash_fs, "flash:", 1);
     if (res != FR_OK) {
         printf("PicoFs: failed to mount flash filesystem! (%i)\r\n", res);
         if (res == FR_NO_FILESYSTEM) {
@@ -39,26 +37,25 @@ Fs::Fs() {
 }
 
 bool Fs::format() {
-    FRESULT res;
-    MKFS_PARM opts{.fmt =  FM_ANY | FM_SFD};
-    std::string path = "flash:";
-    uint32_t sector_size = FLASH_SECTOR_SIZE;
+    constexpr MKFS_PARM opts{.fmt = FM_ANY | FM_SFD};
+    constexpr uint32_t sector_size = FLASH_SECTOR_SIZE;
+    const std::string path = "flash:";
 
-    printf("PicoFs::format: formatting drive \"%s\"...\r\n", path.c_str());
+    printf("Fs::format: formatting drive \"%s\"...\r\n", path.c_str());
 
-    res = f_mkfs(path.c_str(), &opts, flash_fs.win, sector_size);
+    FRESULT res = f_mkfs(path.c_str(), &opts, flash_fs.win, sector_size);
     if (res != FR_OK) {
-        printf("Io::format: format failed! (%i)\r\n", res);
+        printf("Fs::format: format failed! (%i)\r\n", res);
         return false;
     }
 
     res = f_mount(&flash_fs, path.c_str(), 1);
     if (res != FR_OK) {
-        printf("PicoFs::format: failed to mount filesystem! (%i)\r\n", res);
+        printf("Fs::format: failed to mount filesystem! (%i)\r\n", res);
         return false;
     }
 
-    printf("PicoFs: mounted flash fs on \"flash:\" (%s)\r\n",
+    printf("Fs: mounted flash fs on \"flash:\" (%s)\r\n",
            io_flash_get_size_string().c_str());
 
     return true;
@@ -66,18 +63,14 @@ bool Fs::format() {
 
 
 void Fs::createDirectory(const std::string &path) {
-    FRESULT fr;
-    const char *p;
-    char *temp;
-
     // add "/"
     std::string newPath = path;
     if (newPath[newPath.size() - 1] != '/') {
         newPath = newPath + "/";
     }
 
-    temp = static_cast<char *>(calloc(1, strlen(newPath.c_str()) + 1));
-    p = newPath.c_str();
+    const auto temp = static_cast<char *>(calloc(1, strlen(newPath.c_str()) + 1));
+    const char *p = newPath.c_str();
 
     while ((p = strchr(p, '/')) != nullptr) {
         if (p != newPath.c_str() && *(p - 1) == '/') {
@@ -87,7 +80,7 @@ void Fs::createDirectory(const std::string &path) {
         memcpy(temp, newPath.c_str(), p - newPath.c_str());
         temp[p - newPath.c_str()] = '\0';
         p++;
-        fr = f_mkdir(temp);
+        const auto fr = f_mkdir(temp);
         if (fr != FR_OK && fr != FR_EXIST) {
             break;
         }
@@ -108,7 +101,7 @@ bool Fs::directoryExists(const std::string &path) {
 
 std::vector<Fs::File::Info> Fs::getDir(const std::string &path, std::function<bool(const File::Info &)> filter) {
     std::vector<File::Info> ret;
-    FatFs::list_files(path, [&ret, &filter](File::Info &file) {
+    FatFs::list_files(path, [&ret, &filter](const File::Info &file) {
         if (!filter || filter(file))
             ret.push_back(file);
     });
@@ -116,17 +109,17 @@ std::vector<Fs::File::Info> Fs::getDir(const std::string &path, std::function<bo
     return ret;
 }
 
-bool Fs::File::open(const std::string &file, int mode) {
+bool Fs::File::open(const std::string &file, const int mode) {
     close();
     p_fh = FatFs::open_file(file, mode);
     return p_fh != nullptr;
 }
 
-int32_t Fs::File::read(uint32_t offset, uint32_t length, char *buffer) const {
+int32_t Fs::File::read(const uint32_t offset, const uint32_t length, char *buffer) const {
     return FatFs::read_file(p_fh, offset, length, buffer);
 }
 
-int32_t Fs::File::write(uint32_t offset, uint32_t length, const char *buffer) const {
+int32_t Fs::File::write(const uint32_t offset, const uint32_t length, const char *buffer) const {
     return FatFs::write_file(p_fh, offset, length, buffer);
 }
 
@@ -140,8 +133,8 @@ uint32_t Fs::File::getLength() const {
     return FatFs::get_file_length(p_fh);
 }
 
-void *Fs::FatFs::open_file(const std::string &path, int mode) {
-    FIL *f = new FIL();
+void *Fs::FatFs::open_file(const std::string &path, const int mode) {
+    const auto f = new FIL();
     BYTE ff_mode = 0;
 
     if (mode & File::OpenMode::Read)
@@ -151,8 +144,8 @@ void *Fs::FatFs::open_file(const std::string &path, int mode) {
     if (mode == File::OpenMode::Write)
         ff_mode |= FA_CREATE_ALWAYS;
 
-    FRESULT r = f_open(f, path.c_str(), ff_mode);
-    if (r == FR_OK) {
+    const auto res = f_open(f, path.c_str(), ff_mode);
+    if (res == FR_OK) {
         return f;
     }
 
@@ -160,27 +153,26 @@ void *Fs::FatFs::open_file(const std::string &path, int mode) {
     return nullptr;
 }
 
-int32_t Fs::FatFs::read_file(void *fh, uint32_t offset, uint32_t length, char *buffer) {
+int32_t Fs::FatFs::read_file(void *fh, const uint32_t offset, const uint32_t length, char *buffer) {
+    const auto f = static_cast<FIL *>(fh);
     FRESULT r = FR_OK;
-    FIL *f = (FIL *) fh;
 
-    if (offset != f_tell(f))
-        r = f_lseek(f, offset);
+    if (offset != f_tell(f)) r = f_lseek(f, offset);
 
     if (r == FR_OK) {
         unsigned int bytes_read;
         r = f_read(f, buffer, length, &bytes_read);
         if (r == FR_OK) {
-            return (int32_t) bytes_read;
+            return static_cast<int32_t>(bytes_read);
         }
     }
 
     return -1;
 }
 
-int32_t Fs::FatFs::write_file(void *fh, uint32_t offset, uint32_t length, const char *buffer) {
+int32_t Fs::FatFs::write_file(void *fh, const uint32_t offset, const uint32_t length, const char *buffer) {
     FRESULT r = FR_OK;
-    FIL *f = (FIL *) fh;
+    const auto f = static_cast<FIL *>(fh);
 
     if (offset != f_tell(f))
         r = f_lseek(f, offset);
@@ -189,7 +181,7 @@ int32_t Fs::FatFs::write_file(void *fh, uint32_t offset, uint32_t length, const 
         unsigned int bytes_written;
         r = f_write(f, buffer, length, &bytes_written);
         if (r == FR_OK) {
-            return (int32_t) bytes_written;
+            return static_cast<int32_t>(bytes_written);
         }
     }
 
@@ -197,28 +189,27 @@ int32_t Fs::FatFs::write_file(void *fh, uint32_t offset, uint32_t length, const 
 }
 
 int32_t Fs::FatFs::close_file(void *fh) {
-    FRESULT r = f_close((FIL *) fh);
-    delete (FIL *) fh;
+    const auto r = f_close(static_cast<FIL *>(fh));
+    delete static_cast<FIL *>(fh);
     return r == FR_OK ? 0 : -1;
 }
 
 uint32_t Fs::FatFs::get_file_length(void *fh) {
-    return f_size((FIL *) fh);
+    return f_size(static_cast<FIL *>(fh));
 }
 
-void Fs::FatFs::list_files(const std::string &path, std::function<void(File::Info &)> callback) {
+void Fs::FatFs::list_files(const std::string &path, const std::function<void(File::Info &)> &callback) {
+    FILINFO ent;
     DIR dir;
 
     if (f_opendir(&dir, path.c_str()) != FR_OK)
         return;
 
-    FILINFO ent;
-
     while (f_readdir(&dir, &ent) == FR_OK && ent.fname[0]) {
         File::Info info{
-                .name = ent.fname,
-                .flags = 0,
-                .size = ent.fsize
+            .name = ent.fname,
+            .flags = 0,
+            .size = ent.fsize
         };
 
         if (ent.fattrib & AM_DIR)
@@ -262,7 +253,9 @@ DSTATUS disk_status(BYTE drv) {
 DRESULT disk_read(BYTE drv, BYTE *buff, LBA_t sector, UINT count) {
     //printf("disk_read: %i\r\n", drv);
     return io_flash_read(sector, 0, buff, FLASH_SECTOR_SIZE * count)
-           == int32_t(FLASH_SECTOR_SIZE * count) ? RES_OK : RES_ERROR;
+           == int32_t(FLASH_SECTOR_SIZE * count)
+               ? RES_OK
+               : RES_ERROR;
 }
 
 DRESULT disk_write(BYTE drv, const BYTE *buff, LBA_t sector, UINT count) {
@@ -271,7 +264,9 @@ DRESULT disk_write(BYTE drv, const BYTE *buff, LBA_t sector, UINT count) {
            XIP_BASE + FLASH_TARGET_OFFSET_FATFS + ( sector * FLASH_SECTOR_SIZE));
 #endif
     return io_flash_write(sector, 0, buff, FLASH_SECTOR_SIZE * count)
-           == int32_t(FLASH_SECTOR_SIZE * count) ? RES_OK : RES_ERROR;
+           == int32_t(FLASH_SECTOR_SIZE * count)
+               ? RES_OK
+               : RES_ERROR;
 }
 
 DRESULT disk_ioctl(BYTE drv, BYTE cmd, void *buff) {
@@ -284,13 +279,13 @@ DRESULT disk_ioctl(BYTE drv, BYTE cmd, void *buff) {
             return RES_OK;
         case GET_SECTOR_COUNT:
             io_flash_get_size(block_size, num_blocks);
-            *(LBA_t *) buff = num_blocks;
+            *static_cast<LBA_t *>(buff) = num_blocks;
             return RES_OK;
         case GET_SECTOR_SIZE:
-            *(WORD *) buff = FLASH_SECTOR_SIZE;
+            *static_cast<WORD *>(buff) = FLASH_SECTOR_SIZE;
             return RES_OK;
         case GET_BLOCK_SIZE:
-            *(DWORD *) buff = 1;
+            *static_cast<DWORD *>(buff) = 1;
             return RES_OK;
         default:
             break;
