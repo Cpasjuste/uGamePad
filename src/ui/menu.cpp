@@ -103,6 +103,7 @@ void Menu::loop(const Utility::Vec2i &pos) {
             update();
         }
     } else if (buttons & GamePad::Button::B2) {
+        getPlatform()->getPad()->flush();
         getPlatform()->getUi()->show(Ui::MenuWidget::Splash);
     } else if (buttons & GamePad::Button::B1 || buttons & GamePad::Button::MENU) {
         const auto option = getSelection();
@@ -122,6 +123,7 @@ void Menu::loop(const Utility::Vec2i &pos) {
             } else if (option->name == "SYSTEM INFO") {
                 getPlatform()->getUi()->show(Ui::MenuWidget::InfoMenu);
             } else if (option->name == "EXIT") {
+                getPlatform()->getPad()->flush();
                 getPlatform()->getUi()->show(Ui::MenuWidget::Splash);
             } else {
                 option->next();
