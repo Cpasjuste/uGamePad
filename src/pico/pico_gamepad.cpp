@@ -151,7 +151,7 @@ bool PicoGamePad::onHidReport(const uint8_t *report, uint16_t len) {
     // process report in base class
     GamePad::onHidReport(report, len);
 
-    // handle gamepad states
+    // handle gpio states
     const auto ui = getPlatform()->getUi();
     if (ui && !ui->isVisible()) {
         // get output mode/mapping
@@ -178,6 +178,14 @@ bool PicoGamePad::onHidReport(const uint8_t *report, uint16_t len) {
 #endif
                     }
                 }
+            }
+        }
+    } else {
+        // reset gpio states
+        const auto output = getOutputMode();
+        for (const auto &mapping: output->mappings) {
+            if (mapping.pin != UINT8_MAX && gpio_get_dir(mapping.pin) != GPIO_IN) {
+                gpio_set_dir(mapping.pin, GPIO_IN);
             }
         }
     }

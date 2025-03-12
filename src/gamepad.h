@@ -91,6 +91,9 @@ namespace uGamePad {
 
         virtual bool onHidReport(const uint8_t *report, uint16_t len);
 
+        // wait for buttons to be released
+        virtual void flush();
+
         void setDevice(Device *device) {
             p_device = device;
             if (p_device) p_deviceDefaults = get_device(p_device->vid, p_device->pid);
@@ -109,9 +112,6 @@ namespace uGamePad {
         uint16_t getRepeatDelay() const { return m_repeatDelayMs; }
 
         void setRepeatDelay(const uint16_t ms) { m_repeatDelayMs = ms; }
-
-        // wait for buttons to be released
-        void flush();
 
         static uint8_t getButtonIndex(uint32_t button);
 
