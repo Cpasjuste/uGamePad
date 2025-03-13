@@ -146,6 +146,7 @@ void GamePad::flush() {
     m_repeatDelayMs = 0;
 
     while (m_buttons) {
+        getPlatform()->getPad()->clear();
         getPlatform()->getHid()->loop();
         getPlatform()->getPad()->loop();
     }
@@ -158,9 +159,6 @@ bool GamePad::onHidReport(const uint8_t *report, const uint16_t len) {
         printf("uGamePad::onHidReport: error: device not set\r\n");
         return false;
     }
-
-    // reset buttons states
-    m_buttons = 0;
 
     //printf("uGamePad::loop: received data for '%s', len: %i)\r\n", p_device->name, len);
     const auto *data = p_device->report;

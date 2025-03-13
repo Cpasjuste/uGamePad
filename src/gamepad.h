@@ -94,6 +94,9 @@ namespace uGamePad {
         // wait for buttons to be released
         virtual void flush();
 
+        // clear buttons states immediately
+        virtual void clear() { m_buttons = 0; }
+
         void setDevice(Device *device) {
             p_device = device;
             if (p_device) p_deviceDefaults = get_device(p_device->vid, p_device->pid);

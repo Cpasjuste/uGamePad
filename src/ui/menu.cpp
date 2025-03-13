@@ -8,17 +8,17 @@
 using namespace uGamePad;
 
 Menu::Menu() : Rectangle({0, 0}, getPlatform()->getGfx()->getSize()) {
-    uint8_t menu_height = Menu::getSize().y - 4;
+    const uint8_t menu_height = Menu::getSize().y - 4;
     uint8_t line_height = 7 + 2; // font height + margin
     max_lines = menu_height / line_height;
     if (max_lines * line_height < menu_height) {
         line_height = menu_height / max_lines;
     }
 
-    // lines
+    // menu lines
     for (uint8_t i = 0; i < max_lines; i++) {
-        auto y = (int16_t) ((line_height * i) + 2);
-        auto w = (int16_t) (Menu::getSize().x - 2);
+        auto y = static_cast<int16_t>((line_height * i) + 2);
+        auto w = static_cast<int16_t>(Menu::getSize().x - 2);
         auto line = new MenuLine({1, y, w, line_height});
         p_lines.push_back(line);
         Menu::add(line);

@@ -53,14 +53,9 @@ void LinuxGamePad::loop() {
         if (ev.type == SDL_QUIT) exit(0);
     }
 
-    // if no gamepad, fix "onHidReport" not called
-    if (!p_device) {
-        m_buttons = 0;
-    }
-
     // add key press to buttons
     for (const auto &mapping: getOutputMode()->mappings) {
-        m_buttons |= SDL_GetKeyboardState(nullptr)[mapping.pin] > 0 ? mapping.button : 0;
+        if (SDL_GetKeyboardState(nullptr)[mapping.pin]) m_buttons |= mapping.button;
     }
 
     GamePad::loop();
