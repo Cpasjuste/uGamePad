@@ -1,5 +1,7 @@
 # uGamePad
 
+![](docs/pics/ugamepad-splash.png)
+
 ## Usage
 Connect device via USB to computer pressing button:
  - **UP**: device start in bootloader mode for updating/flashing.
@@ -29,6 +31,7 @@ Add a device descriptor to uGamePad flash fs (via USB) in the "devices" folder (
     "is_xbox": true,
     "joystick": {
       "button_count": 12,
+      "dead_zone": 8000,
       "axis": [
         {
           "offset": 48,
@@ -152,6 +155,7 @@ Add a device descriptor to uGamePad flash fs (via USB) in the "devices" folder (
     "is_xbox": false,
     "joystick": {
       "button_count": 8,
+      "dead_zone": 8000,
       "axis": [
         {
           "offset": 8,
@@ -346,7 +350,7 @@ Add a device descriptor to uGamePad flash fs (via USB) in the "devices" folder (
 
 ## Currently supported gamepads
 
-SNK Neo-Geo Mini, Xbox, Xbox One (not tested), DualShock 4, DualShock 5 (not tested), cheap SNES USB Gamepad...
+SNK Neo-Geo Mini, Xbox, (Xbox One not tested), DualShock 4, (DualShock 5 not tested), cheap SNES USB Gamepad...
 See [devices.cpp](src/devices.cpp)
 
 ## Testing/debug in linux with an xbox 360 controller
@@ -365,6 +369,12 @@ Bus 003 Device 004: ID 24c6:550d ThrustMaster, Inc. Hori Gem Controller for Xbox
 KERNEL=="hidraw*", ATTRS{idVendor}=="24c6", ATTRS{idProduct}=="550d", MODE="0660", TAG+="uaccess"
 SUBSYSTEM=="usb", ATTRS{idVendor}=="24c6", ATTRS{idProduct}=="550d", MODE="0666"
 ```
+
+## Pics
+
+![](docs/pics/ugamepad-v1.1.jpg)
+
+![](docs/pics/ugamepad-debug.jpg)
 
 ## TODO
 
