@@ -6,8 +6,10 @@
 #define U_GAMEPAD_PICO_HID_H
 
 namespace uGamePad {
-    class PicoHid : public Hid {
+    class PicoHid final : public Hid {
     public:
+        ~PicoHid() override = default;
+
         void loop() override;
 
     private:

@@ -44,7 +44,7 @@ namespace uGamePad {
             AXIS_R_RIGHT = BIT(17),
             AXIS_R_UP = BIT(18),
             AXIS_R_DOWN = BIT(19),
-            MENU = BIT(20),
+            MENU = BIT(20), // hardware button
             DELAY = BIT(21),
             // Generic catch-all directions
             LEFT = DPAD_LEFT | AXIS_L_LEFT | AXIS_R_LEFT,
@@ -89,17 +89,17 @@ namespace uGamePad {
 
         virtual uint32_t &getButtons() { return m_buttons; }
 
+        virtual uint32_t getHardwareButtons() { return 0; }
+
         virtual bool onHidReport(const uint8_t *report, uint16_t len);
 
         // wait for buttons to be released
         virtual void flush();
 
-        // clear buttons states immediately
-        virtual void clear() { m_buttons = 0; }
-
         void setDevice(Device *device) {
             p_device = device;
             if (p_device) p_deviceDefaults = get_device(p_device->vid, p_device->pid);
+            m_buttons = m_buttons_prev = 0;
         }
 
         void setDeviceDefaultDescriptor() const {

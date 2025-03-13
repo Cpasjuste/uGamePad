@@ -17,18 +17,18 @@ LinuxGamePad::LinuxGamePad() : GamePad() {
             .name = "Jamma",
             .mode = Jamma,
             .mappings = {
-                {B1, SDL_SCANCODE_KP_1},
-                {B2, SDL_SCANCODE_KP_2},
-                {B3, SDL_SCANCODE_KP_3},
-                {B4, SDL_SCANCODE_KP_4},
-                {B5, SDL_SCANCODE_KP_5},
-                {B6, SDL_SCANCODE_KP_6},
-                {SELECT, SDL_SCANCODE_KP_PERIOD},
-                {START, SDL_SCANCODE_KP_ENTER},
-                {UP, SDL_SCANCODE_UP},
-                {DOWN, SDL_SCANCODE_DOWN},
-                {LEFT, SDL_SCANCODE_LEFT},
-                {RIGHT, SDL_SCANCODE_RIGHT},
+                {B1, SDL_SCANCODE_UNKNOWN},
+                {B2, SDL_SCANCODE_UNKNOWN},
+                {B3, SDL_SCANCODE_UNKNOWN},
+                {B4, SDL_SCANCODE_UNKNOWN},
+                {B5, SDL_SCANCODE_UNKNOWN},
+                {B6, SDL_SCANCODE_UNKNOWN},
+                {SELECT, SDL_SCANCODE_UNKNOWN},
+                {START, SDL_SCANCODE_UNKNOWN},
+                {UP, SDL_SCANCODE_UNKNOWN},
+                {DOWN, SDL_SCANCODE_UNKNOWN},
+                {LEFT, SDL_SCANCODE_UNKNOWN},
+                {RIGHT, SDL_SCANCODE_UNKNOWN},
             }
         }
     );
@@ -46,17 +46,19 @@ LinuxGamePad::LinuxGamePad() : GamePad() {
     LinuxGamePad::setOutputMode(m_outputMode);
 }
 
-void LinuxGamePad::loop() {
+uint32_t LinuxGamePad::getHardwareButtons() {
+    uint32_t buttons = 0;
+
     // check for quit event
     SDL_Event ev;
     while (SDL_PollEvent(&ev)) {
         if (ev.type == SDL_QUIT) exit(0);
     }
 
-    // add key press to buttons
-    for (const auto &mapping: getOutputMode()->mappings) {
-        if (SDL_GetKeyboardState(nullptr)[mapping.pin]) m_buttons |= mapping.button;
-    }
+    // simulate hardware buttons
+    if (SDL_GetKeyboardState(nullptr)[SDL_SCANCODE_UP]) buttons |= DPAD_UP;
+    if (SDL_GetKeyboardState(nullptr)[SDL_SCANCODE_DOWN]) buttons |= DPAD_DOWN;
+    if (SDL_GetKeyboardState(nullptr)[SDL_SCANCODE_KP_ENTER]) buttons |= MENU;
 
-    GamePad::loop();
+    return buttons;
 }

@@ -146,7 +146,7 @@ void GamePad::flush() {
     m_repeatDelayMs = 0;
 
     while (m_buttons) {
-        getPlatform()->getPad()->clear();
+        //getPlatform()->getPad()->clear();
         getPlatform()->getHid()->loop();
         getPlatform()->getPad()->loop();
     }
@@ -162,6 +162,9 @@ bool GamePad::onHidReport(const uint8_t *report, const uint16_t len) {
 
     //printf("uGamePad::loop: received data for '%s', len: %i)\r\n", p_device->name, len);
     const auto *data = p_device->report;
+
+    // we need to clear inputs here as hid reports are not received every frames
+    m_buttons = 0;
 
     // process axis // TODO: fix
     if (data->is_xbox) {
@@ -243,6 +246,19 @@ bool GamePad::onHidReport(const uint8_t *report, const uint16_t len) {
 }
 
 void GamePad::loop() {
+    // if no gamepad is connected, we need to clear inputs here for proper hardware buttons states
+    if (!p_device) m_buttons = 0;
+
+    // handle hardware buttons
+    const uint32_t buttons = getHardwareButtons();
+    if (buttons & DPAD_UP) m_buttons |= DPAD_UP;
+    if (buttons & DPAD_DOWN) m_buttons |= DPAD_DOWN;
+    if (buttons & MENU) {
+        m_buttons |= MENU;
+    } else {
+        m_buttons &= ~MENU;
+    }
+
     // handle auto-repeat for ui stuff
     if (m_repeatClock.getElapsedTime().asMilliseconds() >= m_repeatDelayMs) {
         m_repeatClock.restart();

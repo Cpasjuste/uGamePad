@@ -138,11 +138,13 @@ void PicoGamePad::setOutputMode(const GamePad::Mode &mode) {
     }
 }
 
-uint32_t PicoGamePad::getHardwareButtons(uint32_t buttons) {
+uint32_t PicoGamePad::getHardwareButtons() {
+    uint32_t buttons = 0;
+
     // handle hardware buttons
-    if (!gpio_get(GPIO_HW_BTN_UP)) buttons |= UP;
-    if (!gpio_get(GPIO_HW_BTN_DOWN)) buttons |= DOWN;
-    buttons = buttons & ~MENU | (!gpio_get(GPIO_HW_BTN_ENTER) ? MENU : 0);
+    if (!gpio_get(GPIO_HW_BTN_UP)) buttons |= DPAD_UP;
+    if (!gpio_get(GPIO_HW_BTN_DOWN)) buttons |= DPAD_DOWN;
+    if (!gpio_get(GPIO_HW_BTN_ENTER)) buttons |= MENU;
 
     return buttons;
 }
@@ -181,7 +183,7 @@ bool PicoGamePad::onHidReport(const uint8_t *report, uint16_t len) {
             }
         }
     } else {
-        // reset gpio states
+        // clear gpio states if ui is visible
         const auto output = getOutputMode();
         for (const auto &mapping: output->mappings) {
             if (mapping.pin != UINT8_MAX && gpio_get_dir(mapping.pin) != GPIO_IN) {
@@ -191,12 +193,4 @@ bool PicoGamePad::onHidReport(const uint8_t *report, uint16_t len) {
     }
 
     return true;
-}
-
-void PicoGamePad::loop() {
-    // add hardware buttons to gamepad buttons
-    m_buttons = getHardwareButtons(m_buttons);
-
-    // call parent
-    GamePad::loop();
 }

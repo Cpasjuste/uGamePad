@@ -46,7 +46,7 @@ Ui::Ui() {
 }
 
 void Ui::show(const MenuWidget menuWidget) {
-    //printf("Ui::show: %i\r\n", menuWidget);
+    printf("Ui::show: %i\r\n", menuWidget);
     if (m_menuCurrent == menuWidget) return;
 
     if (menuWidget == Splash) {
@@ -98,7 +98,7 @@ void Ui::loop() {
         if (buttons & GamePad::Button::MENU) {
             p_menu->reset();
             show(MainMenu);
-            // needed to clear hardware "menu/start" button
+            // needed to clear hardware "menu/start" button state
             getPlatform()->getPad()->flush();
         } else if (buttons & GamePad::Button::START && buttons & GamePad::Button::SELECT) {
             if (m_triggerMenuClock.getElapsedTime().asSeconds() > 1) {

@@ -54,7 +54,8 @@ void MessageBox::show(const std::string &text, const std::string &leftButton, co
             break;
         }
 
-        if (buttons & GamePad::Button::LEFT || buttons & GamePad::Button::RIGHT) {
+        if (buttons & GamePad::Button::LEFT || buttons & GamePad::Button::RIGHT
+            || buttons & GamePad::Button::UP || buttons & GamePad::Button::DOWN) {
             if (p_buttonLeft->getColor() == Utility::Color::White) {
                 p_buttonLeft->setColor(Utility::Color::Black);
                 p_buttonLeft->setDrawBackground(true);

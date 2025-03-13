@@ -11,6 +11,8 @@
 namespace uGamePad {
     class Hid {
     public:
+        virtual ~Hid() = default;
+
         virtual void loop() {}
 
         void onDeviceConnected(Device *device);

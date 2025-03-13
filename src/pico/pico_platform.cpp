@@ -39,7 +39,7 @@ void PicoPlatform::setup() {
     p_gfx = new PicoGfx();
 
     // check for bootloader mode (hardware) button press
-    const auto hardwareButtons = PicoGamePad::getHardwareButtons();
+    const auto hardwareButtons = p_pad->getHardwareButtons();
     if (hardwareButtons & GamePad::Button::UP) {
         printf("PicoPlatform::setup: bootloader mode called\r\n");
         Utility::reboot(true);

@@ -2,6 +2,11 @@
 
 ![](docs/pics/ugamepad-splash.png)
 
+## Info
+
+uGamePad is an usb gamepad to db15 adapter for jamma arcade superguns, using a pi pico (rp2040)
+
+
 ## Usage
 Connect device via USB to computer pressing button:
  - **UP**: device start in bootloader mode for updating/flashing.

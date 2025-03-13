@@ -14,7 +14,7 @@ namespace uGamePad {
 
         ~LinuxGamePad() override = default;
 
-        void loop() override;
+        uint32_t getHardwareButtons() override;
     };
 }
 
