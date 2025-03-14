@@ -8,7 +8,7 @@ option(PICO_DEV_BOARD "Build for ugp dev board" OFF)
 option(PICO_DEBUG_UART "Pico uart debug" OFF)
 option(PICO_DEBUG_USB "Pico usb debug" OFF)
 
-set(APP_VERSION "1.0")
+set(APP_VERSION "1.1")
 set(HW_VERSION "Retail")
 string(TIMESTAMP BUILD_DATE "%Y%m%d")
 
