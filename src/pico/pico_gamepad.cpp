@@ -22,15 +22,21 @@ PicoGamePad::PicoGamePad() {
     s_picoGamePad = this;
 
     // setup hardware buttons
-    gpio_set_function(GPIO_HW_BTN_UP, GPIO_FUNC_SIO);
-    gpio_set_dir(GPIO_HW_BTN_UP, GPIO_IN);
-    gpio_pull_up(GPIO_HW_BTN_UP);
-    gpio_set_function(GPIO_HW_BTN_DOWN, GPIO_FUNC_SIO);
-    gpio_set_dir(GPIO_HW_BTN_DOWN, GPIO_IN);
-    gpio_pull_up(GPIO_HW_BTN_DOWN);
-    gpio_set_function(GPIO_HW_BTN_ENTER, GPIO_FUNC_SIO);
-    gpio_set_dir(GPIO_HW_BTN_ENTER, GPIO_IN);
-    gpio_pull_up(GPIO_HW_BTN_ENTER);
+    if (GPIO_HW_BTN_UP != INPUT_DUMMY) {
+        gpio_set_function(GPIO_HW_BTN_UP, GPIO_FUNC_SIO);
+        gpio_set_dir(GPIO_HW_BTN_UP, GPIO_IN);
+        gpio_pull_up(GPIO_HW_BTN_UP);
+    }
+    if (GPIO_HW_BTN_DOWN != INPUT_DUMMY) {
+        gpio_set_function(GPIO_HW_BTN_DOWN, GPIO_FUNC_SIO);
+        gpio_set_dir(GPIO_HW_BTN_DOWN, GPIO_IN);
+        gpio_pull_up(GPIO_HW_BTN_DOWN);
+    }
+    if (GPIO_HW_BTN_ENTER != INPUT_DUMMY) {
+        gpio_set_function(GPIO_HW_BTN_ENTER, GPIO_FUNC_SIO);
+        gpio_set_dir(GPIO_HW_BTN_ENTER, GPIO_IN);
+        gpio_pull_up(GPIO_HW_BTN_ENTER);
+    }
 
     // setup output modes
     m_outputModes = {
@@ -127,7 +133,7 @@ void PicoGamePad::setOutputMode(const GamePad::Mode &mode) {
         }
 #endif
         for (const auto &mapping: out->mappings) {
-            if (mapping.pin != UINT8_MAX) {
+            if (mapping.pin != INPUT_DUMMY) {
                 gpio_set_function(mapping.pin, GPIO_FUNC_SIO);
                 gpio_set_dir(mapping.pin, mapping.direction);
                 if (mapping.defaultState != GPIO_FLOAT) {
@@ -142,9 +148,9 @@ uint32_t PicoGamePad::getHardwareButtons() {
     uint32_t buttons = 0;
 
     // handle hardware buttons
-    if (!gpio_get(GPIO_HW_BTN_UP)) buttons |= DPAD_UP;
-    if (!gpio_get(GPIO_HW_BTN_DOWN)) buttons |= DPAD_DOWN;
-    if (!gpio_get(GPIO_HW_BTN_ENTER)) buttons |= MENU;
+    if (GPIO_HW_BTN_UP != INPUT_DUMMY && !gpio_get(GPIO_HW_BTN_UP)) buttons |= DPAD_UP;
+    if (GPIO_HW_BTN_DOWN != INPUT_DUMMY && !gpio_get(GPIO_HW_BTN_DOWN)) buttons |= DPAD_DOWN;
+    if (GPIO_HW_BTN_ENTER != INPUT_DUMMY && !gpio_get(GPIO_HW_BTN_ENTER)) buttons |= MENU;
 
     return buttons;
 }
@@ -166,7 +172,7 @@ bool PicoGamePad::onHidReport(const uint8_t *report, uint16_t len) {
             if (m_buttons_diff) {
                 // generate pin output
                 for (const auto &mapping: output->mappings) {
-                    if (mapping.pin != UINT8_MAX && m_buttons_diff & mapping.button) {
+                    if (mapping.pin != INPUT_DUMMY && m_buttons_diff & mapping.button) {
                         // open-drain simulation
                         if (m_buttons & mapping.button) {
                             gpio_set_dir(mapping.pin, GPIO_OUT);

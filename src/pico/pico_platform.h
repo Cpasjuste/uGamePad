@@ -5,13 +5,32 @@
 #ifndef U_GAMEPAD_PICO_PLATFORM_H
 #define U_GAMEPAD_PICO_PLATFORM_H
 
-#include "pico_gamepad.h"
-#include "pico_gfx.h"
-
 #if defined(PICO_BUILD)
-#if defined(UGP_DEV_BOARD)
+#if PICO_RP2350
+// RP2350 testing
+#define GPIO_TX             0
+#define GPIO_RX             1
+// hardware buttons
+#define GPIO_HW_BTN_UP      INPUT_DUMMY
+#define GPIO_HW_BTN_DOWN    INPUT_DUMMY
+#define GPIO_HW_BTN_ENTER   INPUT_DUMMY
+#define GPIO_OLED_SDA       4
+#define GPIO_OLED_SCL       5
+// output pins
+#define GPIO_BTN_B1         INPUT_DUMMY
+#define GPIO_BTN_B2         INPUT_DUMMY
+#define GPIO_BTN_B3         INPUT_DUMMY
+#define GPIO_BTN_B4         INPUT_DUMMY
+#define GPIO_BTN_B5         INPUT_DUMMY
+#define GPIO_BTN_B6         INPUT_DUMMY
+#define GPIO_BTN_SELECT     INPUT_DUMMY
+#define GPIO_BTN_START      INPUT_DUMMY
+#define GPIO_BTN_UP         INPUT_DUMMY
+#define GPIO_BTN_DOWN       INPUT_DUMMY
+#define GPIO_BTN_LEFT       INPUT_DUMMY
+#define GPIO_BTN_RIGHT      INPUT_DUMMY
+#elif defined(UGP_DEV_BOARD)
 // "uGamePad_v1.1_pico-usb-a" dev board
-// debug pins
 #define GPIO_TX             0
 #define GPIO_RX             1
 // hardware buttons
