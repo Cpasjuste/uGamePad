@@ -24,9 +24,11 @@ namespace uGamePad {
             float x;
             float y;
 
-            Vec2f() : x(0), y(0) {}
+            Vec2f() : x(0), y(0) {
+            }
 
-            Vec2f(const float x, const float y) : x(x), y(y) {}
+            Vec2f(const float x, const float y) : x(x), y(y) {
+            }
 
             Vec2f operator+(const Vec2f &rhs) const {
                 return {x + rhs.x, y + rhs.y};
@@ -45,20 +47,22 @@ namespace uGamePad {
             int16_t x;
             int16_t y;
 
-            Vec2i() : x(0), y(0) {}
+            Vec2i() : x(0), y(0) {
+            }
 
-            Vec2i(const int16_t x, const int16_t y) : x(x), y(y) {}
+            Vec2i(const int16_t x, const int16_t y) : x(x), y(y) {
+            }
 
             Vec2i operator+(const Vec2i &rhs) const {
-                return {(int16_t) (x + rhs.x), (int16_t) (y + rhs.y)};
+                return {static_cast<int16_t>(x + rhs.x), static_cast<int16_t>(y + rhs.y)};
             }
 
             Vec2i operator-(const Vec2i &rhs) const {
-                return {(int16_t) (x - rhs.x), (int16_t) (y - rhs.y)};
+                return {static_cast<int16_t>(x - rhs.x), static_cast<int16_t>(y - rhs.y)};
             }
 
             Vec2i operator*(const int16_t i) const {
-                return {(int16_t) (x * i), (int16_t) (y * i)};
+                return {static_cast<int16_t>(x * i), static_cast<int16_t>(y * i)};
             }
         };
 
@@ -68,24 +72,32 @@ namespace uGamePad {
             int16_t w;
             int16_t h;
 
-            Vec4i() : x(0), y(0), w(0), h(0) {}
+            Vec4i() : x(0), y(0), w(0), h(0) {
+            }
 
             Vec4i(const int16_t x, const int16_t y, const int16_t w, const int16_t h)
-                    : x(x), y(y), w(w), h(h) {}
+                : x(x), y(y), w(w), h(h) {
+            }
 
             Vec4i operator+(const Vec4i &rhs) const {
-                return {(int16_t) (x + rhs.x), (int16_t) (y + rhs.y),
-                        (int16_t) (w + rhs.w), (int16_t) (h + rhs.h)};
+                return {
+                    static_cast<int16_t>(x + rhs.x), static_cast<int16_t>(y + rhs.y),
+                    static_cast<int16_t>(w + rhs.w), static_cast<int16_t>(h + rhs.h)
+                };
             }
 
             Vec4i operator-(const Vec4i &rhs) const {
-                return {(int16_t) (x - rhs.x), (int16_t) (y - rhs.y),
-                        (int16_t) (w - rhs.w), (int16_t) (h - rhs.h)};
+                return {
+                    static_cast<int16_t>(x - rhs.x), static_cast<int16_t>(y - rhs.y),
+                    static_cast<int16_t>(w - rhs.w), static_cast<int16_t>(h - rhs.h)
+                };
             }
 
             Vec4i operator*(const int16_t i) const {
-                return {(int16_t) (x * i), (int16_t) (y * i),
-                        (int16_t) (w * i), (int16_t) (h * i)};
+                return {
+                    static_cast<int16_t>(x * i), static_cast<int16_t>(y * i),
+                    static_cast<int16_t>(w * i), static_cast<int16_t>(h * i)
+                };
             }
         };
 
@@ -102,7 +114,7 @@ namespace uGamePad {
 
         static std::string baseName(const std::string &path);
 
-        static std::string toString(uint32_t button);
+        static std::string toString(uint32_t buttons);
 
         static std::string parseSize(uint64_t size);
 

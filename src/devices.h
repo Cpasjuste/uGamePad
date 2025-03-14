@@ -30,6 +30,7 @@
 #define REPORT_TYPE_JOYSTICK    3
 
 namespace uGamePad {
+    // if "InputReportDescriptor" struct change,
     typedef struct {
         uint8_t type: 2;
         uint8_t report_id;

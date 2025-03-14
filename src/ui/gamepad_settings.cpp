@@ -138,7 +138,7 @@ void GamePadSettings::loop(const Utility::Vec2i &pos) {
                 case GamePad::Button::AXIS_L_UP:
                 case GamePad::Button::AXIS_R_LEFT:
                 case GamePad::Button::AXIS_R_UP:
-#warning "TODO/FIXME: add axis/hat remap support"
+#warning "TODO/FIXME: add axis/hat remap support ?"
                     break;
                 default:
                     break;
@@ -148,7 +148,7 @@ void GamePadSettings::loop(const Utility::Vec2i &pos) {
         m_buttons[m_remap_index].widget->setVisibility(Visibility::Hidden);
         m_remap_index++;
 
-#warning "TODO/FIXME: add axis/hat remap support"
+#warning "TODO/FIXME: add axis/hat remap support ?"
         //if (m_remap_index >= m_buttons.size()) {
         if (m_remap_index >= m_buttons.size() - 8) {
             // all done, update report descriptor of current device

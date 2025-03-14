@@ -16,7 +16,7 @@
 #undef ARDUINO
 #define ARDUINOJSON_ENABLE_STD_STREAM 1
 
-#include "ArduinoJson-v7.0.3.h"
+#include "ArduinoJson-v7.3.1.h"
 
 using namespace uGamePad;
 
@@ -33,7 +33,7 @@ void Utility::reboot(bool bootloader) {
 #endif
 }
 
-std::string Utility::toString(uint32_t buttons) {
+std::string Utility::toString(const uint32_t buttons) {
     std::string ret;
 
     if (buttons & GamePad::Button::B1) ret += "B1 ";
@@ -63,23 +63,24 @@ std::string Utility::toString(uint32_t buttons) {
 }
 
 std::string Utility::parseSize(uint64_t size) {
-    char output[32];
     const char *suffix[] = {"B", "KB", "MB", "GB", "TB"};
-    char length = sizeof(suffix) / sizeof(suffix[0]);
-    auto dblBytes = (double) size;
-    int i = 0;
+    constexpr char length = std::size(suffix);
+    auto dblBytes = static_cast<double>(size);
 
     if (size <= 0) {
         return "0 B";
-    } else {
-        if (size > 1024) {
-            for (i = 0; (size / 1024) > 0 && i < length - 1; i++, size /= 1024)
-                dblBytes = (double) size / 1024.0;
-        }
-
-        snprintf(output, 31, "~%i %s", (int) dblBytes, suffix[i]);
-        return output;
     }
+
+    int i = 0;
+    char output[32];
+    if (size > 1024) {
+        for (i = 0; (size / 1024) > 0 && i < length - 1; i++, size /= 1024)
+            dblBytes = static_cast<double>(size) / 1024.0;
+    }
+
+    snprintf(output, 31, "~%i %s", static_cast<int>(dblBytes), suffix[i]);
+
+    return output;
 }
 
 std::string Utility::baseName(const std::string &path) {
@@ -90,6 +91,7 @@ std::string Utility::baseName(const std::string &path) {
             name.erase(0, idx + 1);
         }
     }
+
     return name;
 }
 
@@ -106,7 +108,7 @@ bool Utility::serialize(Device *device, std::vector<uint8_t> *buffer) {
     doc["name"] = device->name;
 
     // input report
-    JsonObject item = doc["input_descriptor"].to<JsonObject>();
+    auto item = doc["input_descriptor"].to<JsonObject>();
     //item["type"] = device->report->type; // not needed for user
     //item["report_id"] = device->report->report_id;  // not needed for user
     item["report_size"] = device->report->report_size;
@@ -118,7 +120,7 @@ bool Utility::serialize(Device *device, std::vector<uint8_t> *buffer) {
     item["dead_zone"] = device->report->joystick.dead_zone;
 
     // axis
-    JsonArray array = doc["input_descriptor"]["joystick"]["axis"].to<JsonArray>();
+    auto array = doc["input_descriptor"]["joystick"]["axis"].to<JsonArray>();
     for (auto &axis: device->report->joystick.axis) {
         item = array.add<JsonObject>();
         item["offset"] = axis.offset;
@@ -151,7 +153,7 @@ bool Utility::serialize(Device *device, std::vector<uint8_t> *buffer) {
         item["bytes"][i] = device->report->joystick.init.bytes[i];
     }
 
-    size_t len = serializeJsonPretty(doc, buffer->data(), buffer->size());
+    const size_t len = serializeJsonPretty(doc, buffer->data(), buffer->size());
     if (len == 0) {
         printf("Json::getDevice: failed to serialize device...\r\n");
         return {};
@@ -163,7 +165,7 @@ bool Utility::serialize(Device *device, std::vector<uint8_t> *buffer) {
 
 Device *Utility::deserialize(const std::vector<uint8_t> *buffer) {
     JsonDocument doc;
-    DeserializationError err = deserializeJson(doc, buffer->data(), buffer->size());
+    const auto err = deserializeJson(doc, buffer->data(), buffer->size());
     if (err) {
         printf("Json::getDevice: failed to deserialize buffer: %s\r\n", err.c_str());
         return nullptr;
@@ -189,7 +191,7 @@ Device *Utility::deserialize(const std::vector<uint8_t> *buffer) {
     device->report->joystick.dead_zone = doc["input_descriptor"]["joystick"]["dead_zone"];
 
     // axis
-    JsonArray axis = doc["input_descriptor"]["joystick"]["axis"];
+    const JsonArray axis = doc["input_descriptor"]["joystick"]["axis"];
     for (int i = 0; i < MAX_AXIS; i++) {
         device->report->joystick.axis[i].offset = axis[i]["offset"];
         device->report->joystick.axis[i].size = axis[i]["size"];
@@ -198,7 +200,7 @@ Device *Utility::deserialize(const std::vector<uint8_t> *buffer) {
     }
 
     // buttons
-    JsonArray buttons = doc["input_descriptor"]["joystick"]["buttons"];
+    const JsonArray buttons = doc["input_descriptor"]["joystick"]["buttons"];
     for (int i = 0; i < device->report->joystick.button_count; i++) {
         device->report->joystick.buttons[i].byte_offset = buttons[i]["byte_offset"];
         device->report->joystick.buttons[i].bitmask = buttons[i]["bitmask"];
@@ -214,7 +216,7 @@ Device *Utility::deserialize(const std::vector<uint8_t> *buffer) {
 
     // init
     device->report->joystick.init.size = doc["input_descriptor"]["joystick"]["init"]["size"];
-    JsonArray bytes = doc["input_descriptor"]["joystick"]["init"]["bytes"];
+    const JsonArray bytes = doc["input_descriptor"]["joystick"]["init"]["bytes"];
     for (int i = 0; i < bytes.size(); i++) {
         device->report->joystick.init.bytes[i] = bytes[i];
     }
