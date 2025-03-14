@@ -13,7 +13,7 @@ void Hid::onDeviceConnected(Device *device) {
 
     // debug
     std::vector<uint8_t> buffer(4096);
-    Utility::serialize(device, &buffer);
+    Utility::serializeDevice(device, &buffer);
     printf("\r\n%s\r\n", buffer.data());
 
     // set gamepad device

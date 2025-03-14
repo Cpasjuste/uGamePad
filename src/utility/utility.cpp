@@ -95,7 +95,7 @@ std::string Utility::baseName(const std::string &path) {
     return name;
 }
 
-bool Utility::serialize(Device *device, std::vector<uint8_t> *buffer) {
+bool Utility::serializeDevice(Device *device, std::vector<uint8_t> *buffer) {
     if (!device) {
         printf("Json::getDevice: device is null...\r\n");
         return {};
@@ -155,7 +155,7 @@ bool Utility::serialize(Device *device, std::vector<uint8_t> *buffer) {
 
     const size_t len = serializeJsonPretty(doc, buffer->data(), buffer->size());
     if (len == 0) {
-        printf("Json::getDevice: failed to serialize device...\r\n");
+        printf("Json::getDevice: failed to serializeDevice device...\r\n");
         return {};
     }
 
@@ -163,11 +163,11 @@ bool Utility::serialize(Device *device, std::vector<uint8_t> *buffer) {
     return buffer;
 }
 
-Device *Utility::deserialize(const std::vector<uint8_t> *buffer) {
+Device *Utility::deserializeDevice(const std::vector<uint8_t> *buffer) {
     JsonDocument doc;
     const auto err = deserializeJson(doc, buffer->data(), buffer->size());
     if (err) {
-        printf("Json::getDevice: failed to deserialize buffer: %s\r\n", err.c_str());
+        printf("Json::getDevice: failed to deserializeDevice buffer: %s\r\n", err.c_str());
         return nullptr;
     }
 

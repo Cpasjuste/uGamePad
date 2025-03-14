@@ -50,7 +50,7 @@ Device *Config::loadDevice(const std::string &path) {
             return nullptr;
         }
 
-        return Utility::deserialize(&buffer);
+        return Utility::deserializeDevice(&buffer);
     }
 
     return nullptr;
@@ -63,9 +63,9 @@ bool Config::saveDevice(Device *device) {
     }
 
     std::vector<uint8_t> buffer(4096);
-    const bool ret = Utility::serialize(device, &buffer);
+    const bool ret = Utility::serializeDevice(device, &buffer);
     if (!ret || buffer.empty()) {
-        printf("Config::saveDevice: failed to serialize device...\r\n");
+        printf("Config::saveDevice: failed to serializeDevice device...\r\n");
         return false;
     }
 

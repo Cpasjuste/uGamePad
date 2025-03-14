@@ -119,9 +119,9 @@ namespace uGamePad {
         static std::string parseSize(uint64_t size);
 
         // json stuff
-        static bool serialize(Device *device, std::vector<uint8_t> *buffer);
+        static bool serializeDevice(Device *device, std::vector<uint8_t> *buffer);
 
-        static Device *deserialize(const std::vector<uint8_t> *buffer);
+        static Device *deserializeDevice(const std::vector<uint8_t> *buffer);
     };
 }
 
