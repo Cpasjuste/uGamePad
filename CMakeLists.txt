@@ -46,7 +46,7 @@ set(INCLUDES
         ${CMAKE_CURRENT_SOURCE_DIR}/src/compat
         ${CMAKE_CURRENT_SOURCE_DIR}/external/Adafruit-GFX-Library
 )
-set(FLAGS -DARDUINO=123)
+set(FLAGS -D__UGAMEPAD__ -DARDUINO=123)
 set(LIBS)
 
 if (PLATFORM_LINUX)
@@ -103,6 +103,7 @@ else ()
     if (PICO_DEV_BOARD)
         set(HW_VERSION "DEV")
         list(APPEND FLAGS -DUGP_DEV_BOARD)
+        #list(APPEND FLAGS -DCFG_TUSB_DEBUG=2)
     endif ()
 endif ()
 
