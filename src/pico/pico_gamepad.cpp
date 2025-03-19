@@ -2,7 +2,6 @@
 // Created by cpasjuste on 24/03/23.
 //
 
-//#include <Arduino.h>
 #include <hardware/gpio.h>
 #include "tusb.h"
 #include "main.h"

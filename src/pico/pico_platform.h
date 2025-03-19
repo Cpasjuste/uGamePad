@@ -23,7 +23,7 @@
 #define GPIO_BTN_B4         INPUT_DUMMY
 #define GPIO_BTN_B5         INPUT_DUMMY
 #define GPIO_BTN_B6         INPUT_DUMMY
-#define GPIO_BTN_SELECT     INPUT_DUMMY
+#define GPIO_BTN_SELECT     12
 #define GPIO_BTN_START      INPUT_DUMMY
 #define GPIO_BTN_UP         INPUT_DUMMY
 #define GPIO_BTN_DOWN       INPUT_DUMMY
