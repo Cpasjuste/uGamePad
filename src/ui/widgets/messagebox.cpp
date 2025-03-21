@@ -33,14 +33,28 @@ void MessageBox::show(const std::string &text, const std::string &leftButton, co
     const Text *selectedText = nullptr;
 
     p_text->setString(text);
-    p_buttonLeft->setString(leftButton);
-    p_buttonRight->setString(rightButton);
 
-    // reset "buttons" state
-    p_buttonLeft->setColor(Utility::Color::White);
-    p_buttonLeft->setDrawBackground(false);
-    p_buttonRight->setColor(Utility::Color::Black);
-    p_buttonRight->setDrawBackground(true);
+    if (!leftButton.empty() && !rightButton.empty()) {
+        p_buttonLeft->setString(leftButton);
+        p_buttonLeft->setPosition(getSize().x * 0.25f, getSize().y - 6);
+        p_buttonLeft->setVisibility(Visibility::Visible);
+        p_buttonRight->setString(rightButton);
+        p_buttonRight->setPosition(getSize().x * 0.75f, getSize().y - 6);
+        p_buttonRight->setVisibility(Visibility::Visible);
+        // reset "buttons" state
+        p_buttonLeft->setColor(Utility::Color::White);
+        p_buttonLeft->setDrawBackground(false);
+        p_buttonRight->setColor(Utility::Color::Black);
+        p_buttonRight->setDrawBackground(true);
+    } else {
+        p_buttonLeft->setString("OK");
+        p_buttonLeft->setPosition(getSize().x / 2, getSize().y - 6);
+        p_buttonLeft->setVisibility(Visibility::Visible);
+        p_buttonRight->setVisibility(Visibility::Hidden);
+        // reset "buttons" state
+        p_buttonLeft->setColor(Utility::Color::Black);
+        p_buttonLeft->setDrawBackground(true);
+    }
 
     setVisibility(Visibility::Visible);
 
@@ -54,18 +68,20 @@ void MessageBox::show(const std::string &text, const std::string &leftButton, co
             break;
         }
 
-        if (buttons & GamePad::Button::LEFT || buttons & GamePad::Button::RIGHT
-            || buttons & GamePad::Button::UP || buttons & GamePad::Button::DOWN) {
-            if (p_buttonLeft->getColor() == Utility::Color::White) {
-                p_buttonLeft->setColor(Utility::Color::Black);
-                p_buttonLeft->setDrawBackground(true);
-                p_buttonRight->setColor(Utility::Color::White);
-                p_buttonRight->setDrawBackground(false);
-            } else {
-                p_buttonLeft->setColor(Utility::Color::White);
-                p_buttonLeft->setDrawBackground(false);
-                p_buttonRight->setColor(Utility::Color::Black);
-                p_buttonRight->setDrawBackground(true);
+        if (!leftButton.empty() && !rightButton.empty()) {
+            if (buttons & GamePad::Button::LEFT || buttons & GamePad::Button::RIGHT
+                || buttons & GamePad::Button::UP || buttons & GamePad::Button::DOWN) {
+                if (p_buttonLeft->getColor() == Utility::Color::White) {
+                    p_buttonLeft->setColor(Utility::Color::Black);
+                    p_buttonLeft->setDrawBackground(true);
+                    p_buttonRight->setColor(Utility::Color::White);
+                    p_buttonRight->setDrawBackground(false);
+                } else {
+                    p_buttonLeft->setColor(Utility::Color::White);
+                    p_buttonLeft->setDrawBackground(false);
+                    p_buttonRight->setColor(Utility::Color::Black);
+                    p_buttonRight->setDrawBackground(true);
+                }
             }
         }
 
@@ -78,7 +94,7 @@ void MessageBox::show(const std::string &text, const std::string &leftButton, co
     }
 
     setVisibility(Visibility::Hidden);
-    callback(selectedText);
+    if (callback) callback(selectedText);
 }
 
 void MessageBox::loop(const Utility::Vec2i &pos) {

@@ -11,7 +11,7 @@
 #include "menu_line.h"
 
 namespace uGamePad {
-    class Menu : public Rectangle {
+    class Menu final : public Rectangle {
     public:
         struct MenuOption {
             std::string name;
@@ -29,7 +29,7 @@ namespace uGamePad {
 
             void prev() {
                 index--;
-                if (index < 0) index = (int16_t) (values.size() - 1);
+                if (index < 0) index = static_cast<int16_t>(values.size() - 1);
             }
         };
 

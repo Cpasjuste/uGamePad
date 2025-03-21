@@ -33,7 +33,7 @@ void Utility::reboot(bool bootloader) {
 #endif
 }
 
-std::string Utility::toString(const uint32_t buttons) {
+std::string Utility::parseButtons(const uint32_t buttons) {
     std::string ret;
 
     if (buttons & GamePad::Button::B1) ret += "B1 ";

@@ -181,7 +181,7 @@ bool PicoGamePad::onHidReport(const uint8_t *report, uint16_t len) {
                         }
 #ifndef NDEBUG
                         printf("%s: %s (%i)\r\n", p_device->name,
-                               Utility::toString(mapping.button).c_str(), m_buttons & mapping.button ? 1 : 0);
+                               Utility::parseButtons(mapping.button).c_str(), m_buttons & mapping.button ? 1 : 0);
 #endif
                     }
                 }

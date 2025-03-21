@@ -31,7 +31,8 @@ Menu::Menu() : Rectangle({0, 0}, getPlatform()->getGfx()->getSize()) {
     }
     m_options.push_back({"OUTPUT MODE", modes});
     m_options.push_back({"GAMEPAD TEST", {"Go"}});
-    m_options.push_back({"GAMEPAD REMAP", {"Go"}});
+    m_options.push_back({"GAMEPAD PROFILES", {"Go"}});
+    //m_options.push_back({"GAMEPAD REMAP", {"Go"}});
     m_options.push_back({"FACTORY RESET", {"Go"}});
     m_options.push_back({"SYSTEM INFO", {"Go"}});
     m_options.push_back({"EXIT", {"Go"}});
@@ -110,8 +111,12 @@ void Menu::loop(const Utility::Vec2i &pos) {
         if (option != nullptr) {
             if (option->name == "GAMEPAD TEST") {
                 getPlatform()->getUi()->show(Ui::MenuWidget::GamePadTest);
-            } else if (option->name == "GAMEPAD REMAP") {
-                getPlatform()->getUi()->show(Ui::MenuWidget::Remap);
+            } else if (option->name == "GAMEPAD PROFILES") {
+                if (getPlatform()->getPad()->getDevice()) {
+                    getPlatform()->getUi()->show(Ui::MenuWidget::Profiles);
+                } else {
+                    getPlatform()->getUi()->getMessageBox()->show("NO GAMEPAD");
+                }
             } else if (option->name == "FACTORY RESET") {
                 const auto mbox = getPlatform()->getUi()->getMessageBox();
                 mbox->show("FORMAT FLASH ?", "YES", "NO", [mbox](const Text *t) {
@@ -121,7 +126,7 @@ void Menu::loop(const Utility::Vec2i &pos) {
                     }
                 });
             } else if (option->name == "SYSTEM INFO") {
-                getPlatform()->getUi()->show(Ui::MenuWidget::InfoMenu);
+                getPlatform()->getUi()->show(Ui::MenuWidget::Info);
             } else if (option->name == "EXIT") {
                 getPlatform()->getPad()->flush();
                 getPlatform()->getUi()->show(Ui::MenuWidget::Splash);

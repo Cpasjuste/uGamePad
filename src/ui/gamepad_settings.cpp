@@ -159,13 +159,13 @@ void GamePadSettings::loop(const Utility::Vec2i &pos) {
             return;
         }
 
-        p_text->setString("PRESS " + Utility::toString(m_buttons[m_remap_index].button));
+        p_text->setString("PRESS " + Utility::parseButtons(m_buttons[m_remap_index].button));
         m_clock_timeout.restart();
     }
 
     // update timeout
     p_text->setString("PRESS "
-                      + Utility::toString(m_buttons[m_remap_index].button)
+                      + Utility::parseButtons(m_buttons[m_remap_index].button)
                       + "("
                       + std::to_string(5 - (int) m_clock_timeout.getElapsedTime().asSeconds())
                       + ")");

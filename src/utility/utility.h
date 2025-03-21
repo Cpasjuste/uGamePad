@@ -114,7 +114,7 @@ namespace uGamePad {
 
         static std::string baseName(const std::string &path);
 
-        static std::string toString(uint32_t buttons);
+        static std::string parseButtons(uint32_t buttons);
 
         static std::string parseSize(uint64_t size);
 

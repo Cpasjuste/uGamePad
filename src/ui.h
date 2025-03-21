@@ -9,6 +9,7 @@
 #include "menu.h"
 #include "system_info.h"
 #include "gamepad_settings.h"
+#include "profiles.h"
 #include "messagebox.h"
 
 namespace uGamePad {
@@ -18,9 +19,10 @@ namespace uGamePad {
             None,
             MainMenu,
             Splash,
+            Profiles,
             GamePadTest,
             Remap,
-            InfoMenu,
+            Info,
         };
 
         explicit Ui();
@@ -42,6 +44,7 @@ namespace uGamePad {
         Text *p_splashText;
         GamePadSettings *p_gamePadInfo;
         SystemInfo *p_systemInfo;
+        UiProfiles *p_profiles;
         MessageBox *p_messageBox;
         MenuWidget m_menuCurrent = None;
         Clock m_triggerMenuClock;

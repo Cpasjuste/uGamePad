@@ -14,7 +14,6 @@
 #ifdef LINUX
 #define FLASH_SECTOR_SIZE 4096
 #endif
-#define FLASH_TARGET_OFFSET_CACHE ((1024 * 1024) * 0)   // 1MB flash cache (raw)
 #define FLASH_TARGET_OFFSET_FATFS ((1024 * 1024) * 1)   // 1MB fatfs flash ("flash:")
 
 namespace uGamePad {
@@ -108,7 +107,7 @@ namespace uGamePad {
 
         virtual std::string getRootDirectory() { return "flash:/"; };
 
-        virtual std::string getDeviceDirectory() { return getRootDirectory() + "devices"; };
+        virtual std::string getDevicesDirectory() { return getRootDirectory() + "devices"; };
 
         virtual void createDirectory(const std::string &path);
 

@@ -19,7 +19,12 @@ Ui::Ui() {
     p_menu->setVisibility(Widget::Visibility::Hidden);
     p_screen->add(p_menu);
 
-    // gamepad info menu
+    // gamepad profiles menu
+    p_profiles = new UiProfiles();
+    p_profiles->setVisibility(Widget::Visibility::Hidden);
+    p_screen->add(p_profiles);
+
+    // gamepad info/edit menu
     p_gamePadInfo = new GamePadSettings({64, 32}, {90, 60}, bmp_gamepad_90x60);
     p_gamePadInfo->setOrigin(Widget::Origin::Center);
     p_gamePadInfo->setVisibility(Widget::Visibility::Hidden);
@@ -53,6 +58,7 @@ void Ui::show(const MenuWidget menuWidget) {
         p_screen->setVisibility(Widget::Visibility::Visible);
         p_menu->setVisibility(Widget::Visibility::Hidden);
         p_gamePadInfo->setVisibility(Widget::Visibility::Hidden);
+        p_profiles->setVisibility(Widget::Visibility::Hidden);
         p_systemInfo->setVisibility(Widget::Visibility::Hidden);
         p_splash->setVisibility(Widget::Visibility::Visible);
         p_splashText->setVisibility(Widget::Visibility::Visible);
@@ -65,6 +71,16 @@ void Ui::show(const MenuWidget menuWidget) {
         p_screen->setVisibility(Widget::Visibility::Visible);
         p_menu->setVisibility(Widget::Visibility::Visible);
         p_gamePadInfo->setVisibility(Widget::Visibility::Hidden);
+        p_profiles->setVisibility(Widget::Visibility::Hidden);
+        p_systemInfo->setVisibility(Widget::Visibility::Hidden);
+        p_splash->setVisibility(Widget::Visibility::Hidden);
+        p_splashText->setVisibility(Widget::Visibility::Hidden);
+        getPlatform()->getPad()->setRepeatDelay(REPEAT_DELAY_DEFAULT);
+    } else if (menuWidget == Profiles) {
+        p_screen->setVisibility(Widget::Visibility::Visible);
+        p_profiles->setVisibility(Widget::Visibility::Visible);
+        p_menu->setVisibility(Widget::Visibility::Hidden);
+        p_gamePadInfo->setVisibility(Widget::Visibility::Hidden);
         p_systemInfo->setVisibility(Widget::Visibility::Hidden);
         p_splash->setVisibility(Widget::Visibility::Hidden);
         p_splashText->setVisibility(Widget::Visibility::Hidden);
@@ -75,13 +91,15 @@ void Ui::show(const MenuWidget menuWidget) {
         p_splash->setVisibility(Widget::Visibility::Hidden);
         p_splashText->setVisibility(Widget::Visibility::Hidden);
         p_systemInfo->setVisibility(Widget::Visibility::Hidden);
+        p_profiles->setVisibility(Widget::Visibility::Hidden);
         p_gamePadInfo->setVisibility(Widget::Visibility::Visible);
         getPlatform()->getPad()->setRepeatDelay(menuWidget == GamePadTest ? 0 : UINT16_MAX);
         p_gamePadInfo->setMode(menuWidget == GamePadTest ? GamePadSettings::Mode::Info : GamePadSettings::Mode::Remap);
-    } else if (menuWidget == InfoMenu) {
+    } else if (menuWidget == Info) {
         p_screen->setVisibility(Widget::Visibility::Visible);
         p_menu->setVisibility(Widget::Visibility::Hidden);
         p_gamePadInfo->setVisibility(Widget::Visibility::Hidden);
+        p_profiles->setVisibility(Widget::Visibility::Hidden);
         p_systemInfo->setVisibility(Widget::Visibility::Visible);
         p_splash->setVisibility(Widget::Visibility::Hidden);
         p_splashText->setVisibility(Widget::Visibility::Hidden);

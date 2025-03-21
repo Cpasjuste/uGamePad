@@ -12,8 +12,8 @@ namespace uGamePad {
 
         void loop(const Utility::Vec2i &pos) override;
 
-        void show(const std::string &text, const std::string &leftButton, const std::string &rightButton,
-                  const std::function<void(const Text *)> &callback);
+        void show(const std::string &text, const std::string &leftButton = "", const std::string &rightButton = "",
+                  const std::function<void(const Text *)> &callback = nullptr);
 
         Text *getText() { return p_text; }
 
