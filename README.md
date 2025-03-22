@@ -6,11 +6,15 @@
 
 uGamePad is an usb gamepad to db15 adapter for jamma arcade superguns, using a pi pico (rp2040)
 
-
 ## Usage
 Connect device via USB to computer pressing button:
  - **UP**: device start in bootloader mode for updating/flashing.
  - **DOWN**: device start in usb storage mode, access uGamePad configuration and devices files (1MB flash fs).
+
+## Currently supported gamepads
+
+SNK Neo-Geo Mini, Xbox, (Xbox One not tested), DualShock 4, (DualShock 5 not tested), cheap SNES USB Gamepad...
+See [devices.cpp](src/devices.cpp)
 
 ## Adding support for new gamepad
 `lsusb`
@@ -353,14 +357,9 @@ Add a device descriptor to uGamePad flash fs (via USB) in the "devices" folder (
 ```
 </details>
 
-## Currently supported gamepads
-
-SNK Neo-Geo Mini, Xbox, (Xbox One not tested), DualShock 4, (DualShock 5 not tested), cheap SNES USB Gamepad...
-See [devices.cpp](src/devices.cpp)
-
 ## Testing/debug in linux with an xbox 360 controller
 
-A lot of work have been made to support linux for easier debugging (including rendering, flashfs, hid raw access, etc...). This allow, for example, adding support for new gamedads or add new functionality without actually using/having the device.
+A lot of work have been made to support linux for easier debugging (including rendering, flashfs, hid raw access, etc...). This allows, for example, adding support for new gamedads or add new functionality without actually using/having the device.
 
 `lsusb`
 ```
@@ -374,6 +373,10 @@ Bus 003 Device 004: ID 24c6:550d ThrustMaster, Inc. Hori Gem Controller for Xbox
 KERNEL=="hidraw*", ATTRS{idVendor}=="24c6", ATTRS{idProduct}=="550d", MODE="0660", TAG+="uaccess"
 SUBSYSTEM=="usb", ATTRS{idVendor}=="24c6", ATTRS{idProduct}=="550d", MODE="0666"
 ```
+
+## uGamePad DB15 pinout (v1.1)
+
+![](docs/pics/ugamepad-v1.1-db15-pinout.png)
 
 ## Pics
 
