@@ -374,15 +374,15 @@ KERNEL=="hidraw*", ATTRS{idVendor}=="24c6", ATTRS{idProduct}=="550d", MODE="0660
 SUBSYSTEM=="usb", ATTRS{idVendor}=="24c6", ATTRS{idProduct}=="550d", MODE="0666"
 ```
 
-## uGamePad DB15 pinout (v1.1)
-
-![](docs/pics/ugamepad-v1.1-db15-pinout.png)
-
 ## Pics
 
 ![](docs/pics/ugamepad-v1.1.jpg)
 
 ![](docs/pics/ugamepad-debug.jpg)
+
+## uGamePad DB15 pinout (v1.1)
+
+![](docs/pics/ugamepad-v1.1-db15-pinout.png)
 
 ## TODO
 
