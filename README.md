@@ -384,11 +384,6 @@ SUBSYSTEM=="usb", ATTRS{idVendor}=="24c6", ATTRS{idProduct}=="550d", MODE="0666"
 
 ![](docs/pics/ugamepad-v1.1-db15-pinout.png)
 
-## TODO
-
-- Allow entering menu when no gamepad connected...
-- Add "info" submenu (app version, etc...)
-
 # OLD NOTES - TODO: CLEANUP
 
 ## Nintendo Nes
