@@ -12,8 +12,6 @@
 #include "clock.h"
 #include "utility.h"
 
-#define TODO_NES_SNES_MD_CABLES
-
 #define GAMEPAD_DZ 8000
 #define GPIO_FLOAT (-1)
 #define GPIO_LOW 0
@@ -56,8 +54,8 @@ namespace uGamePad {
         enum Mode {
             Jamma,
             Nes,
-            Snes,
-            Md
+            //Snes,
+            //Md
         };
 
         struct PinMapping {

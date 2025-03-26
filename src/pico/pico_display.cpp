@@ -31,6 +31,9 @@ static void SSD1306_Render(uint8_t *buf, struct render_area *area);
 static void calc_render_area_buflen(struct render_area *area);
 
 PicoDisplay::PicoDisplay() : Adafruit_GFX(SSD1306_WIDTH, SSD1306_HEIGHT) {
+#if GPIO_OLED_SDA == INPUT_DUMMY
+    printf("PicoDisplay: dummy display...\r\n");
+#else
     // I2C is "open drain", pull-ups to keep signal high when no data is being sent
     const auto rate = i2c_init(i2c_default, SSD1306_I2C_CLK * 1000);
     printf("PicoDisplay: i2c rate: %i\r\n", rate);
@@ -54,18 +57,25 @@ PicoDisplay::PicoDisplay() : Adafruit_GFX(SSD1306_WIDTH, SSD1306_HEIGHT) {
     // zero the entire display
     memset(framebuffer, 0, SSD1306_BUF_LEN);
     SSD1306_Render(framebuffer, &frame_area);
+#endif
 }
 
 void PicoDisplay::drawPixel(const int16_t x, const int16_t y, const uint16_t color) {
+#if GPIO_OLED_SDA != INPUT_DUMMY
     SSD1306_SetPixel(framebuffer, x, y, color);
+#endif
 }
 
 void PicoDisplay::clear() {
+#if GPIO_OLED_SDA != INPUT_DUMMY
     memset(framebuffer, 0, SSD1306_BUF_LEN);
+#endif
 }
 
 void PicoDisplay::flip() {
+#if GPIO_OLED_SDA != INPUT_DUMMY
     SSD1306_Render(framebuffer, &frame_area);
+#endif
 }
 
 ///

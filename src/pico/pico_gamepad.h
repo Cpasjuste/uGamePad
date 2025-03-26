@@ -5,6 +5,8 @@
 #ifndef U_GAMEPAD_PICO_GAMEPAD_H
 #define U_GAMEPAD_PICO_GAMEPAD_H
 
+#include <pico/types.h>
+
 namespace uGamePad {
     class PicoGamePad final : public GamePad {
     public:
@@ -19,11 +21,6 @@ namespace uGamePad {
         uint32_t getHardwareButtons() override;
 
     private:
-#ifndef TODO_NES_SNES_MD_CABLES
-        static void onLatchRising();
-
-        static void onClockFalling();
-#endif
         uint32_t m_buttons_old{}, m_buttons_diff{};
     };
 }

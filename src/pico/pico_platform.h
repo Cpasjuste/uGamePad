@@ -14,8 +14,8 @@
 #define GPIO_HW_BTN_UP      INPUT_DUMMY
 #define GPIO_HW_BTN_DOWN    INPUT_DUMMY
 #define GPIO_HW_BTN_ENTER   INPUT_DUMMY
-#define GPIO_OLED_SDA       4
-#define GPIO_OLED_SCL       5
+#define GPIO_OLED_SDA       INPUT_DUMMY
+#define GPIO_OLED_SCL       INPUT_DUMMY
 // output pins
 #define GPIO_BTN_B1         INPUT_DUMMY
 #define GPIO_BTN_B2         INPUT_DUMMY
@@ -29,6 +29,10 @@
 #define GPIO_BTN_DOWN       INPUT_DUMMY
 #define GPIO_BTN_LEFT       INPUT_DUMMY
 #define GPIO_BTN_RIGHT      INPUT_DUMMY
+// nes pins
+#define GPIO_NES_LATCH      2
+#define GPIO_NES_CLOCK      3
+#define GPIO_NES_DATA       4
 #elif defined(UGP_DEV_BOARD)
 // "uGamePad_v1.1_pico-usb-a" dev board
 #define GPIO_TX             0

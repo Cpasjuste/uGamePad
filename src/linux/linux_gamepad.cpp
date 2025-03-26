@@ -9,39 +9,35 @@ using namespace uGamePad;
 
 LinuxGamePad::LinuxGamePad() : GamePad() {
     // for linux ui debug/testing
-#ifndef TODO_NES_SNES_MD_CABLES
-    for (int i = 0; i < 4; i++) {
-#endif
-    m_outputModes.push_back(
-        {
-            .name = "Jamma",
-            .mode = Jamma,
-            .mappings = {
-                {B1, SDL_SCANCODE_UNKNOWN},
-                {B2, SDL_SCANCODE_UNKNOWN},
-                {B3, SDL_SCANCODE_UNKNOWN},
-                {B4, SDL_SCANCODE_UNKNOWN},
-                {B5, SDL_SCANCODE_UNKNOWN},
-                {B6, SDL_SCANCODE_UNKNOWN},
-                {SELECT, SDL_SCANCODE_UNKNOWN},
-                {START, SDL_SCANCODE_UNKNOWN},
-                {UP, SDL_SCANCODE_UNKNOWN},
-                {DOWN, SDL_SCANCODE_UNKNOWN},
-                {LEFT, SDL_SCANCODE_UNKNOWN},
-                {RIGHT, SDL_SCANCODE_UNKNOWN},
+    for (int i = 0; i < 2; i++) {
+        m_outputModes.push_back(
+            {
+                .name = "Jamma",
+                .mode = Jamma,
+                .mappings = {
+                    {B1, SDL_SCANCODE_UNKNOWN},
+                    {B2, SDL_SCANCODE_UNKNOWN},
+                    {B3, SDL_SCANCODE_UNKNOWN},
+                    {B4, SDL_SCANCODE_UNKNOWN},
+                    {B5, SDL_SCANCODE_UNKNOWN},
+                    {B6, SDL_SCANCODE_UNKNOWN},
+                    {SELECT, SDL_SCANCODE_UNKNOWN},
+                    {START, SDL_SCANCODE_UNKNOWN},
+                    {UP, SDL_SCANCODE_UNKNOWN},
+                    {DOWN, SDL_SCANCODE_UNKNOWN},
+                    {LEFT, SDL_SCANCODE_UNKNOWN},
+                    {RIGHT, SDL_SCANCODE_UNKNOWN},
+                }
             }
-        }
-    );
-#ifndef TODO_NES_SNES_MD_CABLES
+        );
     }
 
     m_outputModes[1].name = "Nes";
-    m_outputModes[1].mode = Mode::Nes;
-    m_outputModes[2].name = "Snes";
-    m_outputModes[2].mode = Mode::Snes;
-    m_outputModes[3].name = "MD";
-    m_outputModes[3].mode = Mode::Md;
-#endif
+    m_outputModes[1].mode = Nes;
+    //m_outputModes[2].name = "Snes";
+    //m_outputModes[2].mode = Snes;
+    //m_outputModes[3].name = "MD";
+    //m_outputModes[3].mode = Md;
 
     LinuxGamePad::setOutputMode(m_outputMode);
 }

@@ -13,7 +13,7 @@
 #define BIT(n) (1U<<(n))
 #endif
 
-#define INPUT_DUMMY UINT8_MAX
+#define INPUT_DUMMY (UINT8_MAX)
 #define MAX_BUTTONS 12
 #define MAX_AXIS 4
 

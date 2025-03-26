@@ -162,9 +162,7 @@ bool GamePad::onHidReport(const uint8_t *report, const uint16_t len) {
 
     //printf("uGamePad::loop: received data for '%s', len: %i)\r\n", p_device->name, len);
     const auto *data = p_device->report;
-
-    // we need to clear inputs here as hid reports are not received every frames
-    m_buttons = 0;
+    uint32_t buttons = 0;
 
     // process axis // TODO: fix
     if (data->is_xbox) {
@@ -174,11 +172,11 @@ bool GamePad::onHidReport(const uint8_t *report, const uint16_t len) {
             if (data->joystick.axis[i].size > 8) {
                 const int16_t x = (int16_t &) report[data->joystick.axis[i].offset / 8];
                 const int16_t y = (int16_t &) report[data->joystick.axis[i + 1].offset / 8];
-                m_buttons |= getButtonsFromAxis(x, y, AXIS_TYPE_S16 | (i < 2 ? AXIS_TYPE_LEFT : AXIS_TYPE_RIGHT));
+                buttons |= getButtonsFromAxis(x, y, AXIS_TYPE_S16 | (i < 2 ? AXIS_TYPE_LEFT : AXIS_TYPE_RIGHT));
             } else {
                 const uint8_t x = (uint8_t &) report[data->joystick.axis[i].offset / 8];
                 const uint8_t y = (uint8_t &) report[data->joystick.axis[i + 1].offset / 8];
-                m_buttons |= getButtonsFromAxis(x, y, AXIS_TYPE_U8 | (i < 2 ? AXIS_TYPE_LEFT : AXIS_TYPE_RIGHT));
+                buttons |= getButtonsFromAxis(x, y, AXIS_TYPE_U8 | (i < 2 ? AXIS_TYPE_LEFT : AXIS_TYPE_RIGHT));
             }
         }
     } else {
@@ -220,27 +218,30 @@ bool GamePad::onHidReport(const uint8_t *report, const uint16_t len) {
 
         for (int i = 0; i < MAX_AXIS; i += 2) {
             if (data->joystick.axis[i].size == 0) continue;
-            m_buttons |= getButtonsFromAxis(
+            buttons |= getButtonsFromAxis(
                 axis[i], axis[i + 1], AXIS_TYPE_U8 | AXIS_TYPE_FLIP_Y | (i < 2 ? AXIS_TYPE_LEFT : AXIS_TYPE_RIGHT));
         }
 
         // hat
         if (data->joystick.hat.size) {
-            m_buttons |= getButtonsFromHat(report[data->joystick.hat.offset / 8]);
+            buttons |= getButtonsFromHat(report[data->joystick.hat.offset / 8]);
         }
     }
 
     // process buttons
     for (int i = 0; i < data->joystick.button_count; i++) {
         if (data->joystick.buttons[i].byte_offset == INPUT_DUMMY) continue;
-        m_buttons |= report[data->joystick.buttons[i].byte_offset] & data->joystick.buttons[i].bitmask ? (1 << i) : 0;
+        buttons |= report[data->joystick.buttons[i].byte_offset] & data->joystick.buttons[i].bitmask ? (1 << i) : 0;
     }
 
 #ifndef NDEBUG
-    if (m_buttons) {
-        //printf("%s: %s\r\n", p_device->name, Utility::parseButtons(m_buttons).c_str());
+    if (buttons) {
+        printf("%s: %s\r\n", p_device->name, Utility::parseButtons(buttons).c_str());
     }
 #endif
+
+    // update buttons states
+    m_buttons = buttons;
 
     return true;
 }
