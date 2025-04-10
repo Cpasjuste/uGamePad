@@ -107,7 +107,7 @@ void uGamePad::PicoFs::setUsbMode(uGamePad::Fs::UsbMode mode) {
 
 #ifndef PICO_DEBUG_USB
     if (mode == Msc) {
-        board_init();
+        //board_init();
 
         // init usb stack
         constexpr tusb_rhport_init_t dev_init = {
@@ -126,8 +126,7 @@ void uGamePad::PicoFs::setUsbMode(uGamePad::Fs::UsbMode mode) {
             while (true);
         }
     } else {
-        // init board
-        board_init();
+        //board_init();
 
         // init usb stack
         constexpr tusb_rhport_init_t dev_init = {

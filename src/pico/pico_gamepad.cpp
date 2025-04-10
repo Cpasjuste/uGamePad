@@ -42,34 +42,34 @@ PicoGamePad::PicoGamePad() {
             .name = "Jamma",
             .mode = Jamma,
             .mappings = {
-                {B1, GPIO_BTN_B1, GPIO_IN, GPIO_FLOAT},
-                {B2, GPIO_BTN_B2, GPIO_IN, GPIO_FLOAT},
-                {B3, GPIO_BTN_B3, GPIO_IN, GPIO_FLOAT},
-                {B4, GPIO_BTN_B4, GPIO_IN, GPIO_FLOAT},
+                {B1, GPIO_BTN_B1, GPIO_IN, GPIO_LOW}, // BSS138PS
+                {B2, GPIO_BTN_B2, GPIO_IN, GPIO_HIGH}, // ULN2803A
+                {B3, GPIO_BTN_B3, GPIO_IN, GPIO_LOW}, // BSS138PS
+                {B4, GPIO_BTN_B4, GPIO_IN, GPIO_HIGH}, // ULN2803A
 #if !defined(UGP_DEBUG) || defined(UGP_DEV_BOARD) // used by tx/rx serial debug
-                {B5, GPIO_BTN_B5, GPIO_IN, GPIO_FLOAT},
-                {B6, GPIO_BTN_B6, GPIO_IN, GPIO_FLOAT},
+                {B5, GPIO_BTN_B5, GPIO_IN, GPIO_LOW}, // BSS138PS
+                {B6, GPIO_BTN_B6, GPIO_IN, GPIO_HIGH}, // ULN2803A
 #endif
-                {SELECT, GPIO_BTN_SELECT, GPIO_IN, GPIO_FLOAT},
-                {START, GPIO_BTN_START, GPIO_IN, GPIO_FLOAT},
-                {UP, GPIO_BTN_UP, GPIO_IN, GPIO_FLOAT},
-                {DOWN, GPIO_BTN_DOWN, GPIO_IN, GPIO_FLOAT},
-                {LEFT, GPIO_BTN_LEFT, GPIO_IN, GPIO_FLOAT},
-                {RIGHT, GPIO_BTN_RIGHT, GPIO_IN, GPIO_FLOAT},
+                {SELECT, GPIO_BTN_SELECT, GPIO_IN, GPIO_HIGH}, // ULN2803A
+                {START, GPIO_BTN_START, GPIO_IN, GPIO_LOW}, // BSS138PS
+                {UP, GPIO_BTN_UP, GPIO_IN, GPIO_HIGH}, // ULN2803A
+                {DOWN, GPIO_BTN_DOWN, GPIO_IN, GPIO_HIGH}, // ULN2803A
+                {LEFT, GPIO_BTN_LEFT, GPIO_IN, GPIO_HIGH}, // ULN2803A
+                {RIGHT, GPIO_BTN_RIGHT, GPIO_IN, GPIO_HIGH}, // ULN2803A
             }
         },
         {
             .name = "Nes",
             .mode = Nes,
             .mappings = {
-                {B2, GPIO_NES_LATCH, GPIO_IN, GPIO_LOW}, // use interrupts
-                {B1, GPIO_NES_CLOCK, GPIO_IN, GPIO_LOW}, // use interrupts
-                {SELECT, GPIO_NES_DATA, GPIO_OUT, GPIO_LOW}, // use interrupts
-                {START, INPUT_DUMMY, GPIO_IN, GPIO_FLOAT},
-                {UP, INPUT_DUMMY, GPIO_IN, GPIO_FLOAT},
-                {DOWN, INPUT_DUMMY, GPIO_IN, GPIO_FLOAT},
-                {LEFT, INPUT_DUMMY, GPIO_IN, GPIO_FLOAT},
-                {RIGHT, INPUT_DUMMY, GPIO_IN, GPIO_FLOAT},
+                {B2, GPIO_NES_LATCH, GPIO_IN}, // use interrupts
+                {B1, GPIO_NES_CLOCK, GPIO_IN}, // use interrupts
+                {SELECT, GPIO_NES_DATA, GPIO_OUT}, // use interrupts
+                {START, INPUT_DUMMY, GPIO_IN},
+                {UP, INPUT_DUMMY, GPIO_IN},
+                {DOWN, INPUT_DUMMY, GPIO_IN},
+                {LEFT, INPUT_DUMMY, GPIO_IN},
+                {RIGHT, INPUT_DUMMY, GPIO_IN},
             }
         },
 #if 0
@@ -106,11 +106,13 @@ static void onNesCallback(const uint gpio, const uint32_t events) {
         m_clock_count = 0; // reset
     }
 
+    //printf("onNesCallback: %i 0x%04X\r\n", gpio, events);
+
     // send button value to data pin
-    const bool value = s_picoGamePad->getButtons() & s_picoGamePad->getOutputMode()->mappings[m_clock_count].button
-                           ? GPIO_LOW
-                           : GPIO_HIGH;
-    gpio_put(GPIO_NES_DATA, value);
+    gpio_put(GPIO_NES_DATA, s_picoGamePad->getButtons()
+                            & s_picoGamePad->getOutputMode()->mappings[m_clock_count].button
+                                ? GPIO_LOW
+                                : GPIO_HIGH);
 
     // increment on GPIO_NES_LATCH / GPIO_NES_CLOCK
     m_clock_count++;
@@ -134,9 +136,6 @@ void PicoGamePad::setOutputMode(const Mode &mode) {
             if (mapping.pin != INPUT_DUMMY) {
                 gpio_set_function(mapping.pin, GPIO_FUNC_SIO);
                 gpio_set_dir(mapping.pin, mapping.direction);
-                if (mapping.defaultState != GPIO_FLOAT) {
-                    gpio_put(mapping.pin, mapping.defaultState);
-                }
             }
         }
     }
@@ -159,7 +158,9 @@ bool PicoGamePad::onHidReport(const uint8_t *report, uint16_t len) {
 
     // handle gpio states
     const auto ui = getPlatform()->getUi();
-    if (ui && !ui->isVisible()) {
+    if (!ui) return false; // app not ready...
+
+    if (!ui->isVisible()) {
         // get output mode/mapping
         const auto output = getOutputMode();
         // handle jamma mode
@@ -174,7 +175,7 @@ bool PicoGamePad::onHidReport(const uint8_t *report, uint16_t len) {
                         // open-drain simulation
                         if (m_buttons & mapping.button) {
                             gpio_set_dir(mapping.pin, GPIO_OUT);
-                            gpio_put(mapping.pin, GPIO_LOW);
+                            gpio_put(mapping.pin, mapping.logic);
                         } else {
                             gpio_set_dir(mapping.pin, GPIO_IN);
                         }

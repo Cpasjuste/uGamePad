@@ -3,6 +3,8 @@
 //
 
 #include <pico/stdio.h>
+#include <hardware/clocks.h>
+#include <hardware/vreg.h>
 #include <device/usbd.h>
 
 #include "main.h"
@@ -16,6 +18,12 @@ using namespace uGamePad;
 PicoPlatform::PicoPlatform() = default;
 
 void PicoPlatform::setup() {
+#ifdef PICO_RP2350
+    //vreg_set_voltage(VREG_VOLTAGE_1_15);
+    //busy_wait_at_least_cycles((SYS_CLK_VREG_VOLTAGE_AUTO_ADJUST_DELAY_US * static_cast<uint64_t>(XOSC_HZ)) / 1000000);
+    //set_sys_clock_khz(266000, false);
+#endif
+
     stdio_init_all();
 
     // if debugging on retail board, add a delay for serial init

@@ -13,7 +13,6 @@
 #include "utility.h"
 
 #define GAMEPAD_DZ 8000
-#define GPIO_FLOAT (-1)
 #define GPIO_LOW 0
 #define GPIO_HIGH 1
 #define REPEAT_DELAY_DEFAULT UINT16_MAX
@@ -62,7 +61,7 @@ namespace uGamePad {
             uint32_t button;
             uint8_t pin;
             bool direction;
-            int defaultState;
+            bool logic;
         };
 
         struct Output {

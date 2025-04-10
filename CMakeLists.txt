@@ -5,11 +5,12 @@ cmake_minimum_required(VERSION 3.5)
 option(PLATFORM_LINUX "Linux target platform" OFF)
 # pico options
 option(PICO_DEV_BOARD "Build for ugp dev board" OFF)
+option(PICO_RETAIL_V2 "Build for ugp retail board (v2)" OFF)
 option(PICO_DEBUG_UART "Pico uart debug" OFF)
 option(PICO_DEBUG_USB "Pico usb debug" OFF)
 
 set(APP_VERSION "1.1")
-set(HW_VERSION "Retail")
+set(HW_VERSION "1.1")
 string(TIMESTAMP BUILD_DATE "%Y%m%d")
 
 if (NOT PLATFORM_LINUX)
@@ -103,8 +104,16 @@ else ()
     if (PICO_DEV_BOARD)
         set(HW_VERSION "DEV")
         list(APPEND FLAGS -DUGP_DEV_BOARD)
-        #list(APPEND FLAGS -DCFG_TUSB_DEBUG=2)
+    elseif (PICO_RETAIL_V2)
+        set(HW_VERSION "2.0")
+        list(APPEND FLAGS
+                PICO_DEFAULT_UART_TX_PIN=28
+                PICO_DEFAULT_UART_RX_PIN=29
+                -DUGP_RETAIL_V2
+        )
     endif ()
+
+    #list(APPEND FLAGS -DCFG_TUSB_DEBUG=2)
 endif ()
 
 ####################

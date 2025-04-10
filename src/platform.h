@@ -17,7 +17,7 @@ namespace uGamePad {
     public:
         Platform() = default;
 
-        ~Platform();
+        virtual ~Platform();
 
         virtual void setup();
 

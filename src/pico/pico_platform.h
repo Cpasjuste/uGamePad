@@ -6,29 +6,29 @@
 #define U_GAMEPAD_PICO_PLATFORM_H
 
 #if defined(PICO_BUILD)
-#if PICO_RP2350
+#if UGP_RETAIL_V2
 // RP2350 testing
-#define GPIO_TX             0
-#define GPIO_RX             1
+#define GPIO_TX             28
+#define GPIO_RX             29
 // hardware buttons
-#define GPIO_HW_BTN_UP      INPUT_DUMMY
-#define GPIO_HW_BTN_DOWN    INPUT_DUMMY
-#define GPIO_HW_BTN_ENTER   INPUT_DUMMY
-#define GPIO_OLED_SDA       INPUT_DUMMY
-#define GPIO_OLED_SCL       INPUT_DUMMY
+#define GPIO_HW_BTN_UP      22
+#define GPIO_HW_BTN_DOWN    0
+#define GPIO_HW_BTN_ENTER   1
+#define GPIO_OLED_SDA       14
+#define GPIO_OLED_SCL       15
 // output pins
-#define GPIO_BTN_B1         INPUT_DUMMY
-#define GPIO_BTN_B2         INPUT_DUMMY
-#define GPIO_BTN_B3         INPUT_DUMMY
-#define GPIO_BTN_B4         INPUT_DUMMY
-#define GPIO_BTN_B5         INPUT_DUMMY
-#define GPIO_BTN_B6         INPUT_DUMMY
+#define GPIO_BTN_B1         4
+#define GPIO_BTN_B2         10
+#define GPIO_BTN_B3         5
+#define GPIO_BTN_B4         11
+#define GPIO_BTN_B5         3
+#define GPIO_BTN_B6         13
 #define GPIO_BTN_SELECT     12
-#define GPIO_BTN_START      INPUT_DUMMY
-#define GPIO_BTN_UP         INPUT_DUMMY
-#define GPIO_BTN_DOWN       INPUT_DUMMY
-#define GPIO_BTN_LEFT       INPUT_DUMMY
-#define GPIO_BTN_RIGHT      INPUT_DUMMY
+#define GPIO_BTN_START      2
+#define GPIO_BTN_UP         6
+#define GPIO_BTN_DOWN       8
+#define GPIO_BTN_LEFT       7
+#define GPIO_BTN_RIGHT      9
 // nes pins
 #define GPIO_NES_LATCH      2
 #define GPIO_NES_CLOCK      3

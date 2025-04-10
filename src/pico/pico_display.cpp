@@ -35,7 +35,7 @@ PicoDisplay::PicoDisplay() : Adafruit_GFX(SSD1306_WIDTH, SSD1306_HEIGHT) {
     printf("PicoDisplay: dummy display...\r\n");
 #else
     // I2C is "open drain", pull-ups to keep signal high when no data is being sent
-    const auto rate = i2c_init(i2c_default, SSD1306_I2C_CLK * 1000);
+    const auto rate = i2c_init(SSD1306_I2C_PORT, SSD1306_I2C_CLK * 1000);
     printf("PicoDisplay: i2c rate: %i\r\n", rate);
     gpio_set_function(GPIO_OLED_SDA, GPIO_FUNC_I2C);
     gpio_set_function(GPIO_OLED_SCL, GPIO_FUNC_I2C);
@@ -92,7 +92,7 @@ static void SSD1306_send_cmd(uint8_t cmd) {
     // this "data" can be a command or data to follow up a command
     // Co = 1, D/C = 0 => the driver expects a command
     uint8_t buf[2] = {0x80, cmd};
-    i2c_write_blocking(i2c_default, SSD1306_I2C_ADDR, buf, 2, false);
+    i2c_write_blocking(SSD1306_I2C_PORT, SSD1306_I2C_ADDR, buf, 2, false);
 }
 
 static void SSD1306_send_cmd_list(uint8_t *buf, int num) {
@@ -108,12 +108,10 @@ static void SSD1306_send_buf(uint8_t buf[], int buflen) {
     // copy our frame buffer into a new buffer because we need to add the control byte
     // to the beginning
 
-    uint8_t *temp_buf = static_cast<uint8_t *>(malloc(buflen + 1));
-
+    const auto temp_buf = static_cast<uint8_t *>(malloc(buflen + 1));
     temp_buf[0] = 0x40;
     memcpy(temp_buf + 1, buf, buflen);
-
-    i2c_write_blocking(i2c_default, SSD1306_I2C_ADDR, temp_buf, buflen + 1, false);
+    i2c_write_blocking(SSD1306_I2C_PORT, SSD1306_I2C_ADDR, temp_buf, buflen + 1, false);
 
     free(temp_buf);
 }

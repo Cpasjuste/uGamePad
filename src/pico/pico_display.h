@@ -16,6 +16,12 @@
 
 #define SSD1306_I2C_ADDR            _u(0x3C)
 
+#ifdef UGP_RETAIL_V2
+#define SSD1306_I2C_PORT i2c1
+#else
+#define SSD1306_I2C_PORT i2c0
+#endif
+
 // 400 is usual, but often these can be overclocked to improve display response.
 // Tested at 1000 on both 32 and 84 pixel height devices and it worked.
 #define SSD1306_I2C_CLK             400
