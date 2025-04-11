@@ -5,13 +5,13 @@
 #include <pico/stdio.h>
 #include <hardware/clocks.h>
 #include <hardware/vreg.h>
-#include <device/usbd.h>
 
 #include "main.h"
 #include "pico_platform.h"
 #include "pico_gamepad.h"
 #include "pico_fs.h"
 #include "pico_hid.h"
+#include "pico_led.h"
 
 using namespace uGamePad;
 
@@ -30,6 +30,10 @@ void PicoPlatform::setup() {
 #if defined(UGP_DEBUG) && !defined(UGP_DEV_BOARD)
     delay(2000);
 #endif
+
+    // init led
+    p_led = new PicoLed();
+    p_led->put(0, 0, 255);
 
     // init filesystem
     p_fs = new PicoFs();

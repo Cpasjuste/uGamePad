@@ -8,7 +8,7 @@
 #include "fs.h"
 
 namespace uGamePad {
-    class PicoFs : public Fs {
+    class PicoFs final : public Fs {
     public:
         void setUsbMode(UsbMode mode) override;
     };

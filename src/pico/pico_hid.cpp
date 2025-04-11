@@ -7,6 +7,11 @@
 #include "devices.h"
 #include "tusb.h"
 
+#ifdef PICO_DEBUG_USB
+#include <host/usbh.h>
+#include <class/hid/hid_host.h>
+#endif
+
 using namespace uGamePad;
 
 #define MAX_REPORT  4

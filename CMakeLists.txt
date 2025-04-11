@@ -6,6 +6,7 @@ option(PLATFORM_LINUX "Linux target platform" OFF)
 # pico options
 option(PICO_DEV_BOARD "Build for ugp dev board" OFF)
 option(PICO_RETAIL_V2 "Build for ugp retail board (v2)" OFF)
+option(PICO_RGB_LED "Build with ws2812b rgb led support" OFF)
 option(PICO_DEBUG_UART "Pico uart debug" OFF)
 option(PICO_DEBUG_USB "Pico usb debug" OFF)
 
@@ -113,6 +114,11 @@ else ()
         )
     endif ()
 
+    if (PICO_RGB_LED)
+        list(APPEND FLAGS -DPICO_RGB_LED)
+        list(APPEND LIBS hardware_pio)
+    endif ()
+
     #list(APPEND FLAGS -DCFG_TUSB_DEBUG=2)
 endif ()
 
@@ -130,6 +136,13 @@ target_compile_definitions(${PROJECT_NAME} PUBLIC
 target_link_libraries(${PROJECT_NAME} ${LIBS})
 
 if (NOT PLATFORM_LINUX)
+    if (PICO_RGB_LED)
+        pico_generate_pio_header(${PROJECT_NAME}
+                ${CMAKE_CURRENT_LIST_DIR}/src/pico/ws2812.pio
+                OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}
+        )
+    endif ()
+
     #set_linker_flash_size_16(${PROJECT_NAME})
     pico_add_uf2_output(${PROJECT_NAME})
     # debug output

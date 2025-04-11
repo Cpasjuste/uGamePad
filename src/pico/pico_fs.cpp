@@ -5,9 +5,9 @@
 #include <cstring>
 #ifndef PICO_DEBUG_USB
 #include <bsp/board_api.h>
-#endif
-#include <device/usbd.h>
 #include <class/msc/msc_device.h>
+#include <device/usbd.h>
+#endif
 #include "pico_fs.h"
 #include "pico_flash.h"
 
@@ -34,11 +34,12 @@ void tud_msc_inquiry_cb(uint8_t lun, uint8_t vendor_id[8], uint8_t product_id[16
 }
 
 bool tud_msc_test_unit_ready_cb(uint8_t lun) {
+#ifndef PICO_DEBUG_USB
     if (storage_ejected) {
         tud_msc_set_sense(lun, SCSI_SENSE_NOT_READY, 0x3a, 0x00);
         return false;
     }
-
+#endif
     return true;
 }
 
@@ -76,6 +77,7 @@ int32_t tud_msc_write10_cb(uint8_t lun, uint32_t lba, uint32_t offset, uint8_t *
 int32_t tud_msc_scsi_cb(uint8_t lun, uint8_t const scsi_cmd[16], void *buffer, uint16_t bufsize) {
     uint16_t resplen = 0;
 
+#ifndef PICO_DEBUG_USB
     switch (scsi_cmd[0]) {
         case SCSI_CMD_PREVENT_ALLOW_MEDIUM_REMOVAL:
             // Host is about to read/write etc ... better not to disconnect disk
@@ -90,6 +92,7 @@ int32_t tud_msc_scsi_cb(uint8_t lun, uint8_t const scsi_cmd[16], void *buffer, u
             resplen = -1;
             break;
     }
+#endif
 
     return resplen;
 }

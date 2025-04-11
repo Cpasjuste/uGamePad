@@ -11,6 +11,7 @@
 #include "hid.h"
 #include "gfx.h"
 #include "ui.h"
+#include "led.h"
 
 namespace uGamePad {
     class Platform {
@@ -44,6 +45,7 @@ namespace uGamePad {
         Fs *p_fs = nullptr;
         Config *p_config = nullptr;
         Hid *p_hid = nullptr;
+        Led *p_led = nullptr;
     };
 }
 
